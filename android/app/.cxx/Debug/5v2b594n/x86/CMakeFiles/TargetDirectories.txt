@@ -1,0 +1,2 @@
+/Users/blu-ray/tcw/android/app/.cxx/Debug/5v2b594n/x86/CMakeFiles/edit_cache.dir
+/Users/blu-ray/tcw/android/app/.cxx/Debug/5v2b594n/x86/CMakeFiles/rebuild_cache.dir
