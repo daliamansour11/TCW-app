@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
-import 'package:tcw/core/shared/shared_widget/Custom_button.dart';
+import 'package:tcw/core/shared/shared_widget/custom_button.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
-import 'package:tcw/core/shared/shared_widget/customTextFormFiled.dart';
+import 'package:tcw/core/shared/shared_widget/custom_text_form_field.dart';
 import 'package:tcw/core/shared/shared_widget/large_text_filed.dart';
+import 'package:tcw/features/setting/presentation/settings_viewmodel.dart';
 import 'package:tcw/features/setting/presentation/widgets/label_widget.dart';
+import 'package:zapx/zapx.dart';
 
 class SupportScreen extends StatefulWidget {
   const SupportScreen({super.key});
@@ -17,108 +19,101 @@ class _SupportScreenState extends State<SupportScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _complaintTitle = TextEditingController();
-  final _Complainttype = TextEditingController();
+  final complaintType = TextEditingController();
   final _details = TextEditingController();
+  late final SettingsViewmodel viewmodel;
+
+  @override
+  void initState() {
+    super.initState();
+    viewmodel = SettingsViewmodel(context);
+  }
 
   @override
   void dispose() {
     _complaintTitle.dispose();
-    _Complainttype.dispose();
+    complaintType.dispose();
     _details.dispose();
     super.dispose();
   }
 
-  InputDecoration _inputDecoration(String hint) => InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.grey),
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: context.propHeight(27)),
-                CustomAppBar(
-                  title: 'Support &\n Complaints',
-                 
-                ),
-                SizedBox(height: context.propHeight(24)),
-                Label(label: 'Complaint title',
-                  context: context,
-                ),
-                CustomTextField(
-                  controller: _complaintTitle,
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  hintText: 'Enter your complaint title',
-                  keyboardType: TextInputType.name,
-                  obscureText: false,
-                  errorMessage: "Please enter complaint title",
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter complaint title' : null,
-                ),
-                const SizedBox(height: 16),
-                Label(label: 'Complaint Type',
-                  context: context,
-                ),
-                CustomTextField(
-                  controller: _Complainttype,
-                  hintText: 'Technical issue',
-                  keyboardType: TextInputType.name,
-                  obscureText: false,
-                  errorMessage: 'Please enter complaint type',
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter complaint type' : null,
-                  hintStyle: const TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 16),
-                Label(label: 'Details',
-                  context: context,
-                ),
-                LargeTextField(
-                  controller: _details,
-                 
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: CustomButton(
-                    style: context.textTheme.headlineLarge?.copyWith(
-                      fontSize: context.propWidth(16),
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+      appBar: const CustomAppBar(
+        title: 'Support & Complaints',
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    Label(
+                      label: 'Complaint title',
+                      context: context,
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Changes saved successfully!')),
-                        );
-                      }
-                    },
-                    title: 'Submit',
-                  ),
+                    CustomTextField(
+                      controller: _complaintTitle,
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      hintText: 'Enter your complaint title',
+                      keyboardType: TextInputType.name,
+                      obscureText: false,
+                      errorMessage: 'Please enter complaint title',
+                      validator: (value) => value!.isEmpty
+                          ? 'Please enter complaint title'
+                          : null,
+                    ),
+                    Label(
+                      label: 'Complaint Type',
+                      context: context,
+                    ),
+                    CustomTextField(
+                      controller: complaintType,
+                      hintText: 'Technical issue',
+                      keyboardType: TextInputType.name,
+                      obscureText: false,
+                      errorMessage: 'Please enter complaint type',
+                      validator: (value) =>
+                          value!.isEmpty ? 'Please enter complaint type' : null,
+                      hintStyle: const TextStyle(color: Colors.grey),
+                    ),
+                    Label(
+                      label: 'Details',
+                      context: context,
+                    ),
+                    LargeTextField(
+                      controller: _details,
+                    ),
+                    const Row(
+                      spacing: 5,
+                      children: [
+                        Icon(Icons.camera),
+                        Icon(Icons.attach_file),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+          CustomButton(
+            style: context.textTheme.headlineLarge?.copyWith(
+              fontSize: context.propWidth(16),
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              viewmodel.showSuccessDialog('Your complaint has been submitted!');
+            },
+            title: 'Submit',
+          ),
+        ],
+      ).paddingAll(10),
     );
   }
-
 }

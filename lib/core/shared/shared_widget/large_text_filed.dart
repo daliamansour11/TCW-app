@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+
 
 import 'package:flutter/material.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
@@ -6,13 +6,13 @@ import 'package:tcw/core/theme/app_theme.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 
 class LargeTextField extends StatefulWidget {
+
+  const LargeTextField({super.key, required this.controller, this.hint});
   final TextEditingController controller;
   final String? hint;
 
-  const LargeTextField({super.key, required this.controller, this.hint});
-
   @override
-  _LargeTextFieldState createState() => _LargeTextFieldState();
+  State<LargeTextField> createState() => _LargeTextFieldState();
 }
 
 class _LargeTextFieldState extends State<LargeTextField> {
@@ -27,7 +27,6 @@ class _LargeTextFieldState extends State<LargeTextField> {
       decoration: BoxDecoration(
         border: Border.all(
           color:Colors.grey, // Border color
-          width: 1, // Border width
         ),
         borderRadius: BorderRadius.circular(10), // Rounded corners
         color: Colors.white, // Ensure background is white
@@ -41,7 +40,7 @@ class _LargeTextFieldState extends State<LargeTextField> {
               controller: widget.controller,
               maxLength: maxLength, // Limit to 256 characters
               maxLines: null, // Allow multiline input
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16, // Match font size to the image
                 color:
                     Colors.black, // Ensure text color is black for visibility
@@ -73,7 +72,7 @@ class _LargeTextFieldState extends State<LargeTextField> {
             bottom: 10, // Position the counter at the bottom-right
             child: Text(
               '$currentLength/$maxLength', // Display character count
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.grey, // Counter text color
                 fontSize: 12, // Counter text size
               ),

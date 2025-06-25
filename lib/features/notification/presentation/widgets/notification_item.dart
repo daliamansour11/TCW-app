@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tcw/core/constansts/date_extensions.dart';
 import 'package:tcw/features/notification/data/models/notification_model.dart';
 
 class NotificationItem extends StatelessWidget {
-  final AppNotification notification;
-
   const NotificationItem({super.key, required this.notification});
+  final NotificationModel notification;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class NotificationItem extends StatelessWidget {
           const SizedBox(width: 8),
 
           // Date Text
-          Text(notification.date,
+          Text(notification.createdAt.formatDateByYears,
               style: const TextStyle(fontSize: 11, color: Colors.grey)),
         ],
       ),

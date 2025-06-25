@@ -1,8 +1,4 @@
 class Message {
-  final String text;
-  final String time;
-  final bool isMe;
-  final String? avatarUrl;
 
   Message({
     required this.text,
@@ -10,4 +6,8 @@ class Message {
     required this.isMe,
   this.avatarUrl,
   });
+  final String text;
+  final String time;
+  final bool isMe;
+  final String? avatarUrl;
 }

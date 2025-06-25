@@ -4,12 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/theme/app_colors.dart';
-import 'package:tcw/routes/routes_names.dart';
+import 'package:tcw/core/routes/app_routes.dart';
 
 class EventSlider extends StatefulWidget {
-  final List<Map<String, String>> events;
-
   const EventSlider({super.key, required this.events});
+  final List<Map<String, String>> events;
 
   @override
   State<EventSlider> createState() => _EventSliderState();
@@ -32,137 +31,157 @@ class _EventSliderState extends State<EventSlider> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: context.propHeight(230),
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: widget.events.length,
-            onPageChanged: (index) {
-              setState(() {
-              });
-            },
-            itemBuilder: (context, index) {
-              final event = widget.events[index];
-              return Container(
-                margin: const EdgeInsets.only(right: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  image: DecorationImage(
-                    image: AssetImage(event['image']!),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.black.withOpacity(0.6),
-                            Colors.transparent
-                          ],
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(
-                        context.propHeight(12),
-                      ),
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Row(
-                          children: [
-                            const Icon(Icons.calendar_today,
-                                color: Colors.white, size: 14),
-                            SizedBox(width: context.propWidth(4)),
-                            Text(event['date']!,
-                                style: GoogleFonts.poppins(
-                                    fontSize: 10, color: Colors.white)),
-                            SizedBox(width: context.propWidth(12)),
-                            const Icon(Icons.access_time,
-                                color: Colors.white, size: 14),
-                            SizedBox(width: context.propWidth(4)),
-                            Text(event['time']!,
-                                style: GoogleFonts.poppins(
-                                    fontSize: 10, color: Colors.white)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          event['title']!,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Align(
-                        alignment: Alignment.bottomLeft,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          onPressed: () {
-                       Modular.to.pushNamed(AppRoutes.liveEventScreen);
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('join now',
-                                  style: GoogleFonts.poppins(
-                                      color: Colors.white)),
-                              const SizedBox(width: 8),
-                              Container(
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                ),
-                                child: Icon(Icons.play_arrow_rounded,
-                                    size: 12, color: AppColors.primaryColor),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+    return SizedBox(
+      height: context.propHeight(230),
+      child: PageView.builder(
+        controller: _pageController,
+        itemCount: widget.events.length,
+        itemBuilder: (context, index) {
+          final event = widget.events[index];
+          return _buildEventCard(context, event);
+        },
+      ),
+    );
+  }
+
+  Widget _buildEventCard(BuildContext context, Map<String, String> event) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        image: DecorationImage(
+          image: AssetImage(event['image'] ?? ''),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Stack(
+        children: [
+          _buildOverlay(),
+          _buildTopDetails(context, event),
+          _buildTitle(context, event),
+          _buildJoinButton(context),
+          _buildIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverlay() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [
+            Colors.black.withValues(alpha:0.6),
+            Colors.transparent,
+          ],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopDetails(BuildContext context, Map<String, String> event) {
+    return Padding(
+      padding: EdgeInsets.all(context.propHeight(12)),
+      child: Align(
+        alignment: Alignment.topRight,
+        child: Row(
+          spacing: 4,
+          children: [
+            const Icon(Icons.calendar_today, color: Colors.white, size: 14),
+            Text(
+              event['date'] ?? '',
+              style: GoogleFonts.poppins(fontSize: 10, color: Colors.white),
+            ),
+            const Icon(Icons.access_time, color: Colors.white, size: 14),
+            Text(
+              event['time'] ?? '',
+              style: GoogleFonts.poppins(fontSize: 10, color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitle(BuildContext context, Map<String, String> event) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          event['title'] ?? '',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: context.propHeight(12)),
-        Center(
-          child: SmoothPageIndicator(
-            controller: _pageController,
-            count: widget.events.length,
-            effect: WormEffect(
-              dotColor: Colors.grey.shade300,
-              activeDotColor: AppColors.primaryColor,
-              dotHeight: 8,
-              dotWidth: 8,
+      ),
+    );
+  }
+
+  Widget _buildJoinButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Align(
+        alignment: Alignment.bottomLeft,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            backgroundColor:Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
             ),
           ),
+          onPressed: () {
+            Modular.to.pushNamed(AppRoutes.liveEventScreen);
+          },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 5,
+            children: [
+              Text(
+                'join now',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                child:const Icon(
+                  Icons.play_arrow_outlined,
+                  size: 20,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildIndicator() {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 5,
+      child: Center(
+        child: SmoothPageIndicator(
+          controller: _pageController,
+          count: widget.events.length,
+          effect: WormEffect(
+            dotColor: Colors.grey.shade300,
+            activeDotColor: AppColors.primaryColor,
+            dotHeight: 8,
+            dotWidth: 8,
+          ),
+        ),
+      ),
     );
   }
 }

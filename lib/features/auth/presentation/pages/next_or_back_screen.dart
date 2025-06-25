@@ -1,18 +1,11 @@
-
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
-import 'package:tcw/core/shared/shared_widget/Custom_button.dart';
+import 'package:tcw/core/shared/shared_widget/custom_button.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 
 class NextOrBackScreen extends StatelessWidget {
-
-
-  const NextOrBackScreen({
-    Key? key,
-   
-  }) : super(key: key);
+  const NextOrBackScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,22 +15,18 @@ class NextOrBackScreen extends StatelessWidget {
       backgroundColor: AppColors.scaffoldBackground,
       body: Stack(
         children: [
-          SizedBox.expand(child: 
-          Container(
-            decoration: BoxDecoration(
+          SizedBox.expand(
+              child: Container(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/next_or_back.png'),
                 fit: BoxFit.cover,
               ),
             ),
-          )
-          ),
+          )),
           Column(
             children: [
-              
-                SizedBox(height: size.height * 0.7),
-            
-              
+              SizedBox(height: size.height * 0.7),
               SizedBox(height: size.height * 0.02),
             ],
           ),
@@ -63,7 +52,7 @@ class NextOrBackScreen extends StatelessWidget {
               ),
             ),
           ),
-               Align(
+          Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -72,7 +61,7 @@ class NextOrBackScreen extends StatelessWidget {
               ),
               child: CustomButton(
                 title: 'Next'.tr(),
-                onPressed:  () {},
+                onPressed: () {},
                 backgroundColor: AppColors.scaffoldBackground,
                 radius: 10.0,
                 width: double.infinity,

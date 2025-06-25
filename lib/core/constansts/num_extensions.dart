@@ -1,0 +1,3 @@
+extension NumExtensions on num{
+  
+}

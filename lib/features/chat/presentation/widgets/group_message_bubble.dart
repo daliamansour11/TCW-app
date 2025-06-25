@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:tcw/features/chat/data/models/message_model.dart';
 
 class GroupMessageBubble extends StatelessWidget {
-  final Message message;
 
-  const GroupMessageBubble({Key? key, required this.message}) : super(key: key);
+  const GroupMessageBubble({super.key, required this.message});
+  final Message message;
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +16,9 @@ class GroupMessageBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!message.isMe) ...[
-            CircleAvatar(
+            const CircleAvatar(
               radius: 16,
-              backgroundImage: NetworkImage(message.avatarUrl ?? 'https://i.pravatar.cc/150'),
+              // backgroundImage: NetworkImage(message.avatarUrl ?? 'https://i.pravatar.cc/150'),
             ),
             const SizedBox(width: 8),
           ],

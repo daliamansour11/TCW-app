@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tcw/core/constansts/asset_manger.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
-import 'package:tcw/core/shared/shared_widget/Custom_button.dart';
+import 'package:tcw/core/shared/shared_widget/custom_button.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 
 class SubscriptionSection extends StatelessWidget {
@@ -17,7 +16,7 @@ class SubscriptionSection extends StatelessWidget {
       children: [
         Text('My Subscription',
             style: GoogleFonts.lato(fontWeight: FontWeight.w600)),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         SizedBox(
           height: context.propHeight(300),
           child: ListView.builder(
@@ -34,7 +33,7 @@ class SubscriptionSection extends StatelessWidget {
                   border: Border.all(color: Colors.grey.shade300),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha:0.1),
                       blurRadius: 6,
                       offset: const Offset(0, 4),
                     ),
@@ -48,13 +47,13 @@ class SubscriptionSection extends StatelessWidget {
                         Container(
                           width: context.propWidth(8),
                           height: context.propHeight(8),
-                          decoration: ShapeDecoration(
-                            color: const Color(0xFF175941),
+                          decoration: const ShapeDecoration(
+                            color: Color(0xFF175941),
                             shape: CircleBorder(),
                           ),
                         ),
-                        SizedBox(width: 6),
-                        Text('Paid',
+                        const SizedBox(width: 6),
+                        const Text('Paid',
                             style: TextStyle(fontWeight: FontWeight.w600)),
                       ],
                     ),
@@ -65,9 +64,9 @@ class SubscriptionSection extends StatelessWidget {
                     const SizedBox(height: 10),
                     const Row(
                       children: [
-                        CircleAvatar(
-                            radius: 14,
-                            backgroundImage: AssetImage(AssetManger.ex_1)),
+                        // CircleAvatar(
+                        //     radius: 14,
+                        //     backgroundImage: AssetImage(AssetUtils.ex_2)),
                         SizedBox(width: 8),
                         Text('Ramy Badr', style: TextStyle(fontSize: 14)),
                       ],
@@ -82,9 +81,8 @@ class SubscriptionSection extends StatelessWidget {
                       child: Container(
                         decoration: ShapeDecoration(
                           shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                              width: 1,
-                              color: const Color(0xFFB7924F) /* Color-3 */,
+                            side: const BorderSide(
+                              color: Color(0xFFB7924F) /* Color-3 */,
                             ),
                             borderRadius: BorderRadius.circular(24),
                           ),

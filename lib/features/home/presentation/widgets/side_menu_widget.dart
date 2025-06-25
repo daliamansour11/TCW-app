@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:tcw/core/constansts/asset_manger.dart';
+import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
-import 'package:tcw/features/home/presentation/widgets/menu_item_widget.dart';
-import 'package:tcw/features/home/presentation/widgets/state_item_widget.dart';
-import 'package:tcw/features/home/presentation/widgets/user_header_widget.dart';
-import 'package:tcw/routes/routes_names.dart';
+import 'package:tcw/features/home/presentation/home_viewmodel.dart';
+import 'package:tcw/features/profile/presentation/widgets/menu_item_widget.dart';
+import 'package:tcw/features/profile/presentation/widgets/state_item_widget.dart';
+import 'package:tcw/features/profile/presentation/widgets/user_header_widget.dart';
+import 'package:tcw/core/routes/app_routes.dart';
 
 class SideMenu extends StatelessWidget {
-   SideMenu({super.key, });
-
+  const SideMenu({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      backgroundColor: Colors.white,
-      child: SafeArea(
+    return SafeArea(
+      child: Drawer(
+        backgroundColor: Colors.white,
         child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(height: context.propHeight(20)),
-              UserHeader(
-                context: context,
+              const UserHeader(
                 isAside: true,
               ),
               SizedBox(height: context.propHeight(24)),
@@ -32,43 +33,57 @@ class SideMenu extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Text("overview",
+                  child: Text('overview',
                       style: TextStyle(color: Colors.grey, fontSize: 12)),
                 ),
               ),
               MenuItem(
-                  icon: AssetManger.eventIcon,
+                  icon: Icons.space_dashboard_outlined,
                   onTap: () {
-                   
                     Modular.to.popUntil((route) => route.isFirst);
                     Modular.to.pushNamed(AppRoutes.eventScreen);
                   },
-                  title: "Events"),
-              MenuItem(icon: AssetManger.inboxIcon, title: "Inbox",
+                  title: 'Dashboard'),
+              MenuItem(
+                  icon: AssetUtils.eventIcon,
+                  onTap: () {
+                    Modular.to.popUntil((route) => route.isFirst);
+                    Modular.to.pushNamed(AppRoutes.eventScreen);
+                  },
+                  title: 'Events'),
+              MenuItem(
+                  icon: Icons.move_to_inbox_outlined,
+                  title: 'Inbox',
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.inboxScreen);
                   }),
-           
-              MenuItem(icon: AssetManger.coursesIcon, title: "Courses",
+              MenuItem(
+                  icon: AssetUtils.coursesIcon,
+                  title: 'Programmes',
                   onTap: () {
-                    Modular.to.pushNamed(AppRoutes.coursesScreen);
+                    Modular.to.pushNamed(AppRoutes.programmesView);
                   }),
-               MenuItem(icon: AssetManger.taskIcon, title: "Task",
-                  onTap: () {
-                    Modular.to.pushNamed(AppRoutes.TasksScreen);
-                  }),
-               MenuItem(icon: AssetManger.payMentIcon, title: "Payments",
+              MenuItem(
+                  icon: AssetUtils.payMentIcon,
+                  title: 'Payments',
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.paymentsScreen);
                   }),
-               MenuItem(
-                  icon: AssetManger.masterMindIcon, title: "Master mind",
+              MenuItem(
+                  icon: AssetUtils.taskIcon,
+                  title: 'Task',
+                  onTap: () {
+                    Modular.to.pushNamed(AppRoutes.tasksScreen);
+                  }),
+              MenuItem(
+                  icon: AssetUtils.masterMindIcon,
+                  title: 'Master mind',
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.groupsScreen);
                   }),
-                  
-              
-               MenuItem(icon: AssetManger.tcwIcon, title: "TCW media",
+              MenuItem(
+                  icon: AssetUtils.tcwIcon,
+                  title: 'TCW media',
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.tCWMediaScreen);
                   }),
@@ -78,19 +93,20 @@ class SideMenu extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Text("Setting",
+                  child: Text('Setting',
                       style: TextStyle(color: Colors.grey, fontSize: 12)),
                 ),
               ),
               MenuItem(
-                  icon: AssetManger.settingIcon,
+                  icon: AssetUtils.settingIcon,
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.settingsScreen);
                   },
-                  title: "Setting"),
-              const MenuItem(
-                icon: AssetManger.logOutIcon,
-                title: "Log out",
+                  title: 'Setting'),
+              MenuItem(
+                icon: AssetUtils.logOutIcon,
+                onTap: () => HomeViewmodel.logOutDialog(context),
+                title: 'Log out',
                 iconColor: Colors.red,
                 textColor: Colors.red,
               ),
@@ -108,7 +124,7 @@ Widget _buildStats(BuildContext context) {
     children: [
       StateItem(
           context: context,
-          icon: AssetManger.notification,
+          icon: AssetUtils.notification,
           count: '1',
           label: 'Notification',
           onTab: () {
@@ -116,39 +132,36 @@ Widget _buildStats(BuildContext context) {
           }),
       StateItem(
           context: context,
-          icon: AssetManger.point,
+          icon: AssetUtils.point,
           count: '100',
           label: 'Points',
           onTab: () {
-            Modular.to.pushNamed(
-              AppRoutes.pointsRewardsScreen,
-            );
+            Modular.to.pushNamed(AppRoutes.pointsRewardsScreen);
           }),
       StateItem(
           context: context,
-          icon: AssetManger.rewards,
+          icon: AssetUtils.rewards,
           count: '2',
           label: 'Rewards',
           onTab: () {
             Modular.to.pushNamed(
               AppRoutes.pointsRewardsScreen,
-              arguments: false,
             );
           }),
     ],
   );
 }
 
+// ignore: unused_element
 class _StatItem extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-
   const _StatItem({
     required this.icon,
     required this.value,
     required this.label,
   });
+  final IconData icon;
+  final String value;
+  final String label;
 
   @override
   Widget build(BuildContext context) {

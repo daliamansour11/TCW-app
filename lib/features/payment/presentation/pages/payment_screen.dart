@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
-import 'package:tcw/features/payment/presentation/widgets/balance_card_widget.dart';
+import 'package:tcw/features/payment/presentation/payment_viewmodel.dart';
 import 'package:tcw/features/payment/presentation/widgets/payment_method_section.dart';
 import 'package:tcw/features/payment/presentation/widgets/subscription_section.dart';
 import 'package:tcw/features/payment/presentation/widgets/transaction_history_section.dart';
 
-class PaymentsScreen extends StatelessWidget {
-   PaymentsScreen({super.key});
+class PaymentsScreen extends StatefulWidget {
+  const PaymentsScreen({super.key});
 
+  @override
+  State<PaymentsScreen> createState() => _PaymentsScreenState();
+}
+
+class _PaymentsScreenState extends State<PaymentsScreen> {
+   late final PaymentViewmodel viewmodel;
+   @override
+  void initState() {
+    super.initState();
+    viewmodel=  PaymentViewmodel(context);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-     
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomAppBar(
-                title: 'Payments',
-                width: context.propWidth(40),
-                
-              ),
-               SizedBox(height: context.propHeight(24)),
-              BalanceCard(),
-              const SizedBox(height: 24),
-              PaymentMethodSection(),
-              const SizedBox(height: 24),
-              SubscriptionSection(),
-              const SizedBox(height: 24),
-              TransactionHistorySection(transactions: _transactions),
-            ],
-          ),
+      appBar: const CustomAppBar(
+        title: 'Payment',
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 15,
+          children: [
+            const PaymentMethodSection(),
+            const SubscriptionSection(),
+            TransactionHistorySection(transactions: _transactions),
+          ],
         ),
       ),
     );

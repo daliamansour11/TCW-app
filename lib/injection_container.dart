@@ -1,11 +1,11 @@
-// injection_container.dart
 import 'package:get_it/get_it.dart';
-/* import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:internet_connection_checker/internet_connection_checker.dart';
- */
-final sl = GetIt.instance;
-Future<void> init() async {
-  //? Featuers
+import 'package:tcw/core/storage/secure_storage_service.dart';
+import 'package:tcw/features/auth/data/models/user_model.dart';
 
+final di = GetIt.instance;
+Future<void> init() async {
+  final user = await SecureStorageService.instance.get(StorageKey.userData);
+  if (user != null) {
+    userData = UserModel.fromJson(Map.from(user));
+  }
 }

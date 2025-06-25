@@ -35,20 +35,34 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+
+  zapx:
+  zap_sizer:
+
+  dio:
+  logger:
+
+  flutter_secure_storage:
+  
+  toastification: ^3.0.3
+  fl_chart:
+  
   internet_connection_checker: ^3.0.1
-  shimmer: ^3.0.0
   google_fonts: ^6.2.1
   easy_localization: ^3.0.7+1
   bloc: ^9.0.0
   flutter_modular: ^5.0.3
+  video_player:
   device_preview: ^1.2.0
   flutter_bloc: ^9.1.0
   get_it: ^8.0.3
-  intl_phone_field: ^3.2.0
-  country_picker: ^2.0.27
   animated_bottom_navigation_bar: ^1.4.0
   smooth_page_indicator: ^1.2.1
-  chewie: ^1.10.0
+
+  intl:
+
+  cached_network_image: ^3.4.1
+  modular_interfaces:
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -104,4 +118,4 @@ flutter:
   assets:
     - assets/lang/
     - assets/image/
-    - assets/lottie/
+    # - assets/lottie/

@@ -1,21 +1,20 @@
-// ignore_for_file: prefer_const_constructors
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:intl/intl.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/features/courses/data/models/course_model.dart';
-import 'package:tcw/routes/routes_names.dart';
+import 'package:tcw/core/routes/app_routes.dart';
 
 class VerticalCourseCard extends StatelessWidget {
-  final CourseModel course;
 
-  const VerticalCourseCard({Key? key, required this.course}) : super(key: key);
+  const VerticalCourseCard({super.key, required this.course});
+  final CourseModel course;
 
   @override
   Widget build(BuildContext context) {
-    final formattedDate =
-        DateFormat('d/M/yyyy').format(course.date ?? DateTime.now());
+    // final formattedDate =
+    //     DateFormat('d/M/yyyy').format(course.date ?? DateTime.now());
 
     return GestureDetector(
       onTap: () {
@@ -31,7 +30,7 @@ class VerticalCourseCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha:0.1),
                   blurRadius: 6,
                   offset: const Offset(0, 3),
                 )
@@ -41,23 +40,25 @@ class VerticalCourseCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// Instructor + Date Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundImage:
-                              Image.asset(course.coachImageUrl).image,
-                          radius: 12,
-                        ),
-                        SizedBox(width: context.propWidth(8)),
-                        Text(course.coachName),
-                      ],
-                    ),
-                    Text(formattedDate),
-                  ],
-                ),
+            // TODO
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     Row(
+                //       children: [
+                //         CircleAvatar(
+                //           backgroundImage:
+                //               Image.asset(course.coachImageUrl).image,
+                //           radius: 12,
+                //         ),
+                //         SizedBox(width: context.propWidth(8)),
+                //         Text(course.coachName),
+                //       ],
+                //     ),
+                //     Text(formattedDate),
+                //   ],
+                // ),
+         
                 const SizedBox(height: 12),
       
                 /// Title
@@ -74,13 +75,14 @@ class VerticalCourseCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '${course.watchedLessons} / ${course.totalLessons} Watched',
-                      style: const TextStyle(
-                        color:  const Color(0xFF175941),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+            // TODO
+                    // Text(
+                    //   '${course.watchedLessons} / ${course.totalLessons} Watched',
+                    //   style: const TextStyle(
+                    //     color:  Color(0xFF175941),
+                    //     fontWeight: FontWeight.w500,
+                    //   ),
+                    // ),
                     Container(
                       height: 15,
                     padding: const EdgeInsets.symmetric(
@@ -90,8 +92,8 @@ class VerticalCourseCard extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                       ),
-                      child: Center(
-                        child: const Text(
+                      child: const Center(
+                        child: Text(
                           'SHOW LESSONS',
                           style: TextStyle(
                             color: Color(0xFFB7924F),

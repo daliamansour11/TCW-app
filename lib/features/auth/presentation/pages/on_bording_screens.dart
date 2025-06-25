@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:tcw/core/constansts/asset_manger.dart';
+import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/features/auth/data/models/onbording_model.dart';
-import 'package:tcw/routes/routes_names.dart';
+import 'package:tcw/core/routes/app_routes.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -20,7 +20,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _nextPage() {
     if (_currentIndex == onboardingPages.length - 1) {
       // Navigate to main screen or login
-     Modular.to.pushReplacementNamed(AppRoutes.loginPage);
+      Modular.to.pushReplacementNamed(AppRoutes.loginPage);
     } else {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -31,19 +31,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   List<OnboardingModel> onboardingPages = [
     OnboardingModel(
-      image: AssetManger.onBording_1,
+      image: AssetUtils.onBording_1,
       title: 'Start Your Learning Journey!',
       description:
           'Explore a learning platform designed just for you. Join study groups, complete tasks, and track your progress effortlessly.',
     ),
     OnboardingModel(
-      image: AssetManger.onBording_2,
+      image: AssetUtils.onBording_2,
       title: 'Learn Smarter, Not Harder!',
       description:
           'Save time with the "Mind Master" system, where you can join private groups and engage with educational content without distractions.',
     ),
     OnboardingModel(
-      image: AssetManger.onBording_3,
+      image: AssetUtils.onBording_3,
       title: 'All Your Tools in One Place!',
       description:
           'From your dashboard to progress tracking, we’ve designed a seamless experience to keep your learning organized and efficient.',
@@ -59,6 +59,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Expanded(
             child: PageView.builder(
               controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: onboardingPages.length,
               onPageChanged: (index) {
                 setState(() {
@@ -68,25 +69,40 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               itemBuilder: (context, index) {
                 final page = onboardingPages[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (!isLast)
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: TextButton(
-                            onPressed: () {
-                              Modular.to.pushReplacementNamed(AppRoutes.loginPage);
-                            },
-                            child: const Text(
-                              "Skip",
-                              style: TextStyle(
-                                color: Colors.black,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (_currentIndex != 0)
+                            IconButton(
+                              onPressed: () {
+                                _pageController.previousPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.arrow_back,
                               ),
                             ),
-                          ),
-                        ),
+                          if (!isLast)
+                            TextButton(
+                              onPressed: () {
+                                Modular.to
+                                    .pushReplacementNamed(AppRoutes.loginPage);
+                              },
+                              child: const Text(
+                                'Skip',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                       const SizedBox(height: 60),
                       CircleAvatar(
                         radius: 120,
@@ -157,7 +173,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               child: Text(
-                isLast ? "Get Started" : "Continue",
+                isLast ? 'Get Started' : 'Continue',
                 style: context.textTheme.headlineLarge?.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,

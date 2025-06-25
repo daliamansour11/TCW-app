@@ -6,8 +6,8 @@ import 'package:tcw/features/courses/presentation/widgets/full_screen_player.dar
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
-  final String videoUrl;
   const VideoPlayerWidget({super.key, required this.videoUrl});
+  final String videoUrl;
 
   @override
   State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
@@ -20,7 +20,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.videoUrl)
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
       ..initialize().then((_) {
         setState(() {});
         _controller.play();
@@ -160,7 +160,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         _controller,
         allowScrubbing: true,
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        colors: VideoProgressColors(
+        colors: const VideoProgressColors(
           playedColor: AppColors.primaryColor,
           bufferedColor: Colors.white38,
           backgroundColor: Colors.white24,

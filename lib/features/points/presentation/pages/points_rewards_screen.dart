@@ -1,69 +1,65 @@
 // ignore_for_file: must_be_immutable
 import 'package:flutter/material.dart';
-import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
-import '../widgets/points_tab.dart';
-import '../widgets/rewards_tab.dart';
+import 'package:tcw/core/shared/shared_widget/custom_text.dart';
+import 'package:tcw/core/theme/app_colors.dart';
+import 'package:tcw/core/utils/asset_utils.dart';
+import 'package:tcw/features/points/presentation/points_viewmodel.dart';
+import 'package:tcw/features/points/presentation/widgets/points_tab.dart';
+import 'package:tcw/features/points/presentation/widgets/rewards_tab.dart';
 
 class PointsRewardsScreen extends StatefulWidget {
-  bool showPointsTabFirst;
-   PointsRewardsScreen({super.key, this.showPointsTabFirst = true});
+  const PointsRewardsScreen({super.key});
 
   @override
   State<PointsRewardsScreen> createState() => _PointsRewardsScreenState();
 }
 
+List<Map> _tabItems = [
+  {
+    'type': 'points',
+    'label': 'Points',
+    'icon': AssetUtils.point,
+    'count': '100',
+  },
+  {
+    'type': 'rewards',
+    'label': 'Rewards',
+    'icon': AssetUtils.rewards,
+    'count': '4',
+  }
+];
+
 class _PointsRewardsScreenState extends State<PointsRewardsScreen> {
   int selectedIndex = 0;
-
+  bool get isPointsSelected => selectedIndex == 0;
+  bool get isRewardsSelected => selectedIndex == 1;
+  late final PointsViewmodel viewmodel;
   @override
   void initState() {
     super.initState();
-    selectedIndex = widget.showPointsTabFirst ? 0 : 1;
+    viewmodel = PointsViewmodel(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final isPointsSelected = selectedIndex == 0;
-    final isRewardsSelected = selectedIndex == 1;
-
     return Scaffold(
-
+      appBar: const CustomAppBar(title: 'Points'),
       body: SafeArea(
         child: Column(
           children: [
-             SizedBox(height:context.propHeight(32)),
-             CustomAppBar(
-              title: 
-              // if (widget.showPointsTabFirst) "Points" else "Rewards",
-              widget.showPointsTabFirst ? "Points" : "Rewards",
-              ),
-              SizedBox(height:context.propHeight(20)),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  _tabButton("100 Points", isPointsSelected, () {
-                    setState(() {
-                      selectedIndex = 0;
-                      widget.showPointsTabFirst = true;
-
-                    });
-                    
-                  }),
-                  const SizedBox(width: 10),
-                  _tabButton("4 Rewards", isRewardsSelected, () {
-                    setState(() {
-                      selectedIndex = 1;
-                      widget.showPointsTabFirst = false;
-                    });
-                  }),
-                ],
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _tabButton(selectedIndex, (i) {
+                setState(() {
+                  selectedIndex = i;
+                });
+              }),
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: selectedIndex == 0 ? const PointsTab() : const RewardsTab(),
+              child:
+                  selectedIndex == 0 ? const PointsTab() :  RewardsTab(viewmodel),
             ),
           ],
         ),
@@ -71,37 +67,45 @@ class _PointsRewardsScreenState extends State<PointsRewardsScreen> {
     );
   }
 
-  Widget _tabButton(String label, bool isSelected, VoidCallback onTap) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: 90,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            gradient: isSelected
-                ? const LinearGradient(
-                    begin: Alignment(-0.01, -2.12),
-                    end: Alignment(1.01, -2.12),
-                    colors: [const Color(0xFF051742), const Color(0xFF452775)],
-                  )
-                : null,
-            color: isSelected ? null : Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border:
-                isSelected ? null : Border.all(color: const Color(0xFF8241FF)),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.white : Colors.black,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ),
-    );
+  Widget _tabButton(int selectedIndex, void Function(int i) onTap) {
+    return Row(
+        spacing: 10,
+        children: List.generate(
+          _tabItems.length,
+          (index) {
+            final isSelected = selectedIndex == index;
+            return Expanded(
+              child: InkWell(
+                onTap: () => onTap(index),
+                child: AnimatedContainer(
+                  padding:const EdgeInsets.all(20),
+                  duration: const Duration(milliseconds: 300),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    gradient: isSelected ? AppColors.cardGradient : null,
+                    borderRadius: BorderRadius.circular(16),
+                    border: isSelected ? null : Border.all(),
+                  ),
+                  child: Column(
+                    spacing: 10,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ImageIcon(
+                        const AssetImage(AssetUtils.point),
+                        color: isSelected ? Colors.white : Colors.black,
+                      ),
+                      CustomText(
+                        '${_tabItems[index]['count']} ${_tabItems[index]['label']}',
+                        color: isSelected ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ));
   }
 }

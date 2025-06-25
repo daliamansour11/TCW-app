@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class FullscreenPlayer extends StatefulWidget {
-  final VideoPlayerController controller;
 
   const FullscreenPlayer({super.key, required this.controller});
+  final VideoPlayerController controller;
 
   @override
   State<FullscreenPlayer> createState() => _FullscreenPlayerState();
@@ -81,7 +81,6 @@ class _FullscreenPlayerState extends State<FullscreenPlayer> {
                   Slider(
                     activeColor: Colors.orange,
                     inactiveColor: Colors.white30,
-                    min: 0.0,
                     max: duration.inSeconds.toDouble(),
                     value: _isDragging
                         ? _dragValue

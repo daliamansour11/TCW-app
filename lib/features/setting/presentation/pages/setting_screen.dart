@@ -1,80 +1,72 @@
- 
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
-import 'package:tcw/core/constansts/asset_manger.dart';
-import 'package:tcw/core/constansts/context_extensions.dart';
+import 'package:tcw/core/shared/shared_widget/custom_text.dart';
+import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
-import 'package:tcw/features/setting/presentation/widgets/delete_account_dialog.dart';
-import 'package:tcw/routes/routes_names.dart';
+import 'package:tcw/core/routes/app_routes.dart';
+import 'package:tcw/features/setting/presentation/settings_viewmodel.dart';
+import 'package:zapx/zapx.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  late final SettingsViewmodel viewmodel;
+  @override
+  void initState() {
+    super.initState();
+    viewmodel = SettingsViewmodel(context);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-     
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              SizedBox(height: context.propHeight(32)),
-              CustomAppBar(title: 'Settings'),
-               SizedBox(height: context.propHeight(24)),
-              _settingTile(
-                context: context,
-                icon:  AssetManger.personalDetailsIcon,
-                label: 'Personal Details',
-                onTap: () {
-                 Modular.to.pushNamed(AppRoutes.personalDetailsScreen);
-                },
-              ),
-              _settingTile(
-                context: context,
-                icon: AssetManger.subscriptionsIcon,
-                label: 'TCW Spaces',
-                onTap: () {
-                  Modular.to.pushNamed(AppRoutes.tCWMediaScreen);
-                },
-               ),
-              _settingTile(
-                context: context,
-                icon: AssetManger.heart,
-                label: 'Wishlist',
-                onTap: () {
-                  Modular.to.pushNamed(AppRoutes.wishListScreen);
-                },
-              ),
-              _settingTile(
-                context: context,
-                icon: AssetManger.support,
-                label: 'Support & Complaints',
-                onTap: () {
-                  Modular.to.pushNamed(AppRoutes.supportScreen);
-                },
-              ),
-              _settingTile(
-                context: context,
-                
-                icon: AssetManger.deletIcon,
-                label: 'Delete Account',
-                onTap: () {
-                  showDeleteAccountDialog(context);
-                },
-                color: Colors.red,
-                iconColor: Colors.red,
-              ),
-            ],
-          ),
+      appBar: const CustomAppBar(title: 'Settings'),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _settingTile(
+              context: context,
+              icon: AssetUtils.personalDetailsIcon,
+              label: 'Personal Details',
+              onTap: () => Zap.toNamed(AppRoutes.personalDetailsScreen),
+            ),
+            _settingTile(
+              context: context,
+              icon: AssetUtils.subscriptionsIcon,
+              label: 'TCW Spaces',
+              onTap: () => Zap.toNamed(AppRoutes.tCWMediaScreen),
+            ),
+            _settingTile(
+              context: context,
+              icon: AssetUtils.heart,
+              label: 'Wishlist',
+              onTap: () => Zap.toNamed(AppRoutes.wishListScreen),
+            ),
+            _settingTile(
+              context: context,
+              icon: AssetUtils.support,
+              label: 'Support & Complaints',
+              onTap: () => Zap.toNamed(AppRoutes.supportScreen),
+            ),
+            _settingTile(
+              context: context,
+              icon: Icons.pause_circle_outline,
+              label: 'suspend Account',
+              onTap: viewmodel.suspendAccount,
+            ),
+          ],
         ),
       ),
     );
-  } 
+  }
 
   Widget _settingTile({
-    required String icon,
+    required dynamic icon,
     required String label,
     required VoidCallback onTap,
     Widget? trailing,
@@ -82,59 +74,25 @@ class SettingsScreen extends StatelessWidget {
     Color iconColor = Colors.black,
     required dynamic context,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: GestureDetector(
+    return Card(
+      child: ListTile(
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-             Image.asset(
+        leading: icon is IconData
+            ? Icon(icon, color: iconColor, size: 24)
+            : Image.asset(
                 icon,
                 width: 24,
                 height: 24,
                 color: iconColor,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    color: color,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              if (trailing != null) trailing,
-            ],
-          ),
+        title: CustomText(
+          label,
+          color: color,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
         ),
+        trailing: trailing,
       ),
     );
   }
-
-
-void showDeleteAccountDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) {
-      return DeleteAccountDialog();
-    },
-  );
-}
-
 }
