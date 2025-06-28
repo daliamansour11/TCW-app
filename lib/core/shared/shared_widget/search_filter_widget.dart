@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SearchFilterWidget extends StatelessWidget {
-  const SearchFilterWidget({super.key});
+  const SearchFilterWidget({super.key,  this.onChanged});
+  final Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +24,7 @@ class SearchFilterWidget extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
+                    onChanged: onChanged,
                     decoration: InputDecoration(
                       hintText: 'Search your course here....',
                       hintStyle: GoogleFonts.poppins(fontSize: 12),

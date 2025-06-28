@@ -1,7 +1,6 @@
 class ApiResponse<T> {
   ApiResponse({
     this.data,
-    this.errorMessage,
     required this.mapData,
     this.message,
     required this.statusCode,
@@ -12,7 +11,6 @@ class ApiResponse<T> {
   });
   final T? data;
   final Map mapData;
-  final String? errorMessage;
   final int statusCode;
   final String? message;
   final int? limit, offset, total, lastPage;
@@ -20,21 +18,19 @@ class ApiResponse<T> {
   bool get isSuccess => statusCode >= 200 && statusCode < 300;
 
   bool get isError =>
-      errorMessage != null || statusCode < 200 || statusCode >= 300;
+       statusCode < 200 || statusCode >= 300;
   // error ApiResponse
   ApiResponse<TNew> error<TNew>() {
     return ApiResponse<TNew>(
       message: this.message,
       mapData: this.mapData,
       data: null,
-      errorMessage: this.errorMessage,
       statusCode: this.statusCode,
     );
   }
 
   ApiResponse<TNew> copyWith<TNew>({
     TNew? data,
-    String? error,
     int? statusCode,
     Map? mapData,
     String? message,
@@ -51,13 +47,12 @@ class ApiResponse<T> {
       message: message ?? this.message,
       mapData: mapData ?? this.mapData,
       data: data,
-      errorMessage: error ?? this.errorMessage,
       statusCode: statusCode ?? this.statusCode,
     );
   }
 
   @override
   String toString() {
-    return 'message:$message\n mapData:$mapData\n data:$data\n errorMessage:$errorMessage,statusCode:$statusCode,isSuccess:$isSuccess,isError:$isError';
+    return 'message:$message\n mapData:$mapData\n data:$data\n,statusCode:$statusCode,isSuccess:$isSuccess,isError:$isError';
   }
 }

@@ -7,6 +7,9 @@ class StudentCourseInitial extends StudentCourseState {}
 
 class StudentCourseLoading extends StudentCourseState {}
 
+class StudentCourseLoadingMore extends StudentCourseState {}
+
+
 class EnrolledCoursesLoaded extends StudentCourseState {
   EnrolledCoursesLoaded(this.courses);
   final List<EnrolledCourseModel> courses;

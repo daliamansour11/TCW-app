@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:tcw/core/my_app.dart';
-import 'package:tcw/injection_container.dart';
+import 'package:tcw/init.dart';
 import 'package:tcw/core/routes/module.dart';
 //import 'injection_container.dart' as di;
 import 'package:device_preview/device_preview.dart';

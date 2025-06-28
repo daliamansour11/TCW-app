@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tcw/core/shared/shared_widget/custom_button.dart';
 import 'package:tcw/core/shared/shared_widget/custom_container.dart';
@@ -9,6 +10,7 @@ import 'package:tcw/core/shared/shared_widget/show_more_tile_widget.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/features/courses/presentation/widgets/courses_vertical_list.dart';
 import 'package:tcw/features/event/presentation/widgets/event_slider_widget.dart';
+import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:tcw/features/profile/presentation/widgets/hour_chart.dart';
 import 'package:tcw/features/profile/presentation/widgets/state_item_widget.dart';
 import 'package:tcw/features/profile/presentation/widgets/user_header_widget.dart';
@@ -96,7 +98,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 10,
             children: [
-              const UserHeader(),
+              BlocProvider(
+                create: (context) => ProfileCubit(),
+                child: const UserHeader()),
               _buildStats(),
               const SearchFilterWidget(),
               EventSlider(events: events),

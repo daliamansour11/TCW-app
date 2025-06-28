@@ -61,6 +61,10 @@ dependencies:
 
   intl:
 
+  image_picker:
+  permission_handler:
+  device_info_plus:
+
   cached_network_image: ^3.4.1
   modular_interfaces:
 dev_dependencies:

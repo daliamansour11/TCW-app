@@ -7,9 +7,13 @@ class CourseInitial extends CourseState {}
 
 class CourseLoading extends CourseState {}
 
+class CourseLoadingMore extends CourseState {}
+
+
 class CoursesLoaded extends CourseState {
-  CoursesLoaded(this.courses);
+  CoursesLoaded(this.courses, {this.hasMore = true});
   final List<CourseModel> courses;
+  final bool hasMore;
 }
 
 class CourseDetailLoaded extends CourseState {

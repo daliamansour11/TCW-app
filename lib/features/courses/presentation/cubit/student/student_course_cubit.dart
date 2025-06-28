@@ -12,7 +12,7 @@ class StudentCourseCubit extends Cubit<StudentCourseState> {
   final StudentCourseRepository repository;
 
   Future<void> fetchEnrolledCourses({required int limit,required int offset}) async {
-    emit(StudentCourseLoading());
+    emit(offset==1?StudentCourseLoading(): StudentCourseLoadingMore());
     final result = await repository.getEnrolledCourses(limit:limit ,offset:offset );
     if (result.isSuccess) {
       emit(EnrolledCoursesLoaded(result.data!));

@@ -68,6 +68,7 @@ class CustomText extends StatelessWidget {
   }
 
   static TextStyle style({
+    FontWeight? fontWeight,
     FontType fontType = FontType.Lato,
     Color? color,
     double? letterSpacing,
@@ -82,6 +83,7 @@ class CustomText extends StatelessWidget {
         fontSize: fontSize,
         fontType: fontType,
         letterSpacing: letterSpacing,
+        fontWeight: fontWeight,
       );
 }
 
@@ -114,6 +116,7 @@ TextStyle _getStyle({
   double? fontSize,
   TextDecoration? decoration,
   BuildContext? context,
+  FontWeight? fontWeight,
 }) {
   switch (fontType) {
     case FontType.Lato:
@@ -121,7 +124,7 @@ TextStyle _getStyle({
         color: _getColor(color),
         letterSpacing: letterSpacing,
         fontSize: _getFontSize(context, fontSize)?.sp,
-        fontWeight: _getFontWeight(context),
+        fontWeight: _getFontWeight(context, fontWeight: fontWeight),
         decoration: decoration,
       );
     case FontType.NoneFont:
@@ -129,7 +132,7 @@ TextStyle _getStyle({
         color: _getColor(color),
         letterSpacing: letterSpacing,
         fontSize: _getFontSize(context, fontSize)?.sp,
-        fontWeight: _getFontWeight(context),
+        fontWeight: _getFontWeight(context, fontWeight: fontWeight),
         decoration: decoration,
       );
     case FontType.Noto:
@@ -137,7 +140,7 @@ TextStyle _getStyle({
         color: _getColor(color),
         letterSpacing: letterSpacing,
         fontSize: _getFontSize(context, fontSize)?.sp,
-        fontWeight: _getFontWeight(context),
+        fontWeight: _getFontWeight(context, fontWeight: fontWeight),
         decoration: decoration,
       );
       case FontType.Poppins:
@@ -145,7 +148,7 @@ TextStyle _getStyle({
         color: _getColor(color),
         letterSpacing: letterSpacing,
         fontSize: _getFontSize(context, fontSize)?.sp,
-        fontWeight: _getFontWeight(context),
+        fontWeight: _getFontWeight(context, fontWeight: fontWeight),
         decoration: decoration,
       );
   }

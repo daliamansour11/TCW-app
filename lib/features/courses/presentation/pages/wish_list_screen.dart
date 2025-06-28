@@ -24,13 +24,14 @@ class _WishListScreenState extends State<WishListScreen> {
           children: [
             Expanded(
               child: ListView.builder(
-                itemCount: CourseModel.test.length,
+                // itemCount: CourseModel.test.length,
                 itemBuilder: (context, index) {
-                  final course = CourseModel.test[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: LessonCard(course: course),
-                  );
+                  // final course = CourseModel.test[index];
+                  // TODO: add wish list api
+                  // return Padding(
+                  //   padding: const EdgeInsets.only(bottom: 16.0),
+                  //   child: LessonCard(course: course),
+                  // );
                 },
               ),
             ),

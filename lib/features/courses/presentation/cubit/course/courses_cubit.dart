@@ -5,38 +5,41 @@ import 'package:tcw/features/courses/data/repositories/course_repository_impl.da
 
 part 'courses_state.dart';
 
-
 class CourseCubit extends Cubit<CourseState> {
   CourseCubit(this.repository) : super(CourseInitial());
 
   final CourseRepository repository;
 
+   List<CourseModel> allCourses = [];
   Future<void> fetchCourses({
     int limit = 10,
     int offset = 1,
     String? search,
-    bool? latest,
-    int? instructorId,
-    int? categoryId,
-    int? subCategoryId,
-    bool? featured,
+    bool loadMore = false,
   }) async {
-    emit(CourseLoading());
+    if (loadMore) {
+      emit(CourseLoadingMore());
+    } else {
+      emit(CourseLoading());
+      allCourses.clear();
+    }
     final result = await repository.getCourses(
       limit: limit,
       offset: offset,
       search: search,
-      latest: latest,
-      instructorId: instructorId,
-      categoryId: categoryId,
-      subCategoryId: subCategoryId,
-      featured: featured,
     );
 
     if (result.isSuccess) {
-      emit(CoursesLoaded(result.data!));
+      if (loadMore) {
+        allCourses.addAll(result.data ?? []);
+      } else {
+        allCourses = result.data ?? [];
+      } emit(CoursesLoaded(
+        allCourses,
+        hasMore: (result.data?.length ?? 0) == limit,
+      ));
     } else {
-      emit(CourseError(result.message?? 'Failed to load courses'));
+      emit(CourseError(result.message ?? 'Failed to load courses'));
     }
   }
 
@@ -47,7 +50,7 @@ class CourseCubit extends Cubit<CourseState> {
     if (result.isSuccess) {
       emit(CourseDetailLoaded(result.data!));
     } else {
-      emit(CourseError(result.message?? 'Failed to load course details'));
+      emit(CourseError(result.message ?? 'Failed to load course details'));
     }
   }
 
@@ -66,7 +69,7 @@ class CourseCubit extends Cubit<CourseState> {
     if (result.isSuccess) {
       emit(CategoriesLoaded(result.data!));
     } else {
-      emit(CourseError(result.message?? 'Failed to load categories'));
+      emit(CourseError(result.message ?? 'Failed to load categories'));
     }
   }
 }

@@ -63,7 +63,6 @@ class _SupportScreenState extends State<SupportScreen> {
                       hintText: 'Enter your complaint title',
                       keyboardType: TextInputType.name,
                       obscureText: false,
-                      errorMessage: 'Please enter complaint title',
                       validator: (value) => value!.isEmpty
                           ? 'Please enter complaint title'
                           : null,
@@ -77,7 +76,6 @@ class _SupportScreenState extends State<SupportScreen> {
                       hintText: 'Technical issue',
                       keyboardType: TextInputType.name,
                       obscureText: false,
-                      errorMessage: 'Please enter complaint type',
                       validator: (value) =>
                           value!.isEmpty ? 'Please enter complaint type' : null,
                       hintStyle: const TextStyle(color: Colors.grey),

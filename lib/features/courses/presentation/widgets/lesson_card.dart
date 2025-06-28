@@ -53,7 +53,7 @@ class LessonCard extends StatelessWidget {
             Stack(
               children: [
                 CustomImage(
-                  course.thumb,
+                  course.thumb ?? '',
                   height: 20.h,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -112,7 +112,7 @@ class LessonCard extends StatelessWidget {
                   ),
                   SizedBox(height: context.propHeight(8)),
                   Text(
-                    course.title,
+                    course.title ?? '',
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 16),
                   ),

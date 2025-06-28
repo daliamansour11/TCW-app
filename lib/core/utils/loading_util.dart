@@ -6,7 +6,7 @@ class LoadingUtil {
   static BuildContext? _currentDialogContext;
   static bool _isShowing = false;
 
-  static Future<void> show() async {
+  static Future<void> show([BuildContext? context]) async {
     if (_isShowing) {
       close();
     }
@@ -14,7 +14,7 @@ class LoadingUtil {
     _isShowing = true;
 
     showDialog(
-      context: Zap.context,
+      context: context ?? Zap.context,
       barrierDismissible: false,
       builder: (dialogContext) {
         _currentDialogContext = dialogContext;

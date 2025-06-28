@@ -3,13 +3,14 @@ import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/rounded_text_filed.dart';
 import 'package:tcw/features/auth/presentation/auth_viewmodel.dart';
 
-class ForgetPasswordScreen extends StatefulWidget {
-  const ForgetPasswordScreen({super.key});
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({super.key, required this.email, required this.otp});
+final String email,otp;
   @override
-  State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
  late AuthViewModel viewModel;
 
   @override
@@ -29,7 +30,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Forgot Password', style: context.textTheme.headlineMedium),
+        title: Text('Reset Password', style: context.textTheme.headlineMedium),
       ),
       body: SafeArea(
         child: Padding(
@@ -42,7 +43,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               children: [
                 const SizedBox.shrink(),
                 Text(
-                  'Enter the email we will send the OTP in this email to reset your password',
+                  'Enter the phone number we will send the OTP in this phone number to reset your password',
                   style: context.textTheme.headlineSmall,
                 ),
                 const SizedBox.shrink(),
@@ -60,6 +61,17 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         }
                         return null;
                       },
+                    ),
+                    // Enter new password , confirm password
+                    RoundedTextField(
+                      hint: 'Enter new password',
+                      icon: Icons.lock_outline,
+                      controller: viewModel.passwordController,
+                    ),
+                    RoundedTextField(
+                      hint: 'Confirm password',
+                      icon: Icons.lock_outline,
+                      controller: viewModel.passwordController,
                     ),
                 const Spacer(),
                 SizedBox(

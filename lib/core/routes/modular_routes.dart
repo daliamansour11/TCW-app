@@ -1,4 +1,3 @@
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 // ignore: implementation_imports
@@ -12,6 +11,7 @@ import 'package:tcw/features/auth/presentation/pages/forget_password_screen.dart
 import 'package:tcw/features/auth/presentation/pages/login_screen.dart';
 import 'package:tcw/features/auth/presentation/pages/next_or_back_screen.dart';
 import 'package:tcw/features/auth/presentation/pages/on_bording_screens.dart';
+import 'package:tcw/features/auth/presentation/pages/reset_password_screen.dart';
 import 'package:tcw/features/auth/presentation/pages/splash_screen.dart';
 import 'package:tcw/features/auth/presentation/pages/verification_screen.dart';
 import 'package:tcw/features/chat/presentation/pages/group_chat_screen.dart';
@@ -53,7 +53,7 @@ import 'package:tcw/features/setting/presentation/pages/personal_details_screen.
 import 'package:tcw/features/setting/presentation/pages/setting_screen.dart';
 import 'package:tcw/features/setting/presentation/pages/support_screen.dart';
 import 'package:tcw/core/routes/app_routes.dart';
-
+import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
 TransitionType transition = TransitionType.upToDown;
 List<ModularRoute> modularRoutes = <ChildRoute>[
   ChildRoute(
@@ -90,7 +90,7 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
     transition: transition,
   ),
   ChildRoute(
-    AppRoutes.forgotPasswordScreen,
+    AppRoutes.resetPasswordScreen,
     child: (_, ModularArguments args) => BlocProvider(
         create: (context) => AuthCubit(
               AuthRepositoryImpl(
@@ -98,7 +98,23 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
                 AuthLocalDatasourceImpl(),
               ),
             ),
-        child: const ForgotPasswordScreen()),
+        child: ResetPasswordScreen(
+          email: args.data['email'],
+          otp: args.data['otp'],
+        )),
+    transition: transition,
+  ),
+  ChildRoute(
+    AppRoutes.forgetPasswordScreen,
+    child: (_, ModularArguments args) => BlocProvider(
+      create: (context) => AuthCubit(
+        AuthRepositoryImpl(
+          AuthRemoteDatasourceImpl(),
+          AuthLocalDatasourceImpl(),
+        ),
+      ),
+      child: const ForgetPasswordScreen(),
+    ),
     transition: transition,
   ),
   ChildRoute(
@@ -131,8 +147,7 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
   ),
   ChildRoute(
     AppRoutes.pointsRewardsScreen,
-    child: (_, ModularArguments args) => const PointsRewardsScreen(
-    ),
+    child: (_, ModularArguments args) => const PointsRewardsScreen(),
     transition: transition,
   ),
   ChildRoute(
@@ -152,7 +167,10 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
   ),
   ChildRoute(
     AppRoutes.personalDetailsScreen,
-    child: (_, ModularArguments args) => const PersonalDetailsScreen(),
+    child: (_, ModularArguments args) => BlocProvider(
+      create: (context) => ProfileCubit(),
+      child: const PersonalDetailsScreen(),
+    ),
     transition: transition,
   ),
   ChildRoute(
@@ -197,7 +215,7 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
     child: (_, ModularArguments args) => const NewCardScreen(),
     transition: transition,
   ),
- 
+
   ChildRoute(
     AppRoutes.courseDetailsScreen,
     child: (_, ModularArguments args) => const CourseDetailsScreen(),
@@ -242,7 +260,8 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
   ),
   ChildRoute(
     AppRoutes.newTaskScreen,
-    child: (_, ModularArguments args) => NewTaskScreen(task: args.data as Task?),
+    child: (_, ModularArguments args) =>
+        NewTaskScreen(task: args.data as Task?),
     transition: transition,
   ),
   ChildRoute(
@@ -298,7 +317,9 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
   // programmes
   ChildRoute(
     AppRoutes.programmesView,
-    child: (_, ModularArguments args) => const ProgrammesView(),
+    child: (_, ModularArguments args) =>BlocProvider(
+        create: (c) => StudentCourseCubit(StudentCourseRepositoryImpl()),
+        child: const ProgrammesView()),
     transition: transition,
   ),
   // programmeDetails

@@ -155,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                         const Spacer(),
                         TextButton(
                           onPressed: () {
-                            Zap.toNamed(AppRoutes.forgotPasswordScreen);
+                            Zap.toNamed(AppRoutes.forgetPasswordScreen);
                           },
                           child: const Text(
                             'Forgot Password?',

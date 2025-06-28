@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/custom_text.dart';
 import 'package:tcw/core/theme/app_theme.dart';
@@ -19,7 +20,6 @@ class CustomTextField extends StatelessWidget {
     this.controller,
     this.keyboardType,
     this.validator,
-    this.errorMessage,
     this.hintStyle,
     this.obscureText = false,
     this.maxLines,
@@ -43,7 +43,9 @@ class CustomTextField extends StatelessWidget {
     this.borderRadius,
     this.textColor,
     this.counterText,
+    this.inputFormatters,
   });
+  final List<TextInputFormatter>? inputFormatters;
   final FieldType fieldType;
   final Color? fillColor, borderColor, backgroundColor;
   final String? hintText;
@@ -51,7 +53,6 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
-  final String? errorMessage;
   final TextStyle? hintStyle;
   final bool obscureText;
   final int? maxLines, minLines, maxLength;
@@ -168,6 +169,7 @@ class CustomTextField extends StatelessWidget {
       onChanged: onChanged,
       minLines: minLines,
       maxLength: maxLength,
+      inputFormatters: inputFormatters,
       style: AppTheme(context)
           .theme
           .textTheme

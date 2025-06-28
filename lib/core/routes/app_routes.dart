@@ -4,8 +4,6 @@ class AppRoutes {
   static String get onboarding => '/Onboarding';
   static String get newOrOldUserScreen => '/newOrOldUserScreen';
   static String get loginPage => '/LoginPage';
-  static String get forgotPasswordScreen => '/ForgotPasswordScreen';
-  static String get oTPVerificationScreen => '/OTPVerificationScreen';
   static String get homeLayout => '/HomeLayout';
   static String get notificationScreen => '/NotificationScreen';
   static String get pointsRewardsScreen => '/PointsRewardsScreen';
@@ -22,6 +20,10 @@ class AppRoutes {
   static String get inboxScreen => '/InboxScreen';
   static String get chatScreen => '/ChatScreen';
 
+  // Auth
+  static String get forgetPasswordScreen => '/ForgetPasswordScreen';
+  static String get oTPVerificationScreen => '/OTPVerificationScreen';
+  static String get resetPasswordScreen => '/ResetPasswordScreen';
 
 // Payment
 static String get proccessPayScreen => '/ProccessPayScreen';

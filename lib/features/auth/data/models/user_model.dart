@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart' show CircleAvatar, Icons, Icon;
+import 'package:tcw/core/apis/apis_url.dart';
+import 'package:tcw/core/shared/shared_widget/custom_image.dart';
+
 UserModel? userData;
 
 class UserModel {
@@ -65,6 +69,11 @@ class UserModel {
   final String? updatedAt;
   final String? webFcmToken;
   String? token;
+  String get validImage => image?.startsWith('http') ?? false ? image! : '${ApiUrl.baseImageUrl}/storage/app/public/$image';
+  CircleAvatar get imageWidget => CircleAvatar(
+        backgroundImage: image != null ? CustomImage.provider(validImage) : null,
+        child: image == null ? const Icon(Icons.person, size: 30) : null,
+      );
   String get getFirstName => name.split(' ').first;
 
   Map<String, dynamic> toJson() => {
@@ -88,4 +97,51 @@ class UserModel {
         'web_fcm_token': webFcmToken,
         'token': token,
       };
+
+  UserModel copyWith({
+    String? firstName,
+    String? lastName,
+    String? phone,
+    String? imagePath,
+    String? password,
+    String? confirmPassword,
+    String? email,
+    String? address,
+    String? type,
+    String? status,
+    String? identityType,
+    String? identityNumber,
+    String? identityProof,
+    String? deviceToken,
+    String? createdAt,
+    String? updatedAt,
+    String? webFcmToken,
+    String? token,
+    int? id,
+    String? name,
+    String? emailVerifiedAt,
+    String? image,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      emailVerifiedAt: emailVerifiedAt ?? this.emailVerifiedAt,
+      address: address ?? this.address,
+      type: type ?? this.type,
+      status: status ?? this.status,
+      identityType: identityType ?? this.identityType,
+      identityNumber: identityNumber ?? this.identityNumber,
+      identityProof: identityProof ?? this.identityProof,
+      deviceToken: deviceToken ?? this.deviceToken,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      webFcmToken: webFcmToken ?? this.webFcmToken,
+      token: token ?? this.token,
+      image: image ?? this.image,
+    );
+  }
 }

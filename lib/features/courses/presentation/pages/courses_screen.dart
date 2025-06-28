@@ -1,13 +1,17 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/search_filter_widget.dart';
 import 'package:tcw/core/shared/shared_widget/show_more_tile_widget.dart';
 import 'package:tcw/features/courses/presentation/courses_viewmodel.dart';
+import 'package:tcw/features/courses/presentation/cubit/course/courses_cubit.dart';
+import 'package:tcw/features/courses/presentation/cubit/student/student_course_cubit.dart';
+import 'package:tcw/features/courses/presentation/widgets/course_card.dart';
 import 'package:tcw/features/courses/presentation/widgets/courses_vertical_list.dart';
 import 'package:tcw/core/routes/app_routes.dart';
+import 'package:zapx/zapx.dart';
 
 class CoursesScreen extends StatefulWidget {
   const CoursesScreen({super.key});
@@ -24,7 +28,6 @@ class _CoursesScreenState extends State<CoursesScreen> {
     viewmodel = CoursesViewmodel(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       viewmodel.fetchCourses();
-      viewmodel.scrollController.addListener(viewmodel.studentScrollListener);
     });
   }
 
@@ -74,7 +77,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                     ShowMoreTileWidget(
                       title: 'My Library',
                       onTab: () {
-                        Modular.to.pushNamed(AppRoutes.myLibraryScreen);
+                        Zap.toNamed(AppRoutes.myLibraryScreen);
                       },
                     ),
                     // TODO
@@ -83,8 +86,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                     ShowMoreTileWidget(
                       title: 'Recommended Courses',
                       onTab: () {
-                        Modular.to
-                            .pushNamed(AppRoutes.recommendedCoursesScreen);
+                        Zap.toNamed(AppRoutes.recommendedCoursesScreen);
                       },
                     ),
                     SizedBox(height: context.propHeight(12)),
@@ -96,18 +98,33 @@ class _CoursesScreenState extends State<CoursesScreen> {
             SliverToBoxAdapter(
               child: SizedBox(
                 height: context.propHeight(400),
-                // child: ListView.separated(
-                //   scrollDirection: Axis.horizontal,
-                //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                //   itemCount: courses.length,
-                //   separatorBuilder: (_, __) => const SizedBox(width: 12),
-                //   itemBuilder: (context, index) {
-                //     return SizedBox(
-                //       width: context.propWidth(300),
-                //       child: CourseCard(course: courses[index]),
-                //     );
-                //   },
-                // ),
+                child:   BlocBuilder<StudentCourseCubit, StudentCourseState>(
+            builder: (context, state) {
+              if (state is StudentCourseLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is CoursesLoaded || state is CourseLoadingMore) {
+                final courses = (state is CoursesLoaded)
+                    ? (state as CoursesLoaded).courses
+                    : context.read<CourseCubit>().allCourses;
+                if (courses.isEmpty) {
+                  return const Center(child: Text('No courses found.'));
+                }
+                return ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: courses.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    return SizedBox(
+                      width: context.propWidth(300),
+                      child: CourseCard(course: courses[index]),
+                    );
+                  },
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
               ),
             ),
 

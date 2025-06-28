@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/features/home/presentation/home_viewmodel.dart';
+import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:tcw/features/profile/presentation/widgets/menu_item_widget.dart';
 import 'package:tcw/features/profile/presentation/widgets/state_item_widget.dart';
 import 'package:tcw/features/profile/presentation/widgets/user_header_widget.dart';
@@ -22,9 +24,9 @@ class SideMenu extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: context.propHeight(20)),
-              const UserHeader(
-                isAside: true,
-              ),
+                 BlocProvider(
+                create: (context) => ProfileCubit(),
+                child: const UserHeader()),
               SizedBox(height: context.propHeight(24)),
               _buildStats(context),
               const SizedBox(height: 20),

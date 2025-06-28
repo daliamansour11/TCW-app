@@ -1,7 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:tcw/core/apis/api_response.dart';
+import 'package:tcw/core/routes/app_routes.dart';
+import 'package:tcw/core/utils/loading_util.dart';
+import 'package:tcw/core/utils/toast_util.dart';
 import 'package:tcw/features/auth/data/models/user_model.dart';
 import 'package:tcw/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:zapx/zapx.dart';
 
 part 'auth_state.dart';
 
@@ -17,7 +21,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       emit(AuthLoggedIn(response.data!));
     } else {
-      emit(AuthError(response.errorMessage ?? 'Login failed'));
+      emit(AuthError(response.message ?? 'Login failed'));
     }
   }
 
@@ -27,7 +31,7 @@ class AuthCubit extends Cubit<AuthState> {
     if (response.isSuccess && response.data != null) {
       emit(AuthRegistered(response.data!));
     } else {
-      emit(AuthError(response.errorMessage ?? 'Registration failed'));
+      emit(AuthError(response.message ?? 'Registration failed'));
     }
   }
 
@@ -37,7 +41,7 @@ class AuthCubit extends Cubit<AuthState> {
     if (response.isSuccess) {
       emit(AuthLoggedOut());
     } else {
-      emit(AuthError(response.errorMessage ?? 'Logout failed'));
+      emit(AuthError(response.message ?? 'Logout failed'));
     }
   }
 
@@ -47,11 +51,18 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> verifyToken(String email, String token) async {
     emit(AuthLoading());
+    LoadingUtil.show();
     final response = await authRepository.verifyToken(email, token);
+    LoadingUtil.close();
     if (response.isSuccess) {
-      emit(AuthTokenVerified(response.data?.toString() ?? 'Token verified'));
+      ToastUtil.show(response.data?.toString() ?? 'Token verified');
+      Zap.toNamed(AppRoutes.resetPasswordScreen, arguments: {
+        'email': email,
+        'otp': token,
+      });
     } else {
-      emit(AuthError(response.errorMessage ?? 'Invalid token'));
+      ToastUtil.show(response.message ?? 'Invalid token', true);
+      emit(AuthError(response.message ?? 'Invalid token'));
     }
   }
 
@@ -62,7 +73,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthPasswordResetSuccess(
           response.data?.toString() ?? 'Password updated'));
     } else {
-      emit(AuthError(response.errorMessage ?? 'Reset failed'));
+      emit(AuthError(response.message ?? 'Reset failed'));
     }
   }
 

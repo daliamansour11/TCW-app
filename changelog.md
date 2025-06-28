@@ -122,3 +122,15 @@
 - add new card payment
 - proccess pay screen
 
+
+### 28/6/2025
+
+# Auth 
+- linked reset password apis
+
+# Profile 
+- linked (get profile - update profile - delete profile) api to ui
+- handle add and manage image pick
+
+# Courses
+- linked courses search with api

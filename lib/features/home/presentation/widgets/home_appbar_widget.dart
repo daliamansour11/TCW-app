@@ -12,7 +12,7 @@ class HomeAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      leading: const CircleAvatar().paddingSymmetric(horizontal: 5),
+      leading: userData!.imageWidget.paddingSymmetric(horizontal: 5),
       centerTitle: false,
       title: CustomText(
         'Welcome, ${userData!.getFirstName} 👋',

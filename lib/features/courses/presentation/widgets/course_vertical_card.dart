@@ -63,7 +63,7 @@ class VerticalCourseCard extends StatelessWidget {
       
                 /// Title
                 Text(
-                  course.title,
+                  course.title ?? '',
                   style: context.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
