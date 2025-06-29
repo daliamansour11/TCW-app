@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:tcw/core/apis/api_response.dart';
 import 'package:tcw/core/routes/app_routes.dart';
+import 'package:tcw/core/shared/log/logger.dart';
 import 'package:tcw/core/utils/loading_util.dart';
 import 'package:tcw/core/utils/toast_util.dart';
 import 'package:tcw/features/auth/data/models/user_model.dart';
@@ -50,19 +52,23 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> verifyToken(String email, String token) async {
-    emit(AuthLoading());
-    LoadingUtil.show();
-    final response = await authRepository.verifyToken(email, token);
-    LoadingUtil.close();
-    if (response.isSuccess) {
-      ToastUtil.show(response.data?.toString() ?? 'Token verified');
-      Zap.toNamed(AppRoutes.resetPasswordScreen, arguments: {
-        'email': email,
-        'otp': token,
-      });
-    } else {
-      ToastUtil.show(response.message ?? 'Invalid token', true);
-      emit(AuthError(response.message ?? 'Invalid token'));
+    try {
+      emit(AuthLoading());
+      final response = await authRepository.verifyToken(email, token);
+      LoadingUtil.close();
+      logger.d(response.toString());
+      if (response.isSuccess) {
+        ToastUtil.show('Token verified');
+        Zap.toNamed(AppRoutes.resetPasswordScreen, arguments: {
+          'email': email,
+          'otp': token,
+        });
+      } else {
+        ToastUtil.show(response.message ?? 'Invalid token', true);
+        emit(AuthError(response.message ?? 'Invalid token'));
+      }
+    } catch (e) {
+      logger.e(e);
     }
   }
 
@@ -70,8 +76,10 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     final response = await authRepository.resetPassword(data);
     if (response.isSuccess) {
+      ToastUtil.show('Password updated successfully');
       emit(AuthPasswordResetSuccess(
           response.data?.toString() ?? 'Password updated'));
+      Zap.offAllNamed(AppRoutes.loginPage);
     } else {
       emit(AuthError(response.message ?? 'Reset failed'));
     }

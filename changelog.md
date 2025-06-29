@@ -134,3 +134,8 @@
 
 # Courses
 - linked courses search with api
+
+### 29/6/2025
+
+# Auth 
+- done configure check password token

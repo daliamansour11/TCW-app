@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
+import 'package:tcw/core/shared/shared_widget/custom_button.dart';
 import 'package:tcw/core/shared/shared_widget/rounded_text_filed.dart';
 import 'package:tcw/features/auth/presentation/auth_viewmodel.dart';
 
@@ -62,22 +63,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       },
                     ),
                 const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: ()=>viewModel.onSendForgetPassword(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFBD954F),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ),
+                CustomButton(
+                  onPressed: ()=>viewModel.onSendForgetPassword(),
+                  title: 'Continue',
                 ),
                 const SizedBox.shrink(),
               ],

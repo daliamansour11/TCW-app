@@ -58,8 +58,6 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
               borderRadius: 12,
               controller: viewModel.otpController,
               hintText: 'Enter OTP',
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a valid digit code';
@@ -70,8 +68,8 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
             const SizedBox(height: 16),
             BlocBuilder<AuthCubit, AuthState>(
               builder: (context, state) {
-                if (state is AuthOTPRemainingTime &&state.seconds!=0) {
-                return  CustomText(
+                if (state is AuthOTPRemainingTime && state.seconds != 0) {
+                  return CustomText(
                     "00:${state.seconds.toString().padLeft(2, '0')} Sec",
                     color: Colors.grey,
                   );
@@ -79,35 +77,44 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                 return const SizedBox();
               },
             ),
-            CustomButton(
+            BlocBuilder<AuthCubit, AuthState>(
+              builder: (context, state) {
+                if (state is AuthLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return CustomButton(
               onPressed: () => viewModel.onVerifyOTP(widget.email),
               title: 'Continue',
+            );
+              },
             ),
+            
             const SizedBox(height: 16),
-          BlocBuilder<AuthCubit, AuthState>(
+            BlocBuilder<AuthCubit, AuthState>(
               buildWhen: (previous, current) => current is AuthOTPRemainingTime,
-              builder: (context, state) =>  Text.rich(
-              TextSpan(
-                text: 'Don’t receive code ? ',
-                style: CustomText.style(color: Colors.black),
-                children: [
-                  TextSpan(
-                    text: 'Re-send',
-                    style: CustomText.style(
-                      fontWeight: FontWeight.bold,
-                      color: state is AuthOTPRemainingTime && state.seconds == 0
-                          ? Colors.black
-                          : Colors.grey,
+              builder: (context, state) => Text.rich(
+                TextSpan(
+                  text: 'Don’t receive code ? ',
+                  style: CustomText.style(color: Colors.black),
+                  children: [
+                    TextSpan(
+                      text: 'Re-send',
+                      style: CustomText.style(
+                        fontWeight: FontWeight.bold,
+                        color:
+                            state is AuthOTPRemainingTime && state.seconds == 0
+                                ? Colors.black
+                                : Colors.grey,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = viewModel.secondsRemaining == 0
+                            ? () => viewModel.onResendPressed(widget.email)
+                            : null,
                     ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = viewModel.secondsRemaining == 0
-                          ? () => viewModel.onResendPressed(widget.email)
-                          : null,
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
           ],
         ),
       ),

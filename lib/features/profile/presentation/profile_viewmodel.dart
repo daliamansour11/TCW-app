@@ -52,7 +52,7 @@ class ProfileViewmodel {
       SecureStorageService.instance.delete(StorageKey.userData);
       userData = null;
       ToastUtil.show('Profile deleted successfully');
-      Zap.offAllNamed(AppRoutes.loginPage);
+      Zap.offAllNamed(AppRoutes.loginPage); 
     }
     return result;
   }

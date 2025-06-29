@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
+import 'package:tcw/core/shared/shared_widget/custom_button.dart';
 import 'package:tcw/core/shared/shared_widget/rounded_text_filed.dart';
 import 'package:tcw/features/auth/presentation/auth_viewmodel.dart';
 
@@ -43,26 +44,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               children: [
                 const SizedBox.shrink(),
                 Text(
-                  'Enter the phone number we will send the OTP in this phone number to reset your password',
+                   'Enter the new password',
                   style: context.textTheme.headlineSmall,
                 ),
                 const SizedBox.shrink(),
-                   RoundedTextField(
-                      hint: 'Enter your E-mail',
-                      icon: Icons.email_outlined,
-                      controller: viewModel.emailController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}')
-                            .hasMatch(value)) {
-                          return 'Enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                    // Enter new password , confirm password
+                
                     RoundedTextField(
                       hint: 'Enter new password',
                       icon: Icons.lock_outline,
@@ -71,24 +57,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     RoundedTextField(
                       hint: 'Confirm password',
                       icon: Icons.lock_outline,
-                      controller: viewModel.passwordController,
+                      controller: viewModel.confirmPasswordController,
                     ),
                 const Spacer(),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: ()=>viewModel.onSendForgetPassword(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFBD954F),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
+                  child: CustomButton(
+                    onPressed: ()=>viewModel.onResetPassword(widget.email, widget.otp),
+                    title: 'Continue',
                   ),
                 ),
                 const SizedBox.shrink(),

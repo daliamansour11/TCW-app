@@ -119,12 +119,31 @@ class AuthViewModel {
     logger.d(otp);
     if (otp.isEmpty) {
       ToastUtil.show('OTP is required', true);
-    } else if (otp.length >= 8) {
+    } else if (otp.length >= 5) {
       await context.read<AuthCubit>().verifyToken(email, otp);
     } else {
       ToastUtil.show('Please enter a valid OTP', true);
     }
   }
 
-
+  void onResetPassword(String email ,String token) async {
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+    if (password != confirmPassword) {
+      ToastUtil.show('Passwords do not match', true);
+      return;
+    }
+    LoadingUtil.show();
+    try {
+       await context.read<AuthCubit>().resetPassword({
+        'email': email,
+        'token': token,
+        'password': password,
+        'confirm_password': confirmPassword,
+      });
+      LoadingUtil.close();
+    } catch (e) {
+      LoadingUtil.close();
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tcw/core/shared/log/logger.dart';
 import 'package:tcw/core/shared/shared_widget/custom_button.dart';
 import 'package:tcw/core/shared/shared_widget/custom_container.dart';
 import 'package:tcw/core/shared/shared_widget/custom_text.dart';
@@ -8,6 +9,7 @@ import 'package:tcw/core/shared/shared_widget/search_filter_widget.dart';
 import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/shared/shared_widget/show_more_tile_widget.dart';
 import 'package:tcw/core/theme/app_colors.dart';
+import 'package:tcw/features/auth/data/models/user_model.dart';
 import 'package:tcw/features/courses/presentation/widgets/courses_vertical_list.dart';
 import 'package:tcw/features/event/presentation/widgets/event_slider_widget.dart';
 import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
@@ -77,6 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    logger.d(userData?.email);
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -100,7 +103,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               BlocProvider(
                 create: (context) => ProfileCubit(),
-                child: const UserHeader()),
+                child: const UserHeader(),
+              ),
               _buildStats(),
               const SearchFilterWidget(),
               EventSlider(events: events),
