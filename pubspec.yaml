@@ -140,5 +140,4 @@ flutter:
   assets:
     - assets/lang/
     - assets/image/
-    - .ai_key.env
     # - assets/lottie/
