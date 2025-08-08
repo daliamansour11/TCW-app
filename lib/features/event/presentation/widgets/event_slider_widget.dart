@@ -5,10 +5,12 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/core/routes/app_routes.dart';
+import 'package:tcw/core/utils/asset_utils.dart';
+import 'package:tcw/features/event/data/models/event_model.dart';
 
 class EventSlider extends StatefulWidget {
   const EventSlider({super.key, required this.events});
-  final List<Map<String, String>> events;
+  final List<EventItem> events;
 
   @override
   State<EventSlider> createState() => _EventSliderState();
@@ -44,14 +46,18 @@ class _EventSliderState extends State<EventSlider> {
     );
   }
 
-  Widget _buildEventCard(BuildContext context, Map<String, String> event) {
+  Widget _buildEventCard(BuildContext context, EventItem event) {
     return Container(
       margin: const EdgeInsets.only(right: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: DecorationImage(
-          image: AssetImage(event['image'] ?? ''),
-          fit: BoxFit.cover,
+          image: NetworkImage(event.thumbUrl ?? AssetUtils.programPlaceHolder),
+        onError: (exception, stackTrace) {
+          print('Image failed to load: $exception');
+        },
+
+        fit: BoxFit.cover,
         ),
       ),
       child: Stack(
@@ -82,7 +88,7 @@ class _EventSliderState extends State<EventSlider> {
     );
   }
 
-  Widget _buildTopDetails(BuildContext context, Map<String, String> event) {
+  Widget _buildTopDetails(BuildContext context, EventItem event) {
     return Padding(
       padding: EdgeInsets.all(context.propHeight(12)),
       child: Align(
@@ -91,13 +97,13 @@ class _EventSliderState extends State<EventSlider> {
           spacing: 4,
           children: [
             const Icon(Icons.calendar_today, color: Colors.white, size: 14),
-            Text(
-              event['date'] ?? '',
+            Text('25-6-2025',
+              // event.date ?? '',
               style: GoogleFonts.poppins(fontSize: 10, color: Colors.white),
             ),
             const Icon(Icons.access_time, color: Colors.white, size: 14),
-            Text(
-              event['time'] ?? '',
+            Text('02.00 - 3.30',
+              // event.time ?? '',
               style: GoogleFonts.poppins(fontSize: 10, color: Colors.white),
             ),
           ],
@@ -106,13 +112,15 @@ class _EventSliderState extends State<EventSlider> {
     );
   }
 
-  Widget _buildTitle(BuildContext context, Map<String, String> event) {
+  Widget _buildTitle(BuildContext context, EventItem event) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
-          event['title'] ?? '',
+          event.title?.isNotEmpty == true
+              ? event.title!
+              : 'Event Title',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w600,

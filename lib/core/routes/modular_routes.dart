@@ -1,6 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-// ignore: implementation_imports
+
 import 'package:modular_interfaces/src/route/modular_arguments.dart';
 import 'package:tcw/features/ai/presentation/pages/ai_screen.dart';
 import 'package:tcw/features/auth/data/datasources/auth_local_datasource_impl.dart';
@@ -11,6 +12,7 @@ import 'package:tcw/features/auth/presentation/pages/forget_password_screen.dart
 import 'package:tcw/features/auth/presentation/pages/login_screen.dart';
 import 'package:tcw/features/auth/presentation/pages/next_or_back_screen.dart';
 import 'package:tcw/features/auth/presentation/pages/on_bording_screens.dart';
+import 'package:tcw/features/auth/presentation/pages/register_screen.dart';
 import 'package:tcw/features/auth/presentation/pages/reset_password_screen.dart';
 import 'package:tcw/features/auth/presentation/pages/splash_screen.dart';
 import 'package:tcw/features/auth/presentation/pages/verification_screen.dart';
@@ -19,16 +21,43 @@ import 'package:tcw/features/chat/presentation/pages/groups_screen.dart';
 import 'package:tcw/features/chat/presentation/pages/inbox_screen.dart';
 import 'package:tcw/features/chat/presentation/pages/message_screen.dart';
 import 'package:tcw/features/chat/presentation/pages/new_group_screen.dart';
+import 'package:tcw/features/courses/data/datasources/course_datasource_impl.dart';
 import 'package:tcw/features/courses/data/models/task_model.dart';
+import 'package:tcw/features/courses/data/repositories/course_repository_impl.dart';
 import 'package:tcw/features/courses/data/repositories/student_course_repository_impl.dart';
+import 'package:tcw/features/courses/presentation/cubit/course/courses_cubit.dart';
 import 'package:tcw/features/courses/presentation/cubit/student/student_course_cubit.dart';
 import 'package:tcw/features/courses/presentation/pages/course_datails_screen.dart';
 import 'package:tcw/features/courses/presentation/pages/courses_screen.dart';
 import 'package:tcw/features/courses/presentation/pages/lesson_screen.dart';
 import 'package:tcw/features/courses/presentation/pages/my_library_screen.dart';
 import 'package:tcw/features/courses/presentation/pages/recommended_courses_screen.dart';
+import 'package:tcw/features/event/data/data_source/event_data_source.dart';
+import 'package:tcw/features/event/data/models/event_model.dart';
+import 'package:tcw/features/event/data/repositories/event_repository.dart';
+import 'package:tcw/features/event/presentation/cubit/event_cubit.dart';
+import 'package:tcw/features/event/presentation/pages/subscribe_event_details.dart';
+import 'package:tcw/features/notification/data/data_scource/notification_data_source.dart';
+import 'package:tcw/features/notification/data/repositories/notification_repository.dart';
+import 'package:tcw/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:tcw/features/payment/presentation/pages/new_card_screen.dart';
 import 'package:tcw/features/payment/presentation/pages/proccess_pay_screen.dart';
+import 'package:tcw/features/profile/presentation/pages/profile_screen.dart';
+import 'package:tcw/features/programmes/data/data_source/program_datasource_impl.dart';
+import 'package:tcw/features/programmes/data/models/program_detail_model.dart';
+import 'package:tcw/features/programmes/data/repositories/programs_repository_impl.dart';
+import 'package:tcw/features/programmes/presentation/cubit/program_cubit.dart';
+
+import 'package:tcw/features/reels/data/models/reel_history_model.dart';
+import 'package:tcw/features/reels/data/repositories/reel_repository_imp.dart';
+import 'package:tcw/features/reels/presentation/cubit/create_reel_cubit.dart';
+import 'package:tcw/features/reels/presentation/cubit/reel_interactions/add_comment_cubit.dart';
+import 'package:tcw/features/reels/presentation/cubit/reel_interactions/get_comment_cubit.dart';
+import 'package:tcw/features/reels/presentation/cubit/reel_interactions/reel_toggle_on_like_cubit.dart';
+import 'package:tcw/features/reels/presentation/cubit/reels_cubit.dart';
+import 'package:tcw/features/tasks/data/data_source/task_data_source_imp.dart';
+import 'package:tcw/features/tasks/data/repositories/course_task_repositories.dart';
+import 'package:tcw/features/tasks/presentation/cubit/course_tasks_cubit.dart';
 import 'package:tcw/features/tasks/presentation/pages/new_task_screen.dart';
 import 'package:tcw/features/tasks/presentation/pages/task_detail_screen.dart';
 import 'package:tcw/features/event/presentation/pages/event_calendar_screen.dart';
@@ -44,7 +73,6 @@ import 'package:tcw/features/event/presentation/pages/event_screen.dart';
 import 'package:tcw/features/event/presentation/pages/live_event_screen.dart';
 import 'package:tcw/features/home/presentation/pages/home_layout_screen.dart';
 import 'package:tcw/features/notification/presentation/pages/notification_screen.dart';
-import 'package:tcw/features/payment/presentation/pages/payment_screen.dart';
 import 'package:tcw/features/points/presentation/pages/points_rewards_screen.dart';
 import 'package:tcw/features/reels/data/models/reel_model.dart';
 import 'package:tcw/features/reels/presentation/pages/media_screen.dart';
@@ -54,7 +82,9 @@ import 'package:tcw/features/setting/presentation/pages/setting_screen.dart';
 import 'package:tcw/features/setting/presentation/pages/support_screen.dart';
 import 'package:tcw/core/routes/app_routes.dart';
 import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
+
 TransitionType transition = TransitionType.upToDown;
+
 List<ModularRoute> modularRoutes = <ChildRoute>[
   ChildRoute(
     AppRoutes.aiScreen,
@@ -89,15 +119,29 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
     ),
     transition: transition,
   ),
+
+  ChildRoute(
+    AppRoutes.registerPage,
+    child: (_, ModularArguments args) => BlocProvider(
+      create: (context) => AuthCubit(
+        AuthRepositoryImpl(
+          AuthRemoteDatasourceImpl(),
+          AuthLocalDatasourceImpl(),
+        ),
+      ),
+      child: const RegisterScreen(),
+    ),
+    transition: transition,
+  ),
   ChildRoute(
     AppRoutes.resetPasswordScreen,
     child: (_, ModularArguments args) => BlocProvider(
         create: (context) => AuthCubit(
-              AuthRepositoryImpl(
-                AuthRemoteDatasourceImpl(),
-                AuthLocalDatasourceImpl(),
-              ),
-            ),
+          AuthRepositoryImpl(
+            AuthRemoteDatasourceImpl(),
+            AuthLocalDatasourceImpl(),
+          ),
+        ),
         child: ResetPasswordScreen(
           email: args.data['email'],
           otp: args.data['otp'],
@@ -119,30 +163,63 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
   ),
   ChildRoute(
     AppRoutes.oTPVerificationScreen,
-    child: (_, ModularArguments args) => BlocProvider(
+    child: (_, ModularArguments args) {
+
+      return BlocProvider(
       create: (context) => AuthCubit(
         AuthRepositoryImpl(
           AuthRemoteDatasourceImpl(),
           AuthLocalDatasourceImpl(),
         ),
       ),
-      child: OTPVerificationScreen(args.data),
-    ),
+      child: OTPVerificationScreen(args.data as String),
+ );},
     transition: transition,
   ),
   ChildRoute(
     AppRoutes.homeLayout,
-    child: (_, ModularArguments args) => const HomeLayout(),
+    child: (_, ModularArguments args) => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => ProgramCubit(ProgramRepositoryImpl(ProgramDatasourceImpl()))..fetchPrograms(),
+        ),  BlocProvider(
+          create: (_) => NotificationCubit(NotificationRepositoryImp(NotificationDataSourceImpl()))..fetchStudentPushNotification(),
+        ),
+        BlocProvider(
+          create: (_) => StudentCourseCubit(StudentCourseRepositoryImpl()),
+        ),
+        BlocProvider(
+          create: (c) => ReelsCubit(ReelRepositoryImpl()),
+        ), BlocProvider(
+            create: (c) => AuthCubit(AuthRepositoryImpl(AuthRemoteDatasourceImpl(),AuthLocalDatasourceImpl())),
+        ),
+        BlocProvider(
+        create: (context) => EventCubit(
+            EventRepositoryImp(EventDataSourceImpl())
+        )..getEvents(),        //
+        //
+        ),
+
+
+
+      ], child: const HomeLayout(),),
+
     transition: transition,
   ),
   ChildRoute(
     AppRoutes.tCWMediaScreen,
-    child: (_, ModularArguments args) => MediaScreen(reels: reels),
+    child: (_, ModularArguments args) => BlocProvider(
+        create: (c) => ReelsCubit(ReelRepositoryImpl()),
+        child: const MediaScreen()),
     transition: transition,
   ),
   ChildRoute(
     AppRoutes.notificationScreen,
-    child: (_, ModularArguments args) => NotificationScreen(),
+    child: (_, ModularArguments args) => BlocProvider(
+      create: (_) => NotificationCubit(NotificationRepositoryImp(NotificationDataSourceImpl()))..fetchStudentPushNotification(),
+      child: const         NotificationScreen(),
+
+    ),
     transition: transition,
   ),
   ChildRoute(
@@ -152,9 +229,14 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
   ),
   ChildRoute(
     AppRoutes.recommendedCoursesScreen,
-    child: (_, ModularArguments args) => const RecommendedCoursesScreen(),
+    child: (_, ModularArguments args) => BlocProvider(
+      create: (_) => CourseCubit(CourseRepositoryImpl(CourseDatasourceImpl()))..fetchCourses(),
+      child: const RecommendedCoursesScreen(),
+    ),
     transition: transition,
   ),
+
+
   ChildRoute(
     AppRoutes.myLibraryScreen,
     child: (_, ModularArguments args) => const MyLibraryScreen(),
@@ -167,10 +249,26 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
   ),
   ChildRoute(
     AppRoutes.personalDetailsScreen,
-    child: (_, ModularArguments args) => BlocProvider(
-      create: (context) => ProfileCubit(),
+    child: (_, ModularArguments args) =>MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => ProfileCubit()),
+        BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(NotificationDataSourceImpl()))),
+
+      ],
       child: const PersonalDetailsScreen(),
     ),
+    transition: transition,
+  ), ChildRoute(
+    AppRoutes.profilePage,
+    child: (_, ModularArguments args) => MultiBlocProvider(
+providers: [
+BlocProvider(create: (_) => ProfileCubit()),
+BlocProvider(create: (_) => ProgramCubit(ProgramRepositoryImpl(ProgramDatasourceImpl()))),
+BlocProvider(create: (_) => StudentCourseCubit(StudentCourseRepositoryImpl())),
+BlocProvider(create: (_) => EventCubit(EventRepositoryImp(EventDataSourceImpl()))),
+BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(NotificationDataSourceImpl()))),
+
+], child:const ProfileScreen(),),
     transition: transition,
   ),
   ChildRoute(
@@ -185,7 +283,21 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
   ),
   ChildRoute(
     AppRoutes.eventScreen,
-    child: (_, ModularArguments args) => const EventScreen(),
+    child: (_, ModularArguments args) => BlocProvider(
+      create: (context) => EventCubit(
+          EventRepositoryImp(EventDataSourceImpl())
+      )..getEvents(),
+      child: const EventScreen(),
+    ),
+    transition: transition,
+  ),  ChildRoute(
+    AppRoutes.subscribeEventDetailsScreen,
+    child: (_, ModularArguments args) => BlocProvider(
+      create: (context) => EventCubit(
+          EventRepositoryImp(EventDataSourceImpl())
+      )..getEvents(),
+      child:  EventDetailsScreen(eventItem: args.data as EventItem ),
+    ),
     transition: transition,
   ),
   ChildRoute(
@@ -195,14 +307,17 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
   ),
   ChildRoute(
     AppRoutes.coursesScreen,
-    child: (_, ModularArguments args) => BlocProvider(
-        create: (c) => StudentCourseCubit(StudentCourseRepositoryImpl()),
-        child: const CoursesScreen()),
-    transition: transition,
-  ),
-  ChildRoute(
-    AppRoutes.paymentsScreen,
-    child: (_, ModularArguments args) => const PaymentsScreen(),
+    child: (_, ModularArguments args) => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => CourseCubit(CourseRepositoryImpl(CourseDatasourceImpl())),
+        ),
+        BlocProvider(
+          create: (_) => StudentCourseCubit(StudentCourseRepositoryImpl()),
+        ),
+      ],
+      child: const CoursesScreen(),
+    ),
     transition: transition,
   ),
   ChildRoute(
@@ -215,48 +330,79 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
     child: (_, ModularArguments args) => const NewCardScreen(),
     transition: transition,
   ),
-
   ChildRoute(
     AppRoutes.courseDetailsScreen,
-    child: (_, ModularArguments args) => const CourseDetailsScreen(),
+    child: (_, ModularArguments args) {
+      final courseId = args.data is int ? args.data as int : 0; // fallback 0
+
+      return BlocProvider(
+        create: (context) => CourseCubit(CourseRepositoryImpl(CourseDatasourceImpl()))..getCourseLessons(courseId),
+        child: CourseDetailsScreen(courseId: courseId),
+      );
+    },
     transition: transition,
   ),
+
+
   ChildRoute(
     AppRoutes.liveEventScreen,
-    child: (_, ModularArguments args) => LiveEventScreen(
+    child: (_, ModularArguments args) =>
+        LiveEventScreen(
       questions: [
         QuestionModel(
             id: 1,
             question:
-                'What are the best techniques to overcome procrastination?'),
+            'What are the best techniques to overcome procrastination?'),
         QuestionModel(
             id: 2,
             question:
-                'How can I create a daily routine that maximizes productivity?'),
+            'How can I create a daily routine that maximizes productivity?'),
         QuestionModel(
             id: 3,
             question:
-                'What tools do you recommend for effective time management?'),
+            'What tools do you recommend for effective time management?'),
       ],
     ),
     transition: transition,
   ),
   ChildRoute(
     AppRoutes.myCourseScreen,
-    child: (_, ModularArguments args) => const MyCourseScreen(),
+    child: (_, ModularArguments args) =>BlocProvider(
+
+        create: (context) => StudentCourseCubit((StudentCourseRepositoryImpl()))..fetchEnrolledCourses(limit: 10, offset: 1),
+        child:   const MyCourseScreen()),
+
     transition: transition,
   ),
   ChildRoute(
     AppRoutes.lessonScreen,
-    child: (_, ModularArguments args) => LessonScreen(
-      lessonModel: args.data,
-    ),
-    transition: transition,
+    child: (_, args) {
+      final lesson = args.data as Lesson;
+
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => CourseTasksCubit(CourseTaskRepositoriesImp(TaskDataSourceImp()))..getCourseTasks(lesson.id??0),
+          ),
+
+        ],
+        child: LessonScreen(lessonModel: lesson),
+      );
+    },
   ),
+
   ChildRoute(
     AppRoutes.tasksScreen,
-    child: (_, ModularArguments args) => const TasksScreen(),
+    child: (_, ModularArguments args) {
+      final int courseId = args.data is int ? args.data as int : 0;
+
+      return    BlocProvider(
+
+          create: (context) => CourseTasksCubit(CourseTaskRepositoriesImp(TaskDataSourceImp()))..getCourseTasks(courseId),
+          child:   const TasksScreen());
+    },
     transition: transition,
+
   ),
   ChildRoute(
     AppRoutes.newTaskScreen,
@@ -271,23 +417,71 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
   ),
   ChildRoute(
     AppRoutes.reelViewScreen,
-    child: (_, ModularArguments args) => ReelViewScreen(
-      reel: args.data as ReelModel,
-    ),
-    transition: transition,
+    child: (_, args) {
+      final reel = args.data is ReelHistoryModel
+          ? Datum.fromHistory(args.data as ReelHistoryModel)
+          : args.data as Datum;
+
+      return Builder(
+        builder: (context) {
+          final reelsCubit = ReelsCubit(ReelRepositoryImpl());
+
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => CreateReelCubit(ReelRepositoryImpl())),
+              BlocProvider(create: (_) => GetCommentCubit(ReelRepositoryImpl())),
+              BlocProvider.value(value: reelsCubit),
+              BlocProvider(
+                create: (_) =>
+                    AddCommentCubit(ReelRepositoryImpl(), reelsCubit),
+              ),
+              BlocProvider(
+                create: (_) =>
+                    ReelToggleOnLikeCubit(ReelRepositoryImpl(), reelsCubit),
+              ),
+            ],
+            child: Builder(
+              builder: (context) {
+                final authCubit = Modular.get<AuthCubit>();
+                int userId = 0;
+
+                if (authCubit.state is AuthLoggedIn) {
+                  userId = (authCubit.state as AuthLoggedIn).user.id ?? 0;
+                } else if (authCubit.state is AuthRegistered) {
+                }
+
+                return WillPopScope(
+                  onWillPop: () async {
+                    Navigator.of(context).pop(reel);
+                    return false;
+                  },
+                  child: ReelViewScreen(
+                    reel: reel,
+                    videoUrl: reel.videoUrl ?? '',
+                    user_id: userId,
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      );
+    },
   ),
+
   ChildRoute(
     AppRoutes.createReelPage,
-    child: (_, ModularArguments args) => const CreateReelPage(),
-    transition: transition,
-  ),
-  //
+    child: (_, ModularArguments args) => BlocProvider(
+      create: (context) => CreateReelCubit(ReelRepositoryImpl()),
+      child: const CreateReelPage(),
+    ),),
 
   ChildRoute(
     AppRoutes.reelsHistoryPage,
     child: (_, ModularArguments args) => const ReelsHistoryPage(),
     transition: transition,
   ),
+
   ChildRoute(
     AppRoutes.inboxScreen,
     child: (_, ModularArguments args) => const InboxScreen(),
@@ -298,7 +492,7 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
     child: (_, ModularArguments args) => const ChatScreen(),
     transition: transition,
   ),
-  // groups
+// groups
   ChildRoute(
     AppRoutes.groupsScreen,
     child: (_, ModularArguments args) => const GroupsScreen(),
@@ -314,18 +508,35 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
     child: (_, ModularArguments args) => const NewGroupScreen(),
     transition: transition,
   ),
-  // programmes
+// programmes
   ChildRoute(
     AppRoutes.programmesView,
-    child: (_, ModularArguments args) =>BlocProvider(
-        create: (c) => StudentCourseCubit(StudentCourseRepositoryImpl()),
-        child: const ProgrammesView()),
+    child: (_, ModularArguments args) {
+      return BlocProvider(
+        create: (_) => ProgramCubit(ProgramRepositoryImpl(ProgramDatasourceImpl()))..fetchPrograms(),
+
+        // create: (_) => CourseCubit(CourseRepositoryImpl(CourseDatasourceImpl()))..fetchCourses(),
+        child:  ProgrammesView(),
+      );
+    },
     transition: transition,
   ),
-  // programmeDetails
+
+
+// programmeDetails
   ChildRoute(
     AppRoutes.programmeDetails,
-    child: (_, ModularArguments args) => ProgrameDetailsView(args.data),
+    child: (_, ModularArguments args) {
+      final programId = args.data as int;
+      return BlocProvider(
+        create: (context) =>
+        ProgramCubit(ProgramRepositoryImpl(ProgramDatasourceImpl()))
+          ..fetchProgramDetails(programId),
+        child:  ProgrameDetailsView(programId,),
+      );
+    },
     transition: transition,
   ),
+
+
 ];

@@ -9,30 +9,38 @@ class ApiResponse<T> {
     this.offset,
     this.total,
   });
+
   final T? data;
-  final Map mapData;
+  final Map<String, dynamic> mapData; // Fixed type to Map<String, dynamic>
   final int statusCode;
   final String? message;
-  final int? limit, offset, total, lastPage;
+  final int? limit;
+  final int? offset;
+  final int? total;
+  final int? lastPage;
 
   bool get isSuccess => statusCode >= 200 && statusCode < 300;
+  bool get isError => !isSuccess;
 
-  bool get isError =>
-       statusCode < 200 || statusCode >= 300;
-  // error ApiResponse
-  ApiResponse<TNew> error<TNew>() {
+  // Create error response with proper typing
+  ApiResponse<TNew> error<TNew>({String? message}) {
     return ApiResponse<TNew>(
-      message: this.message,
+      message: message ?? this.message,
       mapData: this.mapData,
       data: null,
       statusCode: this.statusCode,
+      lastPage: this.lastPage,
+      limit: this.limit,
+      offset: this.offset,
+      total: this.total,
     );
   }
 
+  // Type-safe copyWith method
   ApiResponse<TNew> copyWith<TNew>({
     TNew? data,
     int? statusCode,
-    Map? mapData,
+    Map<String, dynamic>? mapData, // Fixed type
     String? message,
     int? limit,
     int? offset,
@@ -40,19 +48,28 @@ class ApiResponse<T> {
     int? lastPage,
   }) {
     return ApiResponse<TNew>(
-      lastPage: lastPage ?? this.lastPage,
+      data: data ?? (this.data as TNew?),
+      statusCode: statusCode ?? this.statusCode,
+      mapData: mapData ?? this.mapData,
+      message: message ?? this.message,
       limit: limit ?? this.limit,
       offset: offset ?? this.offset,
       total: total ?? this.total,
-      message: message ?? this.message,
-      mapData: mapData ?? this.mapData,
-      data: data,
-      statusCode: statusCode ?? this.statusCode,
+      lastPage: lastPage ?? this.lastPage,
     );
   }
 
   @override
   String toString() {
-    return 'message:$message\n mapData:$mapData\n data:$data\n,statusCode:$statusCode,isSuccess:$isSuccess,isError:$isError';
+    return '''
+ApiResponse:
+  message: $message
+  mapData: $mapData
+  data: $data
+  statusCode: $statusCode
+  isSuccess: $isSuccess
+  isError: $isError
+  pagination: (limit: $limit, offset: $offset, total: $total, lastPage: $lastPage)
+''';
   }
 }

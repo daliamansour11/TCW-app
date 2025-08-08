@@ -40,8 +40,11 @@ class AssetUtils {
   static const String balance = '${image}balance.png';
   static const String chatBot = '${image}chat_bot.png';
   static const String commentIcon = '${image}commentIcon.png';
+  static const String personAvater = '${image}person_avater.png';
+  static const String reelPalceHolder = '${image}reel_palceholder.jpg';
   static const String shareIcon = '${image}share.png';
   static const String createReelIcon = '${image}createReelIcon.png';
   static const String notoPartyingFace = '${image}noto_partying-face.png';
+  static const String programPlaceHolder = '${image}programs_paceholder.png';
   static const String riyalIcon = '${image}riyal_icon.png';
 }

@@ -55,7 +55,7 @@ class TaskCard extends StatelessWidget {
                 const Icon(Icons.calendar_today_outlined,
                     size: 14, color: Colors.red),
                 const SizedBox(width: 5),
-                Text(task.date,
+                Text('${task.date}',
                     style: const TextStyle(color: Colors.red, fontSize: 12)),
               ],
             ),

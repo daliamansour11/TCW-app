@@ -10,7 +10,6 @@ class ProfileLoaded extends ProfileState {}
 
 class ProfileError extends ProfileState {}
 
-// get profile and return user model
 
 class GetProfileLoaded extends ProfileState {
   GetProfileLoaded({required this.user});

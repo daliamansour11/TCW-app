@@ -6,6 +6,9 @@ abstract class AuthRepository {
   Future<ApiResponse<UserModel?>> register(Map<String, dynamic> data);
   Future<ApiResponse<bool>> logout(String token);
   Future<ApiResponse<bool>> forgetPassword(String email);
-  Future<ApiResponse<bool>> verifyToken(String email, String token);
+  Future<ApiResponse<Map<String, dynamic>>> verifyToken(String email, String token);
   Future<ApiResponse<bool>> resetPassword(Map<String, dynamic> data);
+
+  Future<UserModel?> getLoggedUser();
+  Future<void> saveLoggedUser(UserModel user);
 }

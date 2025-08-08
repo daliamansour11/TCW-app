@@ -1,123 +1,174 @@
-import 'package:flutter/material.dart';
-import 'package:tcw/core/utils/asset_utils.dart';
-import 'package:tcw/features/reels/data/models/reel_model.dart';
-import 'package:zap_sizer/zap_sizer.dart';
-import 'package:zapx/zapx.dart';
 
-class ReelViewScreen extends StatelessWidget {
-  const ReelViewScreen({super.key, required this.reel});
-  final ReelModel reel;
+
+
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tcw/core/apis/apis_url.dart';
+import 'package:tcw/features/reels/data/datasource/local_data_source/reel_history.dart';
+import 'package:tcw/features/reels/data/datasource/reel_datasource_imp.dart';
+import 'package:tcw/features/reels/data/models/comment_model.dart' hide Datum;
+import 'package:tcw/features/reels/data/models/reel_model.dart';
+import 'package:tcw/features/reels/data/repositories/reel_repository_imp.dart';
+import 'package:tcw/features/reels/presentation/cubit/create_reel_cubit.dart';
+import 'package:tcw/features/reels/presentation/pages/widgets/action_buttons_colum.dart';
+import 'package:tcw/features/reels/presentation/pages/widgets/reel_vedio_player.dart';
+import 'package:tcw/features/reels/presentation/pages/widgets/user_info_section.dart';
+import 'package:tcw/features/reels/presentation/reel_viewmodel.dart';
+
+class ReelViewScreen extends StatefulWidget {
+  const ReelViewScreen({
+    super.key,
+    required this.reel,
+    required this.videoUrl, this.user_id,
+  });
+  final Datum reel;
+  final String videoUrl;
+  final user_id;
+  @override
+  State<ReelViewScreen> createState() => _ReelViewScreenState();
+}
+
+class _ReelViewScreenState extends State<ReelViewScreen> {
+  late Datum _reel;
+  bool _hasFetched = false;
+  bool _isLoading = true;
+  bool _isLiked = false;
+  int _likesCount = 0;
+  int _commentCount = 0;
+  bool? isLikedByMe;
+  Timer? _addToHistoryTimer;
+  bool _hasAddedToHistory = false;
+
+  void _onVideoStarted() {
+    if (_hasAddedToHistory) return;
+
+    _addToHistoryTimer?.cancel();
+    _addToHistoryTimer = Timer(const Duration(seconds: 5), () {
+      addReelToHistory(_reel);
+      _hasAddedToHistory = true;
+      debugPrint('Reel added to history after 5 seconds');
+    });
+  }
+  @override
+  void initState() {
+    super.initState();
+    _reel = widget.reel;
+    _isLiked = false;
+    _isLiked = _reel.isLiked ?? false;
+    _likesCount = widget.reel.likesCount ?? 0;
+    _commentCount = widget.reel.commentsCount ?? 0;
+    addReelToHistory(_reel);
+
+    _addToHistoryTimer?.cancel();
+    fetchReelAndUpdateView();
+  }
+  List<CommentModel> _comments = [];
+
+  Future<void> fetchComments() async {
+    try {
+      final response = await ReelsViewmodel(context).getReelComment( reelId: _reel.id!);
+      final commentsList = response.data?.data ?? [];
+      setState(() {
+        _comments = commentsList;
+        _commentCount = _comments.length;
+      });
+    } catch (e) {
+      // Handle error
+    }
+  }
+  String buildFullVideoUrl(String? videoUrl, String? videoPath) {
+    if (videoUrl != null && videoUrl.isNotEmpty) {
+      return videoUrl.replaceFirst('tcw.aspiregypt.com', 'tcw.de-mo.cloud');
+    }
+    if (videoPath == null || videoPath.isEmpty) return '';
+    return '${ApiUrl.baseVideoUrl}$videoPath';
+  }
+
+  Future<void> fetchReelAndUpdateView() async {
+    if (_hasFetched) return;
+    _hasFetched = true;
+
+    try {
+      final response = await ReelsDataSourceImpl().getSpecificReel(_reel.id!);
+      final list = response.data?.data;
+      if (list == null || list.isEmpty) return;
+
+      setState(() {
+        _reel = list.first;
+        _likesCount = _reel.likesCount ?? _likesCount;
+        _commentCount = _reel.commentsCount ?? _commentCount;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _handleLikeToggled(bool newIsLiked, int newLikesCount) {
+    setState(() {
+      _isLiked = newIsLiked;
+      _likesCount = newLikesCount;
+    });
+  }
+
+  void _handleCommentAdded(int newCount) {
+    setState(() {
+      _commentCount = newCount;
+    });
+  }
+  @override
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+
+    return BlocProvider<CreateReelCubit>(
+      create: (_) => CreateReelCubit(ReelRepositoryImpl()),
+      child:
+      Scaffold(
+        backgroundColor: Colors.black,
         body: Stack(
-      children: [
-        Container(
-          height: double.infinity,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(reel.thumbnail),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        Positioned(
-            top: 25,
-            left: 10,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: Zap.back,
-            )),
-        Positioned(
-            bottom: 50,
-            right: 10,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 35,
-              children: [
-                buttonWithValue(
-                  icon: Icons.favorite_border,
-                  value: '11',
-                ),
-                buttonWithValue(
-                  icon: AssetUtils.commentIcon,
-                  value: '11',
-                ),
-                buttonWithValue(
-                  icon: AssetUtils.shareIcon,
-                  value: '11',
-                ),
-                buttonWithValue(
-                  icon: Icons.more_vert,
-                ),
-              ],
-            )),
-        Positioned(
-            bottom: 20,
-            left: 10,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 10,
-              children: [
-                const Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 10,
+          children: [
+            ReelVideoPlayer(
+              videoUrl: buildFullVideoUrl(_reel.videoUrl, _reel.videoPath),
+              onStartedPlaying: _onVideoStarted,
+            ),         SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                child: Column(
                   children: [
-                    CircleAvatar(
-                      radius: 25,
-                    ),
-                    Text(
-                      'user name',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    const Spacer(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(child: UserInfoSection(reel: _reel)),
+                        const SizedBox(width: 12),
+                        ActionButtonsColumn(
+                          key: ValueKey('${_reel.id}_${_likesCount}'),
+                          reel: _reel,
+                          isLiked: _isLiked,
+                          likesCount: _likesCount,
+                          commentCount: _commentCount,
+                          onLikeToggled: _handleLikeToggled,
+                          onCommentAdded: _handleCommentAdded,
+                          currentUserId: widget.reel.user?.id ?? 0,                        ),
+                      ],
                     ),
                   ],
                 ),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: 70.w,
-                  ),
-                  child: const Text(
-                    'Lorem ipsum dolor sit amet consectetur. Sit adipiscing ...',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ))
-      ],
-    ));
-  }
-
-  Widget buttonWithValue({
-    // IconData or String imagePath
-    required dynamic icon,
-    String? value,
-  }) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      spacing: 5,
-      children: [
-        if (icon is IconData)
-          Icon(icon, size: 38, color: Colors.white)
-        else
-          ImageIcon(AssetImage(icon.toString()), size: 38, color: Colors.white),
-        if (value != null)
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
+              ),
             ),
-          )
-      ],
+            Positioned(
+              top: 40,
+              left: 16,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

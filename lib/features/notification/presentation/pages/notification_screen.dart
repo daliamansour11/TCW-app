@@ -1,141 +1,143 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
 import 'package:tcw/features/notification/data/models/notification_model.dart';
+import 'package:tcw/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:tcw/features/notification/presentation/widgets/notification_item.dart';
 
-class NotificationScreen extends StatelessWidget {
-  NotificationScreen({super.key});
-
-  final List<NotificationModel> allNotifications = [
-    NotificationModel(
-      title: 'Resume Your Lesson!',
-      subtitle: 'Get back on track!',
-      createdAt: DateTime.now(),
-      icon: Icons.play_circle,
-      iconBackground: Colors.brown.shade100,
-    ),
-    NotificationModel(
-      title: 'Congratulations',
-      subtitle: "You successfully completed this week's challenge.",
-      createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-      icon: Icons.check_circle,
-      iconBackground: Colors.amber.shade100,
-    ),
-    NotificationModel(
-      title: 'New Message!',
-      subtitle: 'Check your inbox now.',
-      createdAt: DateTime.now().subtract(const Duration(hours: 4)),
-      icon: Icons.chat_bubble_outline,
-      iconBackground: Colors.orange.shade100,
-    ),
-    NotificationModel(
-      title: 'Event Starting Soon!',
-      subtitle: "Begins in 10 minutes. Don't miss out!",
-      createdAt: DateTime.now().subtract(const Duration(days: 1)),
-      icon: Icons.event,
-      iconBackground: Colors.brown.shade100,
-    ),
-    NotificationModel(
-      title: 'Live Now!',
-      subtitle: "You successfully completed this week's challenge.",
-      createdAt: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
-      icon: Icons.wifi_tethering,
-      iconBackground: Colors.pink.shade100,
-    ),
-    NotificationModel(
-      title: 'Live Session Ended!',
-      subtitle: 'You can still watch it here',
-      createdAt: DateTime.now().subtract(const Duration(days: 1, hours: 3)),
-      icon: Icons.stop_circle,
-      iconBackground: Colors.brown.shade100,
-    ),
-    NotificationModel(
-      title: 'Renew Your Subscription!',
-      subtitle: 'Subscription Expires On 10 March! Renew Now',
-      createdAt: DateTime.now().subtract(const Duration(days: 6)),
-      icon: Icons.refresh,
-      iconBackground: Colors.brown.shade100,
-    ),
-    NotificationModel(
-      title: 'Old Notification',
-      subtitle: 'From last month!',
-      createdAt: DateTime.now().subtract(const Duration(days: 40)),
-      icon: Icons.history,
-      iconBackground: Colors.grey.shade300,
-    ),
-    NotificationModel(
-      title: 'Last Year Reminder',
-      subtitle: 'Check last year logs.',
-      createdAt: DateTime.now().subtract(const Duration(days: 370)),
-      icon: Icons.access_time,
-      iconBackground: Colors.grey.shade200,
-    ),
-  ];
+class NotificationScreen extends StatefulWidget {
+  const NotificationScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
+  bool  _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch notifications when screen loads
+    context.read<NotificationCubit>().fetchStudentPushNotification();
+    Timer(Duration(seconds: 12), () {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });}
+
+  Map<String, List<NotificationModel>> categorizeNotifications(
+      List<NotificationModel> notifications) {
     final now = DateTime.now();
+    final Map<String, List<NotificationModel>> categorized = {
+      'Today': [],
+      'Yesterday': [],
+      'Last Week': [],
+      'Last Month': [],
+      'Last Year': [],
+    };
 
-    final List<NotificationModel> today = [];
-    final List<NotificationModel> yesterday = [];
-    final List<NotificationModel> lastWeek = [];
-    final List<NotificationModel> lastMonth = [];
-    final List<NotificationModel> lastYear = [];
-
-    for (var notif in allNotifications) {
+    for (var notif in notifications) {
       final diff = now.difference(notif.createdAt);
+
       if (diff.inDays == 0) {
-        today.add(notif);
+        categorized['Today']!.add(notif);
       } else if (diff.inDays == 1) {
-        yesterday.add(notif);
+        categorized['Yesterday']!.add(notif);
       } else if (diff.inDays <= 7) {
-        lastWeek.add(notif);
+        categorized['Last Week']!.add(notif);
       } else if (diff.inDays <= 30) {
-        lastMonth.add(notif);
+        categorized['Last Month']!.add(notif);
       } else {
-        lastYear.add(notif);
+        categorized['Last Year']!.add(notif);
       }
     }
 
+    // Remove empty categories
+    categorized.removeWhere((key, value) => value.isEmpty);
+    return categorized;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'Notification',
-      ),
-      body: SingleChildScrollView(
+      appBar: const CustomAppBar(title: 'Notification'),
+      body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (today.isNotEmpty) ...[
-              const Text('Today', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              ...today.map((notif) => NotificationItem(notification: notif)),
-              const SizedBox(height: 24),
-            ],
-            if (yesterday.isNotEmpty) ...[
-              const Text('Yesterday', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              ...yesterday.map((notif) => NotificationItem(notification: notif)),
-              const SizedBox(height: 24),
-            ],
-            if (lastWeek.isNotEmpty) ...[
-              const Text('Last Week', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              ...lastWeek.map((notif) => NotificationItem(notification: notif)),
-              const SizedBox(height: 24),
-            ],
-            if (lastMonth.isNotEmpty) ...[
-              const Text('Last Month', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              ...lastMonth.map((notif) => NotificationItem(notification: notif)),
-              const SizedBox(height: 24),
-            ],
-            if (lastYear.isNotEmpty) ...[
-              const Text('Last Year', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              ...lastYear.map((notif) => NotificationItem(notification: notif)),
-            ],
-          ],
+        child: BlocBuilder<NotificationCubit, NotificationState>(
+          builder: (context, state) {
+            if (state is NotificationLoading) {
+              if (_isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Something went wrong or took too long.'),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          context.read<NotificationCubit>()..fetchStudentPushNotification();
+                          Timer(const Duration(seconds: 12), () {
+                            if (mounted) {
+                              setState(() {
+                                _isLoading = false;
+                              });
+                            }
+                          });
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              }            }
+            if (state is NotificationError) {
+              return Center(child: Text('Error: ${state.message}'));
+            }
+
+            // Get notifications from loaded state or cubit's internal list
+            final notifications = (state is NotificationLoaded)
+                ? state.notifications
+                : context.read<NotificationCubit>().allNotification;
+
+            if (notifications.isEmpty) {
+              return const Center(child: Text('No notifications found.'));
+            }
+
+            final categorized = categorizeNotifications(notifications);
+
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: categorized.entries
+                    .map((entry) => [
+                  Text(
+                    entry.key,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ...entry.value
+                      .map((notif) => NotificationItem(notification: notif))
+                      .toList(),
+                  const SizedBox(height: 24),
+                ])
+                    .expand((widget) => widget)
+                    .toList(),
+              ),
+            );
+          },
         ),
       ),
     );

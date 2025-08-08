@@ -1,35 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:tcw/core/routes/app_routes.dart';
 import 'package:tcw/core/shared/shared_widget/custom_container.dart';
 import 'package:tcw/core/shared/shared_widget/custom_image.dart';
 import 'package:tcw/core/shared/shared_widget/custom_text.dart';
 import 'package:tcw/core/theme/app_colors.dart';
+import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/features/event/data/models/event_model.dart';
+import 'package:zapx/zapx.dart';
 
 class SubscribeEventItemWidget extends StatelessWidget {
   const SubscribeEventItemWidget({super.key, required this.event});
-  final Event event;
+  final EventItem event;
 
   @override
   Widget build(BuildContext context) {
-    return CustomContainer(
-      margin: const EdgeInsets.all(10),
-      color: Colors.white,
-      padding: 8,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8,
-        children: [
-          _buildEventCover(),
-          _buildLabelAndDuration(),
-          CustomText(
-            event.title,
-            maxLines: 2,
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
-          _buildProgressBar(),
-          _buildCoachInfo(),
-        ],
+    return GestureDetector(
+      onTap: ()=>  Zap.toNamed(AppRoutes.subscribeEventDetailsScreen,
+      arguments: event),
+
+
+      child: CustomContainer(
+        margin: const EdgeInsets.all(10),
+        color: Colors.white,
+        padding: 8,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            _buildEventCover(),
+            _buildLabelAndDuration(),
+            CustomText(
+              event.title??'',
+              maxLines: 2,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+            _buildProgressBar(),
+            _buildCoachInfo(),
+          ],
+        ),
       ),
     );
   }
@@ -39,7 +48,7 @@ class SubscribeEventItemWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: AspectRatio(
         aspectRatio: 16 / 9,
-        child: CustomImage(event.cover, fit: BoxFit.cover),
+        child: CustomImage(event.thumbUrl??AssetUtils.programPlaceHolder, fit: BoxFit.cover),
       ),
     );
   }
@@ -67,13 +76,13 @@ class SubscribeEventItemWidget extends StatelessWidget {
             fontSize: 12,
           ),
         ),
-        Row(
+       const Row(
           children: [
             const Icon(Icons.access_time,
                 size: 14, color: AppColors.primaryColor),
             const SizedBox(width: 4),
-            CustomText(
-              event.time,
+            CustomText('02.00 - 03.30',
+              // event.time,
               fontSize: 12,
             ),
           ],
@@ -92,7 +101,7 @@ class SubscribeEventItemWidget extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomText(event.coachName, fontSize: 13),
+            CustomText(event.instructor?.name??'', fontSize: 13),
             const CustomText('Coach', fontSize: 11, color: Colors.grey),
           ],
         )

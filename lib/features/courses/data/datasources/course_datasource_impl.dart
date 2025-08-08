@@ -3,6 +3,8 @@ import 'package:tcw/core/apis/api_service.dart';
 import 'package:tcw/core/apis/apis_url.dart';
 import 'package:tcw/features/courses/data/models/category_model.dart';
 import 'package:tcw/features/courses/data/models/course_model.dart';
+import 'package:tcw/features/courses/data/models/lesson_model.dart';
+import 'package:tcw/features/courses/data/models/section_model.dart';
 
 abstract class CourseDatasource {
   Future<ApiResponse<List<CourseModel>>> getCourses({
@@ -23,6 +25,8 @@ abstract class CourseDatasource {
     int offset,
     bool subCategory,
   });
+  Future<ApiResponse<List<SectionModel>>> getCourseLessons(int courseId);
+
 }
 
 class CourseDatasourceImpl implements CourseDatasource {
@@ -49,7 +53,8 @@ class CourseDatasourceImpl implements CourseDatasource {
     };
 
     final response =
-        await ApiService.instance.get('/course', queryParameters: query);
+        await ApiService.instance.get('${ApiUrl.baseUrl}/course',
+            queryParameters: query);
 
     if (response.isError) return response.error();
 
@@ -97,5 +102,18 @@ class CourseDatasourceImpl implements CourseDatasource {
         .toList();
 
     return response.copyWith(data: list);
+  }
+  @override
+  Future<ApiResponse<List<SectionModel>>> getCourseLessons(int courseId) async{
+    final response = await ApiService.instance.get(ApiUrl.studentCourse.getLesson(courseId),
+    );
+
+    if (response.isError) return response.error();
+
+    final lesson = (response.mapData['data']['data'] as List)
+        .map((e) => SectionModel.fromJson(e))
+        .toList();
+    return response.copyWith(data: lesson);
+
   }
 }

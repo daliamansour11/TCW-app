@@ -1,31 +1,41 @@
 class Task {
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
+      title: json['title'] ?? '',
+      subtitle: json['subtitle'] ?? '',
+      status: json['status'] ?? '',
+      isCompleted: json['is_completed'] ?? false,
+      fileSize: json['file_size'],
+      details: json['details'],
+      description: json['description'], createdBy:json['createdBy']?? '',
+      createdAt:json['createdAt']?? '',
+      date:json['date']?? '',
+      requirements:json['requirements']?? '',
+    );
+  }
   Task({
     required this.title,
     required this.subtitle,
     required this.status,
-    required this.date,
+    required this.createdBy,
+    required this.createdAt,
     required this.isCompleted,
     this.fileSize,
     this.details,
+    this.description,
+    this.date,
+    this.requirements,
   });
-  String get createdBy => 'Ahmed Mohammed';
-  String get createdAt => 'Sun, 9 March 2025';
-  String get description =>
-      'Build an interactive UI using React with state management and components.';
-  List<String> get requirements => [
-        'Component Structure: Create reusable components.',
-        'State Management: Implement Redux for state management.',
-        'Testing: Write unit tests for components.',
-        'Documentation: Add comments and documentation.',
-        'Code Review: Review code for best practices.',
-        'Performance Optimization: Optimize code for performance.',
-        'Code Review: Review code for best practices.',
-      ];
-  final String? details ;
+
   final String title;
   final String subtitle;
   final String status;
-  final String date;
+  final String createdBy;
+  final String createdAt;
   final bool isCompleted;
   final String? fileSize;
+  final String? description;
+  final String? requirements;
+  final String? details;
+  final DateTime? date;
 }

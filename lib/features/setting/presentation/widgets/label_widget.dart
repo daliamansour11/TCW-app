@@ -19,7 +19,6 @@ class Label extends StatelessWidget {
           label,
           style: context.textTheme.headlineLarge ?.copyWith(
             fontSize: context.propWidth(16),
-            
           ),
         ),
       );

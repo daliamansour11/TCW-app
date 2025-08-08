@@ -43,9 +43,3 @@ app.*.map.json
 /android/app/release
 
 
-
-
-/lib/features/chat/
-/lib/features/programmes/
-/lib/features/tasks/
-/lib/features/profile/data/

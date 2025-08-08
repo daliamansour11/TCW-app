@@ -67,43 +67,43 @@ class _LoginPageState extends State<LoginPage> {
                           style: context.textTheme.headlineMedium),
                     ),
                     SizedBox(height: context.propHeight(32)),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withValues(alpha: 0.1),
-                            spreadRadius: 3,
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(AssetUtils.google,
-                              width: 30, height: 30),
-                          const SizedBox(width: 8),
-                          Text('Log In with Google',
-                              style: context.textTheme.headlineSmall),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    const Row(
-                      children: [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: Text('Or'),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
+                    // Container(
+                    //   width: double.infinity,
+                    //   padding: const EdgeInsets.symmetric(vertical: 14),
+                    //   decoration: BoxDecoration(
+                    //     borderRadius: BorderRadius.circular(50),
+                    //     color: Colors.white,
+                    //     boxShadow: [
+                    //       BoxShadow(
+                    //         color: Colors.grey.withValues(alpha: 0.1),
+                    //         spreadRadius: 3,
+                    //         blurRadius: 4,
+                    //         offset: const Offset(0, 2),
+                    //       ),
+                    //     ],
+                    //   ),
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       Image.asset(AssetUtils.google,
+                    //           width: 30, height: 30),
+                    //       const SizedBox(width: 8),
+                    //       Text('Log In with Google',
+                    //           style: context.textTheme.headlineSmall),
+                    //     ],
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 24),
+                    // const Row(
+                    //   children: [
+                    //     Expanded(child: Divider()),
+                    //     Padding(
+                    //       padding: EdgeInsets.symmetric(horizontal: 8),
+                    //       child: Text('Or'),
+                    //     ),
+                    //     Expanded(child: Divider()),
+                    //   ],
+                    // ),
                     const SizedBox(height: 24),
                     RoundedTextField(
                       hint: 'Enter your E-mail',
@@ -178,8 +178,26 @@ class _LoginPageState extends State<LoginPage> {
                         color: Colors.white,
                       ),
                       title: 'Log In',
-                      backgroundColor: AppColors.primaryColor,
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Don’t have an account? '),
+                        TextButton(
+                          onPressed: () {
+                            Zap.toNamed(AppRoutes.registerPage);
+                          },
+                          child: const Text(
+                            'Register Now',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
                   ],
                 ),
               ),

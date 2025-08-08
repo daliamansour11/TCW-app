@@ -9,6 +9,9 @@ class SectionModel {
     this.createdAt,
     this.updatedAt,
     required this.lessons,
+    this.durationMinutes,
+    required this.totalLessons,
+    required this.instructor,
   });
 
   factory SectionModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +24,10 @@ class SectionModel {
       updatedAt: DateTime.tryParse(json['updated_at'] ?? ''),
       lessons: List<LessonModel>.from(
           (json['lessons'] as List).map((x) => LessonModel.fromJson(x))),
+      durationMinutes: json['duration_minutes'],
+      totalLessons: json['totalLessons'],
+      instructor: json['instructor'] == null ? null : Instructor.fromJson(json['instructor']),
+
     );
   }
   final int id;
@@ -30,8 +37,34 @@ class SectionModel {
   final int courseId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final int? durationMinutes;
+  final int? totalLessons;
+  final Instructor? instructor;
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'lessons': lessons.map((x) => x.toJson()).toList(),
       };
+}
+class Instructor {
+
+  factory Instructor.fromJson(Map<String, dynamic> json) {
+    print('Instructor JSON: $json'); // DEBUG
+    return Instructor(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+  Instructor({
+    required this.id,
+    required this.name,
+  });
+
+  final int? id;
+  final String? name;
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+  };
 }

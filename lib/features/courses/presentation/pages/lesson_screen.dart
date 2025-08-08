@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
+import 'package:tcw/core/shared/shared_widget/custom_text.dart';
 import 'package:tcw/core/theme/app_colors.dart';
-import 'package:tcw/features/courses/data/models/lesson_model.dart';
+import 'package:tcw/features/courses/data/models/task_model.dart';
 import 'package:tcw/features/courses/presentation/widgets/video_player_widget.dart';
 import 'package:tcw/core/routes/app_routes.dart';
+import 'package:tcw/features/programmes/data/models/program_detail_model.dart';
+import 'package:tcw/features/tasks/presentation/cubit/course_tasks_cubit.dart';
 import 'package:zapx/zapx.dart';
 
-class LessonScreen extends StatelessWidget {
+class LessonScreen extends StatefulWidget {
   const LessonScreen({super.key, required this.lessonModel});
-  final LessonModel lessonModel;
+  final Lesson lessonModel;
+
+  @override
+  State<LessonScreen> createState() => _LessonScreenState();
+}
+
+class _LessonScreenState extends State<LessonScreen> {
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          lessonModel.title,
+          widget.lessonModel.title??'',
           style: context.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -37,12 +47,50 @@ class LessonScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.grey),
                 ),
               ),
-              const VideoPlayerWidget(
-                videoUrl:
-                    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+              //  VideoPlayerWidget(
+              //   videoUrl:
+              //  lessonModel.video?.linkPath
+              // ),
+              VideoPlayerWidget(
+                // sourceType: lessonModel.video?.sourceType,
+                // url: lessonModel.video?.linkPath,
+                videoUrl: widget.lessonModel.video?.linkPath,
               ),
+
               _buildLessonInfo(context),
-              _buildTaskCard(context),
+              BlocConsumer<CourseTasksCubit, CourseTasksState>(
+                listener: (context, state) {
+                  if (state is CourseTasksError) {
+                Text(state.message);
+                  }
+                },
+                builder: (context, state) {
+                  if (state is CourseTasksLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is CourseTasksLoaded || state is CourseLoadingMore) {
+                    final tasks = (state is CourseTasksLoaded)
+                        ? state.tasks
+                        : context.read<CourseTasksCubit>().allTasks;
+                    if (tasks.isEmpty) {
+                      return const Center(child: Text('No Task Found.'));
+                    }
+                    return ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: tasks.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      itemBuilder: (context, index) {
+                        return SizedBox(
+                          width: context.propWidth(300),
+                          child: _buildTaskCard(context, tasks[index]),
+                        );
+                      },
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+
               _buildSectionHeader(context, 'Continue watching'),
               // TODO
               // const CourseListHorizontal(),
@@ -53,7 +101,7 @@ class LessonScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLessonInfo(BuildContext context) {
+  Widget _buildLessonInfo(BuildContext context,) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -66,23 +114,21 @@ class LessonScreen extends StatelessWidget {
               color: const Color(0x33B7924F),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(
-              'Lesson 6',
-              style: context.textTheme.labelMedium?.copyWith(
-                fontSize: 12,
-                color: AppColors.primaryColor,
-              ),
-            ),
+            child: CustomText(
+    'Lesson ${widget.lessonModel.id}',
+      fontSize: 12,
+      color: AppColors.primaryColor,
+    ),
+    ),
+
+          CustomText(
+            widget.lessonModel.title ?? '',
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          Text(
-            'React Hooks Basics',
-            style: context.textTheme.headlineSmall?.copyWith(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          Text(
-            'This lesson covers how to apply styles dynamically and conditionally...,This lesson covers how to apply styles dynamically and conditionally...',
+          Text('${widget.lessonModel.description??'intro in figma to learn more creative UiUx ' }',
             style: context.textTheme.bodyMedium?.copyWith(
               color: const Color(0xFF9E9E9E),
               fontSize: 14,
@@ -94,7 +140,8 @@ class LessonScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTaskCard(BuildContext context) {
+  Widget _buildTaskCard(BuildContext context,Task task) {
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -125,12 +172,10 @@ class LessonScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(
-                        'Collecting Moodboard from Dribbble.com',
-                        style: context.textTheme.headlineSmall?.copyWith(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      child: Text(task.title,style: context.textTheme.headlineSmall?.copyWith(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
                       ),
                     ),
                     const Text(
@@ -146,9 +191,9 @@ class LessonScreen extends StatelessWidget {
                 ),
                 Padding(
                   padding:
-                      EdgeInsets.symmetric(vertical: context.propHeight(10)),
-                  child: Text(
-                    "Let's return to design thinking. Over time designers have built up their own body of approaches to solving classes of problems.",
+                  EdgeInsets.symmetric(vertical: context.propHeight(10)),
+                  child: Text('${   task.description}'
+                    ,
                     style: context.textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFF9E9E9E),
                       fontSize: 14,

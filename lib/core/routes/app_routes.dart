@@ -4,7 +4,9 @@ class AppRoutes {
   static String get onboarding => '/Onboarding';
   static String get newOrOldUserScreen => '/newOrOldUserScreen';
   static String get loginPage => '/LoginPage';
+  static String get registerPage => '/RegisterPage';
   static String get homeLayout => '/HomeLayout';
+  static String get profilePage => '/ProfileScreen';
   static String get notificationScreen => '/NotificationScreen';
   static String get pointsRewardsScreen => '/PointsRewardsScreen';
   static String get recommendedCoursesScreen => '/RecommendedCoursesScreen';
@@ -45,6 +47,8 @@ static String get proccessPayScreen => '/ProccessPayScreen';
   // Events
   static String get eventCalendarScreen => '/EventCalendarScreen';
   static String get eventScreen => '/EventScreen';
+  static String get subscribeEventDetailsScreen => '/SubscribeEventDetailsScreen';
+  static String get nonSubscribeEventDetailsScreen => '/NonSubscribeEventDetailsScreen';
   static String get liveEventScreen => '/LiveEventScreen';
 
   // Reels

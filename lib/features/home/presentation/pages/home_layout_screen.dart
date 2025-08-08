@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/routes/app_routes.dart';
 import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
@@ -6,11 +7,19 @@ import 'package:tcw/core/theme/app_theme.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tcw/features/courses/data/datasources/course_datasource_impl.dart';
+import 'package:tcw/features/courses/data/repositories/course_repository_impl.dart';
+import 'package:tcw/features/courses/data/repositories/student_course_repository_impl.dart';
+import 'package:tcw/features/courses/presentation/cubit/course/courses_cubit.dart';
+import 'package:tcw/features/courses/presentation/cubit/student/student_course_cubit.dart';
+import 'package:tcw/features/courses/presentation/pages/courses_screen.dart';
 import 'package:tcw/features/event/presentation/pages/event_screen.dart';
 import 'package:tcw/features/home/presentation/pages/home_screen.dart';
 import 'package:tcw/features/profile/presentation/pages/profile_screen.dart';
+import 'package:tcw/features/reels/data/models/reel_model.dart';
 import 'package:tcw/features/reels/presentation/pages/media_screen.dart';
 import 'package:tcw/features/reels/presentation/pages/reels_history_page.dart';
+import 'package:tcw/features/reels/presentation/reel_viewmodel.dart';
 import 'package:zapx/zapx.dart';
 
 class HomeLayout extends StatefulWidget {
@@ -22,14 +31,17 @@ class HomeLayout extends StatefulWidget {
 }
 
 class _HomeLayoutState extends State<HomeLayout> {
-  late PageController _pageController;
-  int selectedIdx = 0;
-
-  late final List<Widget> _screens;
-  late final List<_TabItem> _tabs;
+  late final ReelsViewmodel reelsViewmodel;
 
   @override
   void initState() {
+    super.initState();
+    reelsViewmodel = ReelsViewmodel(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      reelsViewmodel.fetchReels();
+
+
+    });
     super.initState();
 
     selectedIdx = widget.index;
@@ -38,13 +50,12 @@ class _HomeLayoutState extends State<HomeLayout> {
     _screens = [
       const HomeScreen(),
       const EventScreen(),
-    const  SizedBox(),
-      MediaScreen(
-        reels: reels,
+      const  SizedBox(),
+      const MediaScreen(
       ),
-      const ProfileScreen(),
-    ];
+      const  ProfileScreen(),
 
+];
     _tabs = const [
       _TabItem(
         label: 'Home',
@@ -63,19 +74,31 @@ class _HomeLayoutState extends State<HomeLayout> {
       ),
       _TabItem(
         label: 'TCW media',
-        activeIcon: AssetUtils.mediOrange,
-        inactiveIcon: AssetUtils.mediGray,
+        activeIcon: AssetUtils.coursesIcon,
+        inactiveIcon: AssetUtils.coursesIcon,
       ),
       _TabItem(
         label: 'Profile',
         iconData: Icons.person_outline,
       ),
     ];
+
   }
+
+
+  late PageController _pageController;
+  int selectedIdx = 0;
+
+  late final List<Widget> _screens;
+  late final List<_TabItem> _tabs;
+
+
 
   @override
   void dispose() {
     _pageController.dispose();
+    reelsViewmodel.dispose();
+
     super.dispose();
   }
 

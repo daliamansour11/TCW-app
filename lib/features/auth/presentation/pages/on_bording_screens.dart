@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/theme/app_colors.dart';
@@ -90,9 +91,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                           if (!isLast)
                             TextButton(
-                              onPressed: () {
-                                Modular.to
-                                    .pushReplacementNamed(AppRoutes.loginPage);
+                              onPressed: () async {
+                                final prefs = await SharedPreferences.getInstance();
+                                await prefs.setBool('hasSeenOnboarding', true);
+                                Modular.to.pushReplacementNamed(AppRoutes.loginPage);
                               },
                               child: const Text(
                                 'Skip',

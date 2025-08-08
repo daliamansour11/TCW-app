@@ -27,5 +27,11 @@ class CertificateLoaded extends StudentCourseState {
 
 class StudentCourseError extends StudentCourseState {
   StudentCourseError(this.message);
+
   final String message;
+
+}
+class CourseLessonsLoaded extends StudentCourseState {
+  CourseLessonsLoaded(this.lesson);
+  final List<LessonModel> lesson;
 }

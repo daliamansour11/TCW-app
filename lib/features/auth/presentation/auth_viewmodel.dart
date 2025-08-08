@@ -2,17 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:tcw/core/shared/extensions/cubit_extensions.dart';
 import 'package:tcw/core/shared/log/logger.dart';
 import 'package:tcw/core/utils/loading_util.dart';
-import 'package:tcw/core/utils/permission_util.dart';
 import 'package:tcw/core/utils/toast_util.dart';
 import 'package:tcw/features/auth/data/models/user_model.dart';
 import 'package:tcw/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:tcw/core/routes/app_routes.dart';
-import 'package:zapx/zapx.dart';
+
 
 class AuthViewModel {
   AuthViewModel(this.context);
@@ -42,7 +38,26 @@ class AuthViewModel {
     final password = passwordController.text.trim();
     context.read<AuthCubit>().login(email, password, rememberMe);
   }
+  void register() {
+    if (!formKey.currentState!.validate()) return;
 
+    final email = emailController.text.trim();
+    final name = firstNameController.text.trim();
+    final phone = phoneController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+
+    final data = {
+      'first_name':name,
+      'email': email,
+      'phone': phone,
+      'password': password,
+      'confirm_password':confirmPassword,
+    };
+
+    context.read<AuthCubit>().register(data);
+  }
   void dispose() {
     emailController.dispose();
     otpController.dispose();
@@ -58,28 +73,16 @@ class AuthViewModel {
   void onSendForgetPassword() async {
     final email = emailController.text.trim();
     if (formKey.currentState?.validate() ?? false) {
-      LoadingUtil.show();
       try {
-        final data = await context.read<AuthCubit>().forgetPassword(email);
+        LoadingUtil.show();
+        await context.read<AuthCubit>().forgetPassword(email);
         LoadingUtil.close();
-        if (data.isSuccess) {
-          await ToastUtil.show(data.message ?? 'OTP sent to your email');
-          LoadingUtil.close();
-          Zap.toNamed(
-            AppRoutes.oTPVerificationScreen,
-            arguments: email,
-          );
-        } else {
-          ToastUtil.show(data.message ?? 'Failed to send OTP', true);
-        }
       } catch (e) {
         LoadingUtil.close();
-        logger.e(e);
         ToastUtil.show('Failed to send OTP', true);
       }
     }
   }
-
   // Verification OTP
 
   void startTimer() {
@@ -98,15 +101,11 @@ class AuthViewModel {
   void onResendPressed(String email) async {
     LoadingUtil.show();
     try {
-      final data = await context.read<AuthCubit>().forgetPassword(email);
+      await context.read<AuthCubit>().forgetPassword(email);
       LoadingUtil.close();
-      await ToastUtil.show(
-        data.message ?? 'OTP sent to your email',
-        data.isError,
-      );
+      ToastUtil.show('OTP sent to your email', false);
       secondsRemaining = 30;
       startTimer();
-      LoadingUtil.close();
     } catch (e) {
       LoadingUtil.close();
       logger.e(e);

@@ -26,7 +26,21 @@ class CategoriesLoaded extends CourseState {
   final List<CategoryModel> categories;
 }
 
+
 class CourseError extends CourseState {
   CourseError(this.message);
   final String message;
+}
+class UpdateLastViewedSuccess extends CourseState{
+  UpdateLastViewedSuccess();
+
+}
+
+class UpdateLastViewedError  extends CourseState{
+  UpdateLastViewedError(this.message);
+  final String message;
+}
+class CourseLessonsLoaded extends CourseState {
+  CourseLessonsLoaded(this.lesson);
+  final List<SectionModel> lesson;
 }

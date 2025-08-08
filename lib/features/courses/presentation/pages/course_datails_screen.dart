@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/shared/shared_widget/search_filter_widget.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/bot_button_widget.dart';
+import 'package:tcw/features/courses/presentation/cubit/course/courses_cubit.dart';
+import 'package:tcw/features/courses/presentation/widgets/lesson_card.dart';
 
 class CourseDetailsScreen extends StatelessWidget {
-  const CourseDetailsScreen({super.key});
+  const CourseDetailsScreen({super.key, required this.courseId});
+
+  final int courseId;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,18 +24,13 @@ class CourseDetailsScreen extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.black),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      onPressed: () => Navigator.pop(context),
                     ),
                     SizedBox(width: context.propWidth(12)),
                     Text(
-                      'Understanding Concept of React ',
-                      style: context.textTheme.headlineLarge?.copyWith(
-                        fontSize: 18,
-                      ),
+                      'Understanding Concept of React',
+                      style: context.textTheme.headlineLarge?.copyWith(fontSize: 18),
                     ),
-                    //back
                   ],
                 ),
                 Row(
@@ -47,6 +48,7 @@ class CourseDetailsScreen extends StatelessWidget {
                     Container(
                       width: 5,
                       height: 5,
+                      margin: const EdgeInsets.symmetric(horizontal: 6),
                       decoration: const ShapeDecoration(
                         color: Color(0xFFE2E2EA),
                         shape: OvalBorder(),
@@ -68,24 +70,35 @@ class CourseDetailsScreen extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: SearchFilterWidget(),
                 ),
-                SizedBox(height: context.propHeight(12)),
-                SizedBox(height: context.propHeight(12)),
-                // TODO
-                // Expanded(
-                //   child: Padding(
-                //     padding: const EdgeInsets.symmetric(horizontal: 16),
-                //     child: ListView.separated(
-                //       separatorBuilder: (context, index) => SizedBox(
-                //         height: context.propHeight(12),
-                //       ),
-                //       padding: const EdgeInsets.only(bottom: 80),
-                //       itemCount: courses.length,
-                //       itemBuilder: (context, index) {
-                //         return LessonCard(course: courses[index]);
-                //       },
-                //     ),
-                //   ),
-                // ),
+                SizedBox(height: context.propHeight(24)),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: BlocBuilder<CourseCubit, CourseState>(
+                      builder: (context, state) {
+                        if (state is CourseLoading) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (state is CourseLessonsLoaded || state is CourseLoadingMore) {
+                          final lessons = (state is CourseLessonsLoaded)
+                              ? state.lesson
+                              : context.read<CourseCubit>().courseLessons;
+                          if (lessons.isEmpty) {
+                            return const Center(child: Text('No lessons found.'));
+                          }
+                          return ListView.separated(
+                            padding: const EdgeInsets.only(bottom: 80),
+                            separatorBuilder: (context, index) => SizedBox(height: context.propHeight(12)),
+                            itemCount: lessons.length,
+                            itemBuilder: (context, index) {
+                              return LessonCard(courseId: courseId, section:lessons[index] ,);
+                            },
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

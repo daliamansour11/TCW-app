@@ -48,29 +48,59 @@ class AuthRemoteDatasourceImpl implements AuthDatasource {
   }
 
   @override
+
+  @override
   Future<ApiResponse<bool>> forgetPassword(String email) async {
-    final response =
-        await ApiService.instance.post(ApiUrl.auth.forgetPassword, data: {
-      'email': email,
-    });
-    if (response.isError) {
-      return response.error();
+    try {
+      final response = await ApiService.instance.post(
+        ApiUrl.auth.forgetPassword,
+        data: {'email': email},
+      );
+
+      if (response.isError) {
+        return response.error<bool>(message: response.message);
+      }
+
+      final success = response.mapData['success'] ?? false;
+      final message = response.mapData['message'] ?? 'OTP sent successfully';
+
+      return success
+          ? response.copyWith<bool>(data: true, message: message)
+          : response.error<bool>(message: message);
+    } catch (e) {
+      return ApiResponse(
+        data: null,
+        statusCode: 500,
+        mapData: {},
+        message: e.toString(),
+      );
     }
-    return response.copyWith<bool>();
   }
 
   @override
   Future<ApiResponse<bool>> verifyToken(String email, String token) async {
-    final response =
-        await ApiService.instance.post(ApiUrl.auth.verifyToken, data: {
-      'email': email,
-      'token': token,
-    });
+    final response = await ApiService.instance.post(
+      ApiUrl.auth.verifyToken,
+      data: {
+        'email': email,
+        'token': token,
+      },
+    );
+
     if (response.isError) {
       return response.error();
     }
-    return response.copyWith<bool>();
+
+    final rawData = response.mapData['data'];
+    final success = rawData is bool
+        ? rawData
+        : (rawData is Map && rawData['success'] is bool
+        ? rawData['success']
+        : false);
+
+    return response.copyWith<bool>(data: success);
   }
+
 
   @override
   Future<ApiResponse<bool>> resetPassword(Map<String, dynamic> data) async {

@@ -26,16 +26,26 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthError(response.message ?? 'Login failed'));
     }
   }
-
   Future<void> register(Map<String, dynamic> data) async {
     emit(AuthLoading());
-    final response = await authRepository.register(data);
-    if (response.isSuccess && response.data != null) {
-      emit(AuthRegistered(response.data!));
-    } else {
-      emit(AuthError(response.message ?? 'Registration failed'));
+
+    try {
+      final response = await authRepository.register(data);
+
+      if (response.isSuccess && response.data != null) {
+        userData = response.data;
+        await authRepository.saveLoggedUser(response.data!); // 👈 ضروري
+
+        emit(AuthRegistered(response.data!));
+      } else {
+        emit(AuthError(response.message ?? 'Registration failed. Please try again.'));
+      }
+    } catch (e) {
+      emit(const AuthError('An unexpected error occurred. Please try again later.'));
+      debugPrint('Register Error: $e');
     }
   }
+
 
   Future<void> logout(String token) async {
     emit(AuthLoading());
@@ -47,9 +57,22 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<ApiResponse> forgetPassword(String email) async {
-    return authRepository.forgetPassword(email);
+  Future<void> forgetPassword(String email) async {
+    try {
+      emit(AuthLoading());
+      final response = await authRepository.forgetPassword(email);
+      if (response.isSuccess) {
+        emit(AuthPasswordResetTokenSent(
+          response.message ?? 'OTP sent to your email',
+        ));
+      } else {
+        emit(AuthError(response.message ?? 'Failed to send OTP'));
+      }
+    } catch (e) {
+      emit(AuthError('Unexpected error: ${e.toString()}'));
+    }
   }
+
 
   Future<void> verifyToken(String email, String token) async {
     try {

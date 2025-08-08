@@ -29,7 +29,7 @@ class ApiService {
         return handler.next(response);
       },
       onError: (DioException e, handler) {
-        logger.e('❌ Error [${e.response?.statusCode}] => ${e.message}');
+        logger.e('Error [${e.response?.statusCode}] => ${e.message}');
         return handler.next(e);
       },
     ));
@@ -70,11 +70,11 @@ class ApiService {
   }
 
   Future<ApiResponse<dynamic>> get(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Map<String, String>? headers,
-    bool withToken = true,
-  }) async {
+      String path, {
+        Map<String, dynamic>? queryParameters,
+        Map<String, String>? headers,
+        bool withToken = true,
+      }) async {
     final Map<String, String> header = {
       ...?headers,
       if (withToken) 'Authorization': 'Bearer ${userData?.token}',
@@ -85,26 +85,31 @@ class ApiService {
         queryParameters: queryParameters,
         options: Options(headers: header),
       );
-      final Map responseData = response.data is Map ? response.data : {};
+
+      // Ensure type safety for the response data
+      final responseData = response.data is Map
+          ? Map<String, dynamic>.from(response.data as Map)
+          : <String, dynamic>{};
+
       return ApiResponse<dynamic>(
         data: response.data,
         statusCode: response.statusCode ?? 200,
-        mapData: response.data,
-        message: responseData['message'],
-        lastPage: responseData['data']?['last_page']?.toString().toIntOrNull,
-        limit: responseData['data']?['limit']?.toString().toIntOrNull,
-        offset: responseData['data']?['offset']?.toString().toIntOrNull,
-        total: responseData['data']?['total']?.toString().toIntOrNull,
+        mapData: responseData,
+        message: responseData['message']?.toString(),
+        lastPage: responseData['data'] is Map ? responseData['data']['last_page']?.toString().toIntOrNull : null,
+        limit: responseData['data'] is Map ? responseData['data']['limit']?.toString().toIntOrNull : null,
+        offset: responseData['data'] is Map ? responseData['data']['offset']?.toString().toIntOrNull : null,
+        total: responseData['data'] is Map ? responseData['data']['total']?.toString().toIntOrNull : null,
       );
     } on DioException catch (e) {
       logger.e('''
-        path : $path
-        response : ${e.response?.data},
-        errorMessages : ${e.response?.statusMessage}
-        statusCode : ${e.response?.statusCode}
-        responseData : ${e.response?.data}
-        error : ${userData?.token}
-        ''');
+      path : $path
+      response : ${e.response?.data},
+      errorMessages : ${e.response?.statusMessage}
+      statusCode : ${e.response?.statusCode}
+      responseData : ${e.response?.data}
+      error : ${userData?.token}
+      ''');
       throw _handleDioError(e);
     }
   }
@@ -145,7 +150,7 @@ class ApiService {
           }
         });
       }
-     
+
       return ApiResponse<dynamic>(
         data: response.data,
         statusCode: response.statusCode ?? 200,

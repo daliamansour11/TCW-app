@@ -55,7 +55,7 @@ class _UserHeaderState extends State<UserHeader> {
             ),
             SizedBox(height: context.propHeight(widget.isAside ? 9 : 12)),
             CustomText(
-              '${''.greeting}, ${user!.getFirstName}',
+              '${''.greeting}, ${user.getFirstName}',
               textAlign: TextAlign.center,
               fontSize: widget.isAside ? 12 : 16,
               fontWeight: FontWeight.bold,

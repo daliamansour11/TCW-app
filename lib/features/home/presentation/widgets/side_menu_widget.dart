@@ -4,11 +4,13 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/features/home/presentation/home_viewmodel.dart';
+import 'package:tcw/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:tcw/features/profile/presentation/widgets/menu_item_widget.dart';
 import 'package:tcw/features/profile/presentation/widgets/state_item_widget.dart';
 import 'package:tcw/features/profile/presentation/widgets/user_header_widget.dart';
 import 'package:tcw/core/routes/app_routes.dart';
+import 'package:zapx/zapx.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({
@@ -43,7 +45,7 @@ class SideMenu extends StatelessWidget {
                   icon: Icons.space_dashboard_outlined,
                   onTap: () {
                     Modular.to.popUntil((route) => route.isFirst);
-                    Modular.to.pushNamed(AppRoutes.eventScreen);
+                    Modular.to.pushNamed(AppRoutes.profilePage);
                   },
                   title: 'Dashboard'),
               MenuItem(
@@ -121,36 +123,52 @@ class SideMenu extends StatelessWidget {
 }
 
 Widget _buildStats(BuildContext context) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceAround,
-    children: [
-      StateItem(
-          context: context,
-          icon: AssetUtils.notification,
-          count: '1',
-          label: 'Notification',
-          onTab: () {
-            Modular.to.pushNamed(AppRoutes.notificationScreen);
-          }),
-      StateItem(
-          context: context,
-          icon: AssetUtils.point,
-          count: '100',
-          label: 'Points',
-          onTab: () {
-            Modular.to.pushNamed(AppRoutes.pointsRewardsScreen);
-          }),
-      StateItem(
-          context: context,
-          icon: AssetUtils.rewards,
-          count: '2',
-          label: 'Rewards',
-          onTab: () {
-            Modular.to.pushNamed(
-              AppRoutes.pointsRewardsScreen,
-            );
-          }),
-    ],
+  return BlocBuilder<NotificationCubit, NotificationState>(
+    builder: (context, state) {
+      final unreadCount = BlocProvider.of<NotificationCubit>(context).unreadCount;
+
+      final List<Map<String, dynamic>> statsItems = [
+        {
+          'lable': 'Notification',
+          'icon': AssetUtils.notification,
+          'count': '$unreadCount',
+          'route': AppRoutes.notificationScreen,
+          'args': true,
+        },
+        {
+          'lable': 'Points',
+          'icon': AssetUtils.point,
+          'count': '100',
+          'route': AppRoutes.pointsRewardsScreen,
+          'args': true,
+        },
+        {
+          'lable': 'Rewards',
+          'icon': AssetUtils.rewards,
+          'count': '2',
+          'route': AppRoutes.pointsRewardsScreen,
+          'args': false,
+        },
+      ];
+
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: statsItems
+            .map(
+              (item) => StateItem(
+            context: context,
+            icon: item['icon'],
+            count: item['count'],
+            label: item['lable'],
+            onTab: () => Zap.toNamed(
+              item['route'],
+              arguments: item['args'],
+            ),
+          ),
+        )
+            .toList(),
+      );
+    },
   );
 }
 

@@ -1,12 +1,15 @@
 class ApiUrl {
   static const String baseImageUrl = 'https://tcw.de-mo.cloud';
   static const String baseUrl = 'https://tcw.de-mo.cloud/api';
-
+  static const String baseVideoUrl = 'https://tcw.de-mo.cloud/storage/app/public/';
   static const auth = _AuthEndpoints();
   static const profile = _ProfileEndpoints();
   // Endpoints for course-related operations.
   static const course = _CourseEndpoints();
   static const studentCourse = _StudentCourseEndpoints();
+  static const reels = _ReelEndpoints();
+  static const notification = _NotificationEndpoints();
+  static const events = _EventEndpoints();
 }
 
 /// Endpoints for authentication-related operations.
@@ -38,11 +41,17 @@ class _StudentCourseEndpoints {
 
   String get base => '${ApiUrl.baseUrl}/student/course';
 
-  String get getCourses => base;
+  String get getCourses =>'$base/';
   String get getLastViewed => '$base/last-viewed';
   String get updateLastViewed => '$base/last-viewed';
-  String getCourseDetails(int courseId) => '$base/class-room/$courseId';
+  String getCourseClassRoomDetails(int courseId) => '$base/classroom-/$courseId';
   String getCertificate(int courseId) => '$base/certificate/$courseId';
+  String getLesson(int courseId) => '${ApiUrl.baseUrl}/student/lesson-resource/$courseId';
+  String  getCourseDetails (int courseId) => '$base/details/$courseId';
+
+  String get getCourseTasks => '${ApiUrl.baseUrl}/student/assignment';
+  String getCourseTasksDetails(int courseId) => '${ApiUrl.baseUrl}/student/assignment/$courseId';
+
 }
 
 /// Endpoints for course-related operations.
@@ -53,5 +62,34 @@ class _CourseEndpoints {
 
   String get getCourses => base;
   String get getCategories => '$base-category';
-  String get getCourseDetails => '$base/details';
+  String  getCourseDetails (int courseId) => '$base/details/$courseId';
+  String getCourseLesson(int courseId) => '${ApiUrl.baseUrl}/student/lesson-resource/$courseId';
+
+}class _NotificationEndpoints {
+  const _NotificationEndpoints();
+
+  String get base => '${ApiUrl.baseUrl}/push-notification';
+  String getNotification(String receiverType) => '$base?receiver_type=$receiverType';
+
 }
+
+
+
+/// Endpoints for course-related operations.
+class _ReelEndpoints {
+  const _ReelEndpoints();
+
+  String get base => '${ApiUrl.baseUrl}/reels';
+
+
+}
+class _EventEndpoints {
+  const _EventEndpoints();
+
+  String get base => '${ApiUrl.baseUrl}/events';
+  String  getEventDetails (int eventId) => '$base/events/$eventId';
+
+
+
+}
+

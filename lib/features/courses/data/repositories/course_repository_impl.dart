@@ -2,6 +2,7 @@ import 'package:tcw/core/apis/api_response.dart';
 import 'package:tcw/features/courses/data/datasources/course_datasource_impl.dart';
 import 'package:tcw/features/courses/data/models/category_model.dart';
 import 'package:tcw/features/courses/data/models/course_model.dart';
+import 'package:tcw/features/courses/data/models/section_model.dart';
 
 abstract class CourseRepository {
   Future<ApiResponse<List<CourseModel>>> getCourses({
@@ -22,6 +23,8 @@ abstract class CourseRepository {
     int offset,
     bool subCategory,
   });
+  Future<ApiResponse<List<SectionModel>>> getCourseLessons(int courseId) ;
+
 }
 
 class CourseRepositoryImpl implements CourseRepository {
@@ -65,4 +68,9 @@ class CourseRepositoryImpl implements CourseRepository {
   }) {
     return _datasource.getCategories(limit: limit, offset: offset, subCategory: subCategory);
   }
-}
+
+ @override
+ Future<ApiResponse<List<SectionModel>>> getCourseLessons(int courseId) {
+   return _datasource.getCourseLessons(courseId);
+ }
+ }
