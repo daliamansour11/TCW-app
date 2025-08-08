@@ -3,7 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AiService {
 
-  final openAiApiKey = dotenv.env['OPENAI_API_KEY'];  late final Dio _dio;
+  String? openAiApiKey = dotenv.env['OPENAI_API_KEY'];
+
+  late final Dio _dio;
 
   AiService() {
     _dio = Dio(BaseOptions(

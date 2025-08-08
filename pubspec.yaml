@@ -140,4 +140,5 @@ flutter:
   assets:
     - assets/lang/
     - assets/image/
+    - .env
     # - assets/lottie/
