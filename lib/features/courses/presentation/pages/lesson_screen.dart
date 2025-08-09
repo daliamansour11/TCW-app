@@ -1,31 +1,209 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_player/video_player.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/custom_text.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/features/courses/data/models/task_model.dart';
-import 'package:tcw/features/courses/presentation/widgets/video_player_widget.dart';
 import 'package:tcw/core/routes/app_routes.dart';
-import 'package:tcw/features/programmes/data/models/program_detail_model.dart';
 import 'package:tcw/features/tasks/presentation/cubit/course_tasks_cubit.dart';
 import 'package:zapx/zapx.dart';
 
+import '../../../../core/shared/shared_widget/custom_container.dart';
+import '../../../../core/storage/secure_storage_service.dart';
+import '../../../../core/utils/asset_utils.dart';
+import '../../../auth/data/models/user_model.dart';
+import '../../data/local_data_source/local_storage.dart';
+import '../../data/models/last_viewed_model.dart';
+import '../../data/models/lesson_model.dart';
+import '../../data/models/section_model.dart';
+import '../cubit/student/student_course_cubit.dart';
+import '../widgets/video_player_widget.dart';
 class LessonScreen extends StatefulWidget {
-  const LessonScreen({super.key, required this.lessonModel});
-  final Lesson lessonModel;
+  final LessonModel lesson;
+// final  Instructor? instructorName;
+  const LessonScreen({super.key, required this.lesson, });
 
   @override
   State<LessonScreen> createState() => _LessonScreenState();
 }
 
 class _LessonScreenState extends State<LessonScreen> {
+  int? _userId;
+  Future<void> _loadUserId() async {
+    final storage = SecureStorageService.instance;
+    final data = await storage.get(StorageKey.userData);
+    if (data != null) {
+      final userMap = data as Map<String, dynamic>;
+      final user = UserModel.fromJson(userMap);
+      setState(() {
+        _userId = user.id;
+      });
+    }
+
+  }
+
+
+
+  VideoPlayerController? _controller;
+  bool _addedToContinueWatching = false;
+  final ContinueWatchingManager _manager = ContinueWatchingManager();
+  List<Map<String, dynamic>> _continueWatching = [];
+  Timer? _periodicSaveTimer;
+  int _lastSavedSecond = 0;
+  void _updateLastViewed() {
+    if (_userId == null) return;
+    final lastViewed = LastViewedModel(
+      id: widget.lesson.id??0,
+      userId: _userId??0,
+      lastViewedCourse: widget.lesson.courseId,
+      lastViewedSection: widget.lesson.sectionId,
+      lastViewedLesson: widget.lesson.id ?? 0,
+      lastViewedQuiz: null,
+      lastViewedAssignment: null,
+      createdAt: null,
+      updatedAt: null,
+    );
+    context.read<StudentCourseCubit>().updateLastViewed(lastViewed);
+  }
+
+  Future<void> _addLessonToContinueWatching(int positionSeconds) async {
+    await _manager.saveOrUpdateVideoPosition(
+      videoUrl: widget.lesson.video?.linkPath ?? '',
+      positionSeconds: positionSeconds,
+      lessonId: widget.lesson.id,
+      title: widget.lesson.title,
+    );
+
+    _updateLastViewed();
+
+    _loadContinueWatching();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadContinueWatching();
+    _initVideoControllerIfNeeded();
+    _loadUserId();
+  }
+
+  Future<void> _loadContinueWatching() async {
+    final items = await _manager.getContinueWatchingVideos();
+    if (mounted) setState(() => _continueWatching = items);
+  }
+
+  bool _isYoutubeUrl(String? url) {
+    if (url == null) return false;
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    return uri.host.contains('youtube.com') || uri.host.contains('youtu.be');
+  }
+
+  void _initVideoControllerIfNeeded() async {
+    final videoUrl = widget.lesson.video?.linkPath ?? '';
+    if (videoUrl.isEmpty) return;
+
+    if (_isYoutubeUrl(videoUrl)) {
+      return;
+    }
+
+    _controller = VideoPlayerController.network(videoUrl);
+    try {
+      await _controller!.initialize();
+      final lastPos = await _manager.getLastPosition(videoUrl);
+      if (lastPos > 0) {
+        final duration = _controller!.value.duration.inSeconds;
+        final seekTo = lastPos < duration ? Duration(seconds: lastPos) : Duration.zero;
+        await _controller!.seekTo(seekTo);
+      }
+      _controller!.addListener(_videoListener);
+      _controller!.play();
+
+      // periodic save every 5 seconds (throttled by _lastSavedSecond)
+      _periodicSaveTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+        _maybeSavePosition();
+      });
+
+      if (mounted) setState(() {});
+    } catch (_) {
+    }
+  }
+
+  void _videoListener() {
+    if (_controller == null) return;
+    final pos = _controller!.value.position.inSeconds;
+    if (!_addedToContinueWatching && pos >= 10) {
+      _addedToContinueWatching = true;
+      _addLessonToContinueWatching(pos);
+    }
+  }
+
+  Future<void> _maybeSavePosition() async {
+    if (_controller == null) return;
+    final pos = _controller!.value.position.inSeconds;
+    // only save if changed by 3+ seconds to reduce writes
+    if ((pos - _lastSavedSecond).abs() >= 3) {
+      _lastSavedSecond = pos;
+      await _manager.saveOrUpdateVideoPosition(
+        videoUrl: widget.lesson.video?.linkPath ?? '',
+        positionSeconds: pos,
+        lessonId: widget.lesson.id,
+        title: widget.lesson.title,
+      );
+      _loadContinueWatching();
+    }
+  }
+
+
+  @override
+  void dispose() {
+    _periodicSaveTimer?.cancel();
+    if (_controller != null) {
+      try {
+        _maybeSavePosition(); // final save
+        _controller!.removeListener(_videoListener);
+        _controller!.dispose();
+      } catch (_) {}
+    }
+    super.dispose();
+  }
+
+  String getVideoThumbnail(String? url) {
+    if (url == null || url.isEmpty) {
+      return AssetUtils.programPlaceHolder;
+    }
+
+    final Uri? uri = Uri.tryParse(url);
+    if (uri == null) return AssetUtils.programPlaceHolder;
+
+    if (uri.host.contains('youtu.be')) {
+      final videoId = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+      if (videoId != null && videoId.isNotEmpty) {
+        return 'https://img.youtube.com/vi/$videoId/0.jpg';
+      }
+    } else if (uri.host.contains('youtube.com')) {
+      String? videoId = uri.queryParameters['v'];
+      videoId ??= uri.pathSegments.isNotEmpty ? uri.pathSegments.last : null;
+      if (videoId != null && videoId.isNotEmpty) {
+        return 'https://img.youtube.com/vi/$videoId/0.jpg';
+      }
+    }
+
+    return AssetUtils.programPlaceHolder;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final lesson = widget.lesson;
+    final videoUrl = lesson.video?.linkPath ?? '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.lessonModel.title??'',
+          lesson.title ?? '',
           style: context.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -39,7 +217,6 @@ class _LessonScreenState extends State<LessonScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 20,
             children: [
               const Center(
                 child: Text(
@@ -47,53 +224,110 @@ class _LessonScreenState extends State<LessonScreen> {
                   style: TextStyle(color: Colors.grey),
                 ),
               ),
-              //  VideoPlayerWidget(
-              //   videoUrl:
-              //  lessonModel.video?.linkPath
-              // ),
-              VideoPlayerWidget(
-                // sourceType: lessonModel.video?.sourceType,
-                // url: lessonModel.video?.linkPath,
-                videoUrl: widget.lessonModel.video?.linkPath,
+
+              // Video area: use native controller for direct links; fall back to VideoPlayerWidget for YouTube
+              Container(
+                height: 220,
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 12, bottom: 12),
+                child: _isYoutubeUrl(videoUrl)
+                    ? VideoPlayerWidget(
+                  videoUrl: videoUrl,
+                  videoId: '',
+                  sourceType: lesson.video?.sourceType ?? '',
+                )
+                    : _controller != null && _controller!.value.isInitialized
+                    ? AspectRatio(
+                  aspectRatio: _controller!.value.aspectRatio,
+                  child: VideoPlayer(_controller!),
+                )
+                    : Center(child: CircularProgressIndicator()),
               ),
 
               _buildLessonInfo(context),
-              BlocConsumer<CourseTasksCubit, CourseTasksState>(
-                listener: (context, state) {
-                  if (state is CourseTasksError) {
-                Text(state.message);
-                  }
-                },
-                builder: (context, state) {
-                  if (state is CourseTasksLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is CourseTasksLoaded || state is CourseLoadingMore) {
-                    final tasks = (state is CourseTasksLoaded)
-                        ? state.tasks
-                        : context.read<CourseTasksCubit>().allTasks;
-                    if (tasks.isEmpty) {
-                      return const Center(child: Text('No Task Found.'));
-                    }
-                    return ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: tasks.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
-                      itemBuilder: (context, index) {
-                        return SizedBox(
-                          width: context.propWidth(300),
-                          child: _buildTaskCard(context, tasks[index]),
-                        );
-                      },
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
+              _buildTaskCard(context),
+              _buildSectionHeader(
+                'Continue Watching',
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomContainer(
+                      padding: 3,
+                      isCircle: true,
+                      color: Colors.transparent,
+                      border: Border.all(color: Colors.black),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new,
+                        size: 12,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const CustomContainer(
+                      padding: 3,
+                      isCircle: true,
+                      color: Colors.black,
+                      child: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 12,
+                        color: Colors.white,
+                      ),
+                    )
+                  ],
+                ),
               ),
 
-              _buildSectionHeader(context, 'Continue watching'),
-              // TODO
-              // const CourseListHorizontal(),
+              SizedBox(
+                height: 150,
+                child: _continueWatching.isEmpty
+                    ? Center(
+                  child: Text(
+                    'No items yet.',
+                    style: context.textTheme.bodyMedium?.copyWith(color: const Color(0xFF9E9E9E)),
+                  ),
+                )
+                    : ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _continueWatching.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    final item = _continueWatching[index];
+                    final itemVideoUrl = item['videoUrl'] as String? ?? '';
+                    final title = item['title'] as String? ?? 'Untitled';
+                    final thumbnail = getVideoThumbnail(itemVideoUrl);
+                    return GestureDetector(
+                      onTap: () async {
+                        // Navigate to lesson screen. we pass a Map — adapt on receiver if needed.
+                        Zap.toNamed(AppRoutes.lessonScreen, arguments: item);
+                      },
+                      child: Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              thumbnail,
+                              height: 100,
+                              width: 160,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: 160,
+                            child: Text(
+                              title,
+                              style: context.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -101,7 +335,75 @@ class _LessonScreenState extends State<LessonScreen> {
     );
   }
 
-  Widget _buildLessonInfo(BuildContext context,) {
+  Widget _buildTaskItem(BuildContext context, Task task) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                task.title,
+                style: context.textTheme.headlineSmall?.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0x1A951111),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                '1 Day Left',
+                style: context.textTheme.labelMedium?.copyWith(
+                  color: const Color(0xFF951111),
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          task.description ?? '',
+          style: context.textTheme.bodyMedium?.copyWith(
+            color: const Color(0xFF9E9E9E),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            onPressed: () => Zap.toNamed(AppRoutes.tasksScreen),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.primaryColor,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: const BorderSide(color: AppColors.primaryColor),
+              ),
+            ),
+            child: Text(
+              'View Details',
+              style: context.textTheme.labelMedium?.copyWith(
+                fontSize: 12,
+                color: AppColors.primaryColor,
+              ),
+            ),
+          ),
+        ),
+        const Divider(height: 32, color: Color(0xFFF1F1F5)),
+      ],
+    );
+  }
+
+  Widget _buildLessonInfo(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -114,21 +416,24 @@ class _LessonScreenState extends State<LessonScreen> {
               color: const Color(0x33B7924F),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: CustomText(
-    'Lesson ${widget.lessonModel.id}',
-      fontSize: 12,
-      color: AppColors.primaryColor,
-    ),
-    ),
-
-          CustomText(
-            widget.lessonModel.title ?? '',
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            child: Text(
+              'Lesson ${widget.lesson.id}',
+              style: context.textTheme.labelMedium?.copyWith(
+                fontSize: 12,
+                color: AppColors.primaryColor,
+              ),
+            ),
           ),
-          Text('${widget.lessonModel.description??'intro in figma to learn more creative UiUx ' }',
+          Text(
+            '${widget.lesson.title ?? ''}',
+            style: context.textTheme.headlineSmall?.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          Text(
+            widget.lesson.description ??
+                'This lesson covers how to apply styles dynamically and conditionally...,This lesson covers how to apply styles dynamically and conditionally...}',
             style: context.textTheme.bodyMedium?.copyWith(
               color: const Color(0xFF9E9E9E),
               fontSize: 14,
@@ -140,8 +445,7 @@ class _LessonScreenState extends State<LessonScreen> {
     );
   }
 
-  Widget _buildTaskCard(BuildContext context,Task task) {
-
+  Widget _buildTaskCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -155,91 +459,107 @@ class _LessonScreenState extends State<LessonScreen> {
               fontWeight: FontWeight.w700,
             ),
           ),
-          Container(
-            width: double.infinity,
-            height: 207,
-            margin: EdgeInsets.only(top: context.propHeight(12)),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFAFAFB),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFF1F1F5)),
-            ),
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(task.title,style: context.textTheme.headlineSmall?.copyWith(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
+
+          BlocConsumer<CourseTasksCubit, CourseTasksState>(
+              listener: (context, state) {
+                if (state is CourseTasksError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message)),
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state is CourseTasksLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is CourseTasksLoaded || state is CourseLoadingMore) {
+                  final tasks = (state is CourseTasksLoaded)
+                      ? state.tasks
+                      : context.read<CourseTasksCubit>().allTasks;
+                  if (tasks.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'No Task Found.',
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            color: const Color(0xFF9E9E9E),
+                          ),
+                        ),
                       ),
-                      ),
+                    );
+                  }
+                  return CustomContainer(
+                    padding: 16,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Task',
+                              style: context.textTheme.headlineSmall?.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              '1/2',
+                              style: context.textTheme.bodyMedium?.copyWith(
+                                color: const Color(0xFF9E9E9E),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        ...tasks.map((task) => _buildTaskItem(context, task)).toList(),
+                      ],
                     ),
-                    const Text(
-                      '1 Day Left',
-                      style: TextStyle(
-                        color: Color(0xFF951111),
-                        fontSize: 12,
-                        fontFamily: 'Lato',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding:
-                  EdgeInsets.symmetric(vertical: context.propHeight(10)),
-                  child: Text('${   task.description}'
-                    ,
-                    style: context.textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xFF9E9E9E),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: TextButton(
-                    onPressed: () {
-                      Zap.toNamed(AppRoutes.tasksScreen);
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      minimumSize: const Size(0, 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: const BorderSide(color: AppColors.primaryColor),
-                      ),
-                      backgroundColor: Colors.white,
-                    ),
-                    child: Text(
-                      'View Details',
-                      style: context.textTheme.labelMedium?.copyWith(
-                        fontSize: 12,
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+                  );
+                }
+                return const SizedBox.shrink();
+              })
         ],
       ),
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title) {
-    return Text(
-      title,
-      style: context.textTheme.headlineLarge?.copyWith(
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
+  Widget _buildSectionHeader(
+      String title, {
+        String? subTitle,
+        Widget? trailing,
+      }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomText(
+                  title,
+                  fontType: FontType.Poppins,
+                  fontWeight: FontWeight.bold,
+                ),
+                if (subTitle != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: CustomText(
+                      subTitle,
+                      fontType: FontType.Poppins,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (trailing != null) trailing,
+        ],
       ),
     );
   }

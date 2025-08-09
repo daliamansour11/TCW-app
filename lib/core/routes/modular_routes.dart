@@ -83,6 +83,9 @@ import 'package:tcw/features/setting/presentation/pages/support_screen.dart';
 import 'package:tcw/core/routes/app_routes.dart';
 import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
 
+import '../../features/courses/data/models/lesson_model.dart';
+import '../../features/courses/data/models/section_model.dart';
+
 TransitionType transition = TransitionType.upToDown;
 
 List<ModularRoute> modularRoutes = <ChildRoute>[
@@ -377,7 +380,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
   ChildRoute(
     AppRoutes.lessonScreen,
     child: (_, args) {
-      final lesson = args.data as Lesson;
+      final lesson = args.data as LessonModel;
 
       return MultiBlocProvider(
         providers: [
@@ -386,7 +389,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
           ),
 
         ],
-        child: LessonScreen(lessonModel: lesson),
+        child: LessonScreen(lesson: lesson),
       );
     },
   ),
@@ -527,16 +530,19 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
   ChildRoute(
     AppRoutes.programmeDetails,
     child: (_, ModularArguments args) {
-      final programId = args.data as int;
+      final int programId = args.data  as int;
+
       return BlocProvider(
-        create: (context) =>
-        ProgramCubit(ProgramRepositoryImpl(ProgramDatasourceImpl()))
+        create: (context) => ProgramCubit(ProgramRepositoryImpl(ProgramDatasourceImpl()))
           ..fetchProgramDetails(programId),
-        child:  ProgrameDetailsView(programId,),
+        child: ProgrameDetailsView(
+          programId: programId,
+        ),
       );
     },
     transition: transition,
   ),
+
 
 
 ];

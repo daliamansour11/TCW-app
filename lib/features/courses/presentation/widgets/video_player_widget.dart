@@ -1,135 +1,249 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import '../../data/local_data_source/local_storage.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/features/courses/presentation/widgets/full_screen_player.dart';
 
-import 'package:video_player/video_player.dart';
-
 class VideoPlayerWidget extends StatefulWidget {
-  const VideoPlayerWidget({super.key, required this.videoUrl});
+  const VideoPlayerWidget({
+    super.key,
+    required this.videoUrl,
+    required this.videoId,
+    required this.sourceType,
+  });
+
   final String videoUrl;
+  final String videoId;
+  final String sourceType;
 
   @override
   State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
 }
 
-class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late VideoPlayerController _controller;
+class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with WidgetsBindingObserver {
+  VideoPlayerController? _mp4Controller;
+  YoutubePlayerController? _ytController;
+  final ContinueWatchingManager _continueWatchingManager = ContinueWatchingManager();
+
+  bool _isYoutube = false;
+  bool _isPlaying = true;
   bool _isMuted = false;
+
+  Timer? _progressTimer;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
-      ..initialize().then((_) {
-        setState(() {});
-        _controller.play();
-      });
-    _controller.setLooping(false);
+    WidgetsBinding.instance.addObserver(this);
+    _isYoutube = widget.videoUrl.contains('youtu');
+    _initVideo();
+  }
+
+  Future<void> _initVideo() async {
+    if (_isYoutube) {
+      await _initYoutube();
+    } else {
+      await _initMp4();
+    }
+  }
+
+  Future<void> _initYoutube() async {
+    final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl) ?? '';
+    final lastPosition = await _continueWatchingManager.getLastPosition(widget.videoUrl);
+
+    _ytController = YoutubePlayerController(
+      initialVideoId: videoId,
+      flags: YoutubePlayerFlags(
+        autoPlay: false,
+        startAt: lastPosition,
+        controlsVisibleAtStart: false,
+      ),
+    );
+
+    _ytController!.addListener(_checkYoutubeProgress);
+    _startProgressTimer();
+    setState(() {});
+  }
+
+  Future<void> _initMp4() async {
+    _mp4Controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    await _mp4Controller!.initialize();
+
+    final lastPositionSeconds = await _continueWatchingManager.getLastPosition(widget.videoUrl);
+    if (lastPositionSeconds > 0 && lastPositionSeconds < _mp4Controller!.value.duration.inSeconds) {
+      await _mp4Controller!.seekTo(Duration(seconds: lastPositionSeconds));
+    }
+
+    _mp4Controller!.setLooping(false);
+    _mp4Controller!.addListener(_checkMp4Progress);
+
+    _startProgressTimer();
+    setState(() {});
+    _mp4Controller!.play();
+  }
+
+  void _startProgressTimer() {
+    _progressTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      _saveProgress();
+    });
+  }
+
+  void _checkMp4Progress() {
+    if (_mp4Controller!.value.position >= _mp4Controller!.value.duration) {
+      _removeFromContinueWatching();
+    }
+    if (_mp4Controller!.value.isPlaying != _isPlaying) {
+      setState(() => _isPlaying = _mp4Controller!.value.isPlaying);
+    }
+  }
+
+  void _checkYoutubeProgress() {
+    final position = _ytController!.value.position;
+    final duration = _ytController!.metadata.duration;
+
+    if (position >= duration) {
+      _removeFromContinueWatching();
+    }
+  }
+
+  void _saveProgress() {
+      if (_isYoutube && _ytController != null) {
+        final position = _ytController!.value.position.inSeconds;
+        _continueWatchingManager.saveOrUpdateVideoPosition(
+          videoUrl: widget.videoUrl,
+          positionSeconds: position,
+        );
+      } else if (_mp4Controller != null && _mp4Controller!.value.isInitialized) {
+        final position = _mp4Controller!.value.position.inSeconds;
+        _continueWatchingManager.saveOrUpdateVideoPosition(
+          videoUrl: widget.videoUrl,
+          positionSeconds: position,
+        );
+      }
+    }
+
+
+
+  Future<void> _removeFromContinueWatching() async {
+    await _continueWatchingManager.removeVideo(widget.videoUrl);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _mp4Controller?.dispose();
+    _ytController?.dispose();
+    _progressTimer?.cancel();
     super.dispose();
   }
 
-  String _formatDuration(Duration d) {
-    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _saveProgress();
+      if (_mp4Controller?.value.isPlaying ?? false) _mp4Controller!.pause();
+      _ytController?.pause();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       height: context.propHeight(350),
-      child: _controller.value.isInitialized
-          ? ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  VideoPlayer(_controller),
-                  _buildControlsOverlay(),
-                  _buildProgressBar(),
-                ],
-              ),
-            )
-          : const Center(child: CircularProgressIndicator()),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.grey[200],
+      ),
+      child: _isYoutube ? _buildYoutubePlayer() : _buildVideoPlayer(),
     );
   }
 
-  Widget _buildControlsOverlay() {
-    return Positioned.fill(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+  Widget _buildYoutubePlayer() {
+    if (_ytController == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: YoutubePlayer(
+        controller: _ytController!,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: AppColors.primaryColor,
+        progressColors: const ProgressBarColors(
+          playedColor: AppColors.primaryColor,
+          handleColor: AppColors.primaryColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoPlayer() {
+    if (_mp4Controller == null || !_mp4Controller!.value.isInitialized) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Stack(
+        fit: StackFit.expand,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _formatDuration(_controller.value.position),
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                ),
-                Text(
-                  _formatDuration(_controller.value.duration),
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ],
+          VideoPlayer(_mp4Controller!),
+
+          if (!_isPlaying)
+            Center(
+              child: IconButton(
+                icon: const Icon(Icons.play_arrow, size: 48, color: Colors.white),
+                onPressed: () {
+                  _mp4Controller!.play();
+                  setState(() => _isPlaying = true);
+                },
+              ),
             ),
+
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: _buildControls(),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    _controller.value.isPlaying
-                        ? Icons.pause
-                        : Icons.play_arrow,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _controller.value.isPlaying
-                          ? _controller.pause()
-                          : _controller.play();
-                    });
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.replay_10, color: Colors.white),
-                  onPressed: () {
-                    final newPos = _controller.value.position -
-                        const Duration(seconds: 10);
-                    _controller.seekTo(
-                        newPos > Duration.zero ? newPos : Duration.zero);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(
-                    _isMuted ? Icons.volume_off : Icons.volume_up,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isMuted = !_isMuted;
-                      _controller.setVolume(_isMuted ? 0 : 1);
-                    });
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.picture_in_picture_alt_rounded,
-                      color: Colors.white),
-                  onPressed: _openFullscreen,
-                ),
-              ],
-            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControls() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      color: Colors.black54,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white),
+            onPressed: () {
+              if (_isPlaying) {
+                _mp4Controller!.pause();
+              } else {
+                _mp4Controller!.play();
+              }
+              setState(() => _isPlaying = !_isPlaying);
+            },
+          ),
+          IconButton(
+            icon: Icon(_isMuted ? Icons.volume_off : Icons.volume_up, color: Colors.white),
+            onPressed: () {
+              setState(() {
+                _isMuted = !_isMuted;
+                _mp4Controller!.setVolume(_isMuted ? 0 : 1);
+              });
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.fullscreen, color: Colors.white),
+            onPressed: _openFullscreen,
           ),
         ],
       ),
@@ -137,35 +251,19 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   }
 
   void _openFullscreen() async {
-    final wasPlaying = _controller.value.isPlaying;
-    if (wasPlaying) _controller.pause();
+    if (_mp4Controller == null) return;
+
+    final wasPlaying = _mp4Controller!.value.isPlaying;
+    if (wasPlaying) _mp4Controller!.pause();
 
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => FullscreenPlayer(controller: _controller),
+        builder: (_) => FullscreenPlayer(controller: _mp4Controller!),
       ),
     );
 
-    if (wasPlaying) _controller.play();
-    setState(() {});
-  }
-
-  Widget _buildProgressBar() {
-    return Positioned(
-      bottom: 48,
-      left: 0,
-      right: 0,
-      child: VideoProgressIndicator(
-        _controller,
-        allowScrubbing: true,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        colors: const VideoProgressColors(
-          playedColor: AppColors.primaryColor,
-          bufferedColor: Colors.white38,
-          backgroundColor: Colors.white24,
-        ),
-      ),
-    );
+    if (wasPlaying) _mp4Controller!.play();
+    setState(() => _isPlaying = wasPlaying);
   }
 }

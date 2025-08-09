@@ -13,11 +13,53 @@ import 'package:tcw/features/courses/data/models/lesson_model.dart';
 import 'package:tcw/features/courses/data/models/section_model.dart';
 import 'package:zap_sizer/zap_sizer.dart';
 
-class LessonCard extends StatelessWidget {
-  // ignore: use_super_parameters
-  const LessonCard({Key? key, required this.courseId, required this.section}) : super(key: key);
+import '../../data/models/last_viewed_model.dart';
+import '../cubit/student/student_course_cubit.dart';
+
+class LessonCard extends StatefulWidget {
+  const LessonCard({Key? key, required this.courseId, required this.section, required this.lessonModel, }) : super(key: key);
   final SectionModel section;
   final int  courseId;
+  final LessonModel lessonModel;
+
+  @override
+  State<LessonCard> createState() => _LessonCardState();
+}
+
+class _LessonCardState extends State<LessonCard> {
+
+  @override
+  void initState() {
+    super.initState();
+    getUpdatedView();
+    _updateLastViewed();
+  }
+
+  void _updateLastViewed() {
+    final lastViewed = LastViewedModel(
+      id: 0,
+      userId: 0,
+      lastViewedCourse: widget.lessonModel.courseId ?? 0,
+      lastViewedSection: widget.lessonModel.sectionId ?? 0,
+      lastViewedLesson: widget.lessonModel.id ?? 0,
+      lastViewedQuiz: null,
+      lastViewedAssignment: null,
+      createdAt: null,
+      updatedAt: null,
+    );
+
+    context.read<StudentCourseCubit>().updateLastViewed(lastViewed);
+  }
+
+  Future<void> getUpdatedView() async {
+    try {
+
+      await context.read<StudentCourseCubit>().getLastViewed(
+      );
+    } catch (e) {
+      debugPrint('Failed to get updated view: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +67,7 @@ class LessonCard extends StatelessWidget {
       onTap: () {
         Modular.to.pushNamed(
           AppRoutes.lessonScreen,
+          arguments:widget.lessonModel
         );
       },
       child: CustomContainer(
@@ -44,7 +87,7 @@ class LessonCard extends StatelessWidget {
             Stack(
               children: [
                 CustomImage(
-                  section.lessons.first.video?.url ?? '',
+                  widget.section.lessons.first.video?.url ?? '',
                   height: 20.h,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -85,7 +128,7 @@ class LessonCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child:  Text(
-                          section.topic,
+                          widget.section.topic,
                           style: const TextStyle(fontSize: 12),
                         ),
                       ),
@@ -95,7 +138,7 @@ class LessonCard extends StatelessWidget {
                               size: 16, color: Colors.black54),
                       const    SizedBox(width: 4),
                           // TODO
-                          Text('${section.durationMinutes??13}h',
+                          Text('${widget.section.durationMinutes??13}h',
                               style: const TextStyle(fontSize: 12)),
                         ],
                       ),
@@ -103,7 +146,7 @@ class LessonCard extends StatelessWidget {
                   ),
                   SizedBox(height: context.propHeight(8)),
                   Text(
-                 section.lessons.first.title ?? '',
+                 widget.section.lessons.first.title ?? '',
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 16),
                   ),
@@ -116,7 +159,6 @@ class LessonCard extends StatelessWidget {
                   SizedBox(height: context.propHeight(12)),
                    Row(
                     children: [
-                     // TODO
                     const  CircleAvatar(
                         radius: 18,
                         backgroundImage: AssetImage(AssetUtils.personAvater),
@@ -127,7 +169,7 @@ class LessonCard extends StatelessWidget {
                         children: [
 
                           Text(
-                            section.instructor?.name ??'Coach',
+                            widget.section.instructor?.name ??'Coach',
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                           const Text(
@@ -146,6 +188,7 @@ class LessonCard extends StatelessWidget {
       ),
     );
   }
+
   String getYoutubeThumbnail(String url) {
     final Uri? uri = Uri.tryParse(url);
     if (uri == null) return AssetUtils.programPlaceHolder;
@@ -157,6 +200,7 @@ class LessonCard extends StatelessWidget {
 
     return 'https://img.youtube.com/vi/$videoId/0.jpg';
   }
+
   Widget _buildLessonWidget(LessonModel lesson, int index ,BuildContext context) {
     final videoUrl = lesson.video?.linkPath ?? '';
     final thumbnailUrl = getYoutubeThumbnail(videoUrl);
@@ -269,5 +313,4 @@ class LessonCard extends StatelessWidget {
     );
 
   }
-
 }

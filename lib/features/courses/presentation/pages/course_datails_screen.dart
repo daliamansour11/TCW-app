@@ -10,7 +10,6 @@ class CourseDetailsScreen extends StatelessWidget {
   const CourseDetailsScreen({super.key, required this.courseId});
 
   final int courseId;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +89,7 @@ class CourseDetailsScreen extends StatelessWidget {
                             separatorBuilder: (context, index) => SizedBox(height: context.propHeight(12)),
                             itemCount: lessons.length,
                             itemBuilder: (context, index) {
-                              return LessonCard(courseId: courseId, section:lessons[index] ,);
+                              return LessonCard(courseId: courseId, section:lessons[index], lessonModel: lessons[index].lessons.first ,);
                             },
                           );
                         }

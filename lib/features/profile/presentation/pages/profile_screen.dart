@@ -35,6 +35,10 @@ import 'package:tcw/core/routes/app_routes.dart';
 import 'package:zap_sizer/zap_sizer.dart';
 import 'package:zapx/zapx.dart';
 
+import '../../../courses/data/local_data_source/local_storage.dart';
+import '../../../courses/data/models/lesson_model.dart';
+import '../../../courses/presentation/widgets/lesson_card.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -48,7 +52,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   EnrolledCourseModel? courses;
     CoursesViewmodel? viewmodel;
   bool  _isLoading = true;
+  final ContinueWatchingManager _continueWatchingManager = ContinueWatchingManager();
 
+  late Future<List<Map<String, dynamic>>> _continueWatchingFuture;
   @override
   void initState() {
     super.initState();
@@ -68,31 +74,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });}
 
       );});
+    _continueWatchingFuture = _continueWatchingManager.getContinueWatchingVideos();
     }
 
-  final List<Map> _statsItems = [
-    {
-      'lable': 'Notification',
-      'icon': AssetUtils.notification,
-      'count': '1',
-      'route': AppRoutes.notificationScreen,
-      'args': true,
-    },
-    {
-      'lable': 'Points',
-      'icon': AssetUtils.point,
-      'count': '100',
-      'route': AppRoutes.pointsRewardsScreen,
-      'args': true,
-    },
-    {
-      'lable': 'Rewards',
-      'icon': AssetUtils.rewards,
-      'count': '2',
-      'route': AppRoutes.pointsRewardsScreen,
-      'args': false,
-    },
-  ];
 
 late  final List<VideoItem> videos;
   @override
@@ -257,16 +241,63 @@ late  final List<VideoItem> videos;
                   ],
                 ),
               ),
-              // SizedBox(
-              //   height: 160,
-              //   child: ListView.builder(
-              //     scrollDirection: Axis.horizontal,
-              //     itemCount: videos.length,
-              //     itemBuilder: (context, index) {
-              //       return LessonCard(lesson:, courseId: courses,);
-              //     },
-              //   ),
-              // ),
+
+              SizedBox(
+                height: 160,
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: _continueWatchingFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No videos to continue watching.'));
+                    }
+
+                    final videos = snapshot.data!;
+
+                    return ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: videos.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) {
+                        final video = videos[index];
+                        final position = video['position'] ?? 0;
+                        final videoUrl = video['videoUrl'] ?? '';
+                        final videoId = video['videoId'] ?? '';
+
+                        return GestureDetector(
+                          onTap: () {
+                            final lesson = LessonModel(
+                              id: videoId,
+                              video: videoUrl,
+                            );
+
+                            Zap.toNamed(
+                              AppRoutes.lessonScreen,
+                              arguments: lesson,
+                            );
+                          },
+
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: CachedNetworkImage(
+                              width: 130,
+                              height: 160,
+                              fit: BoxFit.cover,
+                              imageUrl: videoUrl,
+                              placeholder: (context, url) =>
+                                  Image.asset(AssetUtils.programPlaceHolder),
+                              errorWidget: (context, url, error) =>
+                                  Image.asset(AssetUtils.programPlaceHolder),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
               _buildSectionHeader('Your Programs',
                   trailing: ShowMoreTileWidget(
                     onTab: () => Zap.toNamed(AppRoutes.programmesView),
