@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:tcw/core/apis/api_response.dart';
 import 'package:tcw/core/apis/api_service.dart';
@@ -16,7 +17,9 @@ abstract class StudentCourseDatasources {
 );
   Future<ApiResponse<CourseDetailModel>> getCourseDetails(int courseId);
   Future<ApiResponse<CertificateModel>> downloadCertificate(int courseId);
-  Future<ApiResponse<bool>> updateLastViewed(LastViewedModel lastViewedData);
+  Future<ApiResponse<bool>> updateLastViewed( int courseId,
+      int sectionId,
+      int lessonId,);
   Future<ApiResponse<LastViewedModel>> getLastViewed();
   Future<ApiResponse<List<LessonModel>>> getCourseLessons(int courseId);
 }
@@ -67,21 +70,28 @@ class StudentCourseDatasourceImpl implements StudentCourseDatasources {
     final response = await ApiService.instance.get(
       ApiUrl.studentCourse.getCertificate(courseId),
       withToken: true,
-
     );
-
     if (response.isError) return response.error();
-
     final cert = CertificateModel.fromJson(response.mapData['data']);
     return response.copyWith(data: cert);
   }
 
   @override
   Future<ApiResponse<bool>> updateLastViewed(
-      LastViewedModel lastViewedData) async {
+      int courseId,
+      int sectionId,
+      int lessonId,) async {
+    final formData = FormData.fromMap({
+      'last_viewed_course': courseId ?? '',
+      'last_viewed_section': sectionId,
+      'last_viewed_lesson': lessonId,
+
+
+    });
+
     final response = await ApiService.instance.post(
       ApiUrl.studentCourse.updateLastViewed,
-      data: lastViewedData.toJson(),
+      data:formData,
       withToken: true,
     );
 

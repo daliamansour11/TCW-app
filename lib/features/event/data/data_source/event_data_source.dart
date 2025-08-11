@@ -20,7 +20,7 @@ class EventDataSourceImpl implements EventDataSource {
   @override
   @override
   Future<ApiResponse<EventModel>> getEvents() async {
-    final response = await ApiService.instance.get('${ApiUrl.baseUrl}/events');
+    final response = await ApiService.instance.get('${ApiUrl.baseUrl}/meetings');
 
     if (response.isError) return response.error();
 

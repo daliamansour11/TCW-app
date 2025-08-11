@@ -121,10 +121,12 @@ class CoursesViewmodel {
   }
 
 
-    Future<void> updateLastViewed(LastViewedModel model) async {
+    Future<void> updateLastViewed(   int courseId,
+        int sectionId,
+        int lessonId, ) async {
     try{
       await ctx.read<StudentCourseCubit>().updateLastViewed(
-           model );
+           courseId,sectionId,lessonId );
     } catch (e) {
       debugPrint('Error updating Last Viewed: $e');
     }

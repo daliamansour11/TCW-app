@@ -10,14 +10,17 @@ import 'package:zapx/zapx.dart';
 
 class SubscribeEventItemWidget extends StatelessWidget {
   const SubscribeEventItemWidget({super.key, required this.event});
-  final EventItem event;
+  final Meeting event;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: ()=>  Zap.toNamed(AppRoutes.subscribeEventDetailsScreen,
-      arguments: event),
-
+      onTap: () => Zap.toNamed(AppRoutes.liveEventScreen,
+        arguments: {
+          'event': event,
+          'meetingLink': 'https://meet.google.com/poa-dgpu-etr', // Passes the meeting link
+        },
+      ),
 
       child: CustomContainer(
         margin: const EdgeInsets.all(10),
@@ -76,12 +79,12 @@ class SubscribeEventItemWidget extends StatelessWidget {
             fontSize: 12,
           ),
         ),
-       const Row(
+        Row(
           children: [
             const Icon(Icons.access_time,
                 size: 14, color: AppColors.primaryColor),
             const SizedBox(width: 4),
-            CustomText('02.00 - 03.30',
+            CustomText('${event.scheduledAt}',
               // event.time,
               fontSize: 12,
             ),

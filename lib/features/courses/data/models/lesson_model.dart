@@ -9,7 +9,7 @@ class LessonModel {
       durationMinutes: json['duration_minutes'],
       courseId: json['course_id'],
       sectionId: json['section_id'],
-      video: json['video'] != null ? IntroVideo.fromJson(json['video']) : null,
+      video: json['video'] != null ? IntroVideo.fromJson(json['video']) : null, resumePositionMs: null,
     );
   }
 
@@ -20,7 +20,7 @@ class LessonModel {
     this.durationMinutes,
     this.courseId,
     this.sectionId,
-    this.video,
+    this.video, required resumePositionMs,
   });
 
   final int? id;

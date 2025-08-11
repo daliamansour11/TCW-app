@@ -1,19 +1,21 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:tcw/core/shared/shared_widget/custom_container.dart';
-import 'package:tcw/core/shared/shared_widget/custom_text.dart';
-import 'package:tcw/core/shared/shared_widget/custom_text_form_field.dart';
-import 'package:tcw/core/theme/app_colors.dart';
-import 'package:tcw/features/chat/presentation/pages/group_chat_screen.dart';
-import 'package:tcw/features/event/data/models/poll_model.dart';
-import 'package:tcw/features/event/data/models/question_model.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import '../../../../core/shared/shared_widget/custom_container.dart';
+import '../../../../core/shared/shared_widget/custom_text.dart';
+import '../../../../core/shared/shared_widget/custom_text_form_field.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../chat/presentation/pages/group_chat_screen.dart';
+import '../../data/models/poll_model.dart';
+import '../../data/models/question_model.dart';
 import 'package:zap_sizer/zap_sizer.dart';
-
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 class LiveEventScreen extends StatefulWidget {
-  const LiveEventScreen({super.key, required this.questions});
+  const LiveEventScreen({super.key, required this.questions, required this.meetingUrl});
   final List<QuestionModel> questions;
-
+  final String meetingUrl;
   @override
   State<LiveEventScreen> createState() => _LiveEventScreenState();
 }
@@ -24,32 +26,126 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
     PollOption(text: 'Eisenhower Matrix'),
   ];
 
-  void selectPollOption(int index) {
-    setState(() {
-      for (int i = 0; i < pollOptions.length; i++) {
-        pollOptions[i].isSelected = i == index;
+  final Map<int, TextEditingController> answerControllers = {};
+  late WebViewController webViewController; // Add WebViewController
+  MediaStream? localStream;
+  bool isMicOn = true;
+  bool isCameraOn = true;
+  RTCVideoRenderer _localRenderer = RTCVideoRenderer();
+  Future<void> startLocalStream() async {
+    final Map<String, dynamic> mediaConstraints = {
+      'audio': true,
+      'video': {
+        'facingMode': 'user',
       }
-      pollOptions[index].votes += 1;
+    };
+
+    try {
+      MediaStream stream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+      setState(() {
+        localStream = stream;
+        _localRenderer.srcObject = localStream;
+        isMicOn = true;
+        isCameraOn = true;
+      });
+    } catch (e) {
+      print('Error accessing media devices: $e');
+    }
+  }
+
+  void toggleCamera() {
+    if (localStream == null) return;
+    final videoTrack = localStream!.getVideoTracks().first;
+    setState(() {
+      if (videoTrack.enabled) {
+        videoTrack.enabled = false;
+        isCameraOn = false;
+      } else {
+        videoTrack.enabled = true;
+        isCameraOn = true;
+      }
+    });
+  }
+
+  void toggleMic() {
+    if (localStream == null) return;
+    final audioTrack = localStream!.getAudioTracks().first;
+    setState(() {
+      if (audioTrack.enabled) {
+        audioTrack.enabled = false;
+        isMicOn = false;
+      } else {
+        audioTrack.enabled = true;
+        isMicOn = true;
+      }
+    });
+  }
+
+  Future<void> initRenderer() async {
+    await _localRenderer.initialize();
+  }
+  @override
+  void initState() {
+    super.initState();
+    initRenderer().then((_) {
+      startLocalStream();
+    });
+    webViewController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..loadRequest(Uri.parse(widget.meetingUrl));
+
+
+
+    for (var question in widget.questions) {
+      answerControllers[question.id] = TextEditingController();
+    }
+  }
+
+  @override
+  void dispose() {
+    localStream?.getTracks().forEach((track) {
+      track.stop();
+    });    _localRenderer.dispose();
+    for (var ctrl in answerControllers.values) {
+      ctrl.dispose();
+    }
+    super.dispose();
+  }
+
+  void togglePollOption(int index) {
+    setState(() {
+      pollOptions[index].isSelected = !(pollOptions[index].isSelected ?? false);
+      if (pollOptions[index].isSelected == true) {
+        pollOptions[index].votes += 1;
+      } else {
+        if (pollOptions[index].votes > 0) pollOptions[index].votes -= 1;
+      }
     });
   }
 
   int get totalVotes => pollOptions.fold(0, (sum, o) => sum + o.votes);
 
+  Map<int, String> get allAnswers => answerControllers.map(
+        (key, controller) => MapEntry(key, controller.text.trim()),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: ListView(padding: const EdgeInsets.all(10), children: [
+      backgroundColor: Colors.white,
+      body: ListView(
+        padding: const EdgeInsets.all(10),
+        children: [
+
           Row(
             children: [
               IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: () => Navigator.pop(context),
               ),
-              const CustomText(
-                'master time management and\nachieve peak productivity!',
+               CustomText(
+                '',
                 fontWeight: FontWeight.bold,
               ),
             ],
@@ -57,17 +153,17 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 4,
             children: [
               IconButton(
-                  onPressed: () {
-                    Clipboard.setData(
-                        const ClipboardData(text: 'www.tcw-event.com/live'));
-                  },
-                  icon: const Icon(Icons.copy,
-                      color: AppColors.primaryColor, size: 12)),
-              const CustomText(
-                'www.tcw-event.com/live',
+                onPressed: () {
+                  Clipboard.setData(
+                       ClipboardData(text: '${widget.meetingUrl}'));
+                },
+                icon: const Icon(Icons.copy,
+                    color: AppColors.primaryColor, size: 20),
+              ),
+               CustomText(
+                '${widget.meetingUrl}',
                 color: AppColors.primaryColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -76,51 +172,16 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          // // Video area
+
+          // WebView Container
           CustomContainer(
             height: 50.h,
             borderRadius: 16,
             color: Colors.grey.shade300,
-            image: const DecorationImage(
-              fit: BoxFit.cover,
-              image: NetworkImage(
-                'https://img.freepik.com/free-photo/speaker-stage-conference-hall_23-2148918160.jpg',
-              ),
-            ),
             child: Stack(
               children: [
-                Positioned(
-                  right: 12,
-                  top: 12,
-                  child: Row(
-                    spacing: 10,
-                    children: [
-                      CustomContainer(
-                        color: Colors.black.withValues(alpha: 0.6),
-                        padding: 5,
-                        borderRadius: 12,
-                        child: const Row(
-                          spacing: 4,
-                          children: [
-                            Icon(Icons.group, color: Colors.white, size: 16),
-                            CustomText('15+',
-                                color: Colors.white, fontSize: 12),
-                          ],
-                        ),
-                      ),
-                      Badge.count(
-                        count: 5,
-                        backgroundColor: Colors.green,
-                        child: const Icon(
-                          CupertinoIcons.chat_bubble,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Control buttons
+                // Use WebViewWidget instead of WebView
+                WebViewWidget(controller: webViewController),
                 Positioned(
                   bottom: 12,
                   left: 0,
@@ -128,41 +189,99 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      CircleAvatar(
-                          backgroundColor: Colors.black.withValues(alpha: 0.6),
-                          child: const Icon(Icons.present_to_all,
-                              color: Colors.white)),
-                      CircleAvatar(
-                          backgroundColor: Colors.black.withValues(alpha: 0.6),
-                          child:
-                              const Icon(Icons.videocam, color: Colors.white)),
-                      CustomContainer(
-                        color: const Color(0xFFF7000E),
-                        radius: BorderRadius.circular(12.37),
-                        child: const Icon(Icons.call_end, color: Colors.white),
+                      GestureDetector(
+                        onTap: () {
+                          print('Present button clicked');
+                          // TODO: إضافة مشاركة الشاشة أو وظيفة فعلية
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: Colors.black.withOpacity(0.6),
+                          child: const Icon(Icons.present_to_all, color: Colors.white),
+                        ),
                       ),
-                      CircleAvatar(
-                          backgroundColor: Colors.black.withValues(alpha: 0.6),
-                          child: const Icon(Icons.mic, color: Colors.white)),
-                      CircleAvatar(
-                        backgroundColor: Colors.black.withValues(alpha: 0.6),
-                        child:
-                            const Icon(Icons.more_horiz, color: Colors.white),
+                        GestureDetector(
+                          onTap: toggleCamera,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.black.withOpacity(0.6),
+                            child: Icon(
+                              isCameraOn ? Icons.videocam : Icons.videocam_off,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+
+                        GestureDetector(
+                        onTap: () {
+                          print('Call end clicked');
+                          Navigator.pop(context);
+                        },
+                        child: CustomContainer(
+                          padding: 8,
+                          color: const Color(0xFFF7000E),
+                          radius: BorderRadius.circular(12.37),
+                          child: const Icon(Icons.call_end, color: Colors.white),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: toggleMic,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.black.withOpacity(0.6),
+                          child: Icon(
+                            isMicOn ? Icons.mic : Icons.mic_off,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+
+                      GestureDetector(
+                        onTap: () {
+                          print('More options clicked');
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (_) => Container(
+                              height: 200,
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  const Text('More Options', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                  ListTile(
+                                    leading: const Icon(Icons.settings),
+                                    title: const Text('Settings'),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      // TODO: تنفيذ إجراء الإعدادات
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(Icons.help),
+                                    title: const Text('Help'),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: Colors.black.withOpacity(0.6),
+                          child: const Icon(Icons.more_horiz, color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
                 ),
+
               ],
             ),
           ),
 
           const SizedBox(height: 12),
           const Row(
-            spacing: 5,
             children: [
-              CustomText(
-                'Messages',
-              ),
+              CustomText('Messages'),
+              SizedBox(width: 5),
               CustomText(
                 '(4)',
                 color: AppColors.primaryColor,
@@ -170,35 +289,34 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
             ],
           ),
           const SizedBox(height: 12),
-        const  GroupChatScreen(
-            isWidgetOnly: true,
-          ),
-          // Live Questions
+          const GroupChatScreen(isWidgetOnly: true),
           const SizedBox(height: 15),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 12,
             children: [
               const CustomText(
                 'Live Questions (Q&A)',
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),
+              const SizedBox(height: 12),
               ...widget.questions.map(
-                (q) => Padding(
+                    (q) => Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 6,
                     children: [
                       CustomText(
                         '${q.id}- ${q.question}',
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
-                      const CustomTextField(
+                      const SizedBox(height: 6),
+                      CustomTextField(
+                        controller: answerControllers[q.id],
                         hintText: 'Type your answer...',
-                        hintStyle: TextStyle(fontSize: 14, color: Colors.grey),
+                        hintStyle:
+                        const TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -207,7 +325,9 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
               buildPollSection(),
             ],
           ),
-        ]));
+        ],
+      ),
+    );
   }
 
   Widget buildPollSection() {
@@ -219,7 +339,7 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -251,20 +371,20 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
             final index = entry.key;
             final option = entry.value;
             final percent =
-                totalVotes == 0 ? 0.0 : option.votes / totalVotes.toDouble();
+            totalVotes == 0 ? 0.0 : option.votes / totalVotes.toDouble();
 
             return GestureDetector(
-              onTap: () => selectPollOption(index),
+              onTap: () => togglePollOption(index),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Icon(
-                        option.isSelected
-                            ? Icons.check_circle
-                            : Icons.circle_outlined,
-                        color: option.isSelected
+                        option.isSelected == true
+                            ? Icons.check_box
+                            : Icons.check_box_outline_blank,
+                        color: option.isSelected == true
                             ? AppColors.primaryColor
                             : Colors.grey,
                         size: 20,
@@ -282,8 +402,8 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
                       if (option.votes > 0)
                         const CircleAvatar(
                           radius: 10,
-                          backgroundImage: NetworkImage(
-                              'https://i.pravatar.cc/100'), // example avatar
+                          backgroundImage:
+                          NetworkImage('https://i.pravatar.cc/100'),
                         ),
                       const SizedBox(width: 4),
                       Text(
@@ -297,14 +417,14 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
                     height: 6,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryColor,
+                      color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(4),
                     ),
                     clipBehavior: Clip.hardEdge,
                     child: FractionallySizedBox(
                       alignment: Alignment.centerLeft,
                       widthFactor: percent,
-                      child: Container(color: Colors.grey[300]),
+                      child: Container(color: AppColors.primaryColor),
                     ),
                   ),
                   const SizedBox(height: 16),

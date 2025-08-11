@@ -1,84 +1,26 @@
+import 'live_model_details.dart';
+
 class EventModel {
 
-  factory EventModel.fromJson(Map<String, dynamic> json){
-    return EventModel(
-      currentPage: json['current_page'],
-      data: json['data'] == null ? [] : List<EventItem>.from(json['data']!.map((x) => EventItem.fromJson(x))),
-      firstPageUrl: json['first_page_url'],
-      from: json['from'],
-      lastPage: json['last_page'],
-      lastPageUrl: json['last_page_url'],
-      links: json['links'] == null ? [] : List<Link>.from(json['links']!.map((x) => Link.fromJson(x))),
-      nextPageUrl: json['next_page_url'],
-      path: json['path'],
-      perPage: json['per_page'],
-      prevPageUrl: json['prev_page_url'],
-      to: json['to'],
-      total: json['total'],
-    );
-  }
+  final List<Meeting> data;
+  final Links links;
+  final Meta meta;
+
   EventModel({
-    required this.currentPage,
     required this.data,
-    required this.firstPageUrl,
-    required this.from,
-    required this.lastPage,
-    required this.lastPageUrl,
     required this.links,
-    required this.nextPageUrl,
-    required this.path,
-    required this.perPage,
-    required this.prevPageUrl,
-    required this.to,
-    required this.total,
+    required this.meta,
   });
 
-  final int? currentPage;
-  final List<EventItem> data;
-  final String? firstPageUrl;
-  final int? from;
-  final int? lastPage;
-  final String? lastPageUrl;
-  final List<Link> links;
-  final dynamic nextPageUrl;
-  final String? path;
-  final int? perPage;
-  final dynamic prevPageUrl;
-  final int? to;
-  final int? total;
-
-}
-
-
-class EventItem {
-  final int? id;
-  final String? title;
-  final String? subTitle;
-  final int? instructorId;
-  final String? thumbUrl;
-  final Instructor? instructor;
-
-  EventItem({
-    required this.id,
-    required this.title,
-    required this.subTitle,
-    required this.instructorId,
-    required this.thumbUrl,
-    required this.instructor,
-  });
-
-  factory EventItem.fromJson(Map<String, dynamic> json) {
-    return EventItem(
-      id: json['id'],
-      title: json['title'],
-      subTitle: json['sub_title'],
-      instructorId: json['instructor_id'],
-      thumbUrl: json['thumb_url'],
-      instructor: json['instructor'] != null
-          ? Instructor.fromJson(json['instructor'])
-          : null,
+  factory EventModel.fromJson(Map<String, dynamic> json) {
+    return EventModel(
+      data: (json['data'] as List).map((e) => Meeting.fromJson(e)).toList(),
+      links: Links.fromJson(json['links']),
+      meta: Meta.fromJson(json['meta']),
     );
   }
+
+
 }
 
 class Instructor {
@@ -96,7 +38,10 @@ class Instructor {
 
   final int? id;
   final String? name;
-
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+  };
 }
 
 class Link {
@@ -119,3 +64,166 @@ class Link {
   final bool? active;
 
 }
+class MeetingResponse {
+  final List<Meeting> data;
+  final Links links;
+  final Meta meta;
+
+  MeetingResponse({
+    required this.data,
+    required this.links,
+    required this.meta,
+  });
+
+  factory MeetingResponse.fromJson(Map<String, dynamic> json) {
+    return MeetingResponse(
+      data: (json['data'] as List).map((e) => Meeting.fromJson(e)).toList(),
+      links: Links.fromJson(json['links']),
+      meta: Meta.fromJson(json['meta']),
+    );
+  }
+}
+
+
+class Meeting {
+  final int id;
+  final String title;
+  final String thumbUrl;
+  final String meetingLink;
+  final DateTime scheduledAt;
+  final String scheduledForHumans;
+  final Course course;
+  final String subTitle;
+  final Instructor instructor;
+  final int enrolledStudentsCount;
+  final List<dynamic> comments;
+
+  Meeting({
+    required this.id,
+    required this.title,
+    required this.meetingLink,
+    required this.scheduledAt,
+    required this.scheduledForHumans,
+    required this.course,
+    required this.instructor,
+    required this.enrolledStudentsCount,
+    required this.comments,
+    required this.subTitle,
+    required this.thumbUrl,
+
+  });
+
+  factory Meeting.fromJson(Map<String, dynamic> json) => Meeting(
+    id: json['id'],
+    title: json['title'],
+    subTitle: json['sub_title'],
+    meetingLink: json['meeting_link'],
+    thumbUrl: json['thumb_url'],
+
+    scheduledAt: DateTime.parse(json['scheduled_at']),
+    scheduledForHumans: json['scheduled_for_humans'],
+    course: Course.fromJson(json['course']),
+    instructor: Instructor.fromJson(json['instructor']),
+    enrolledStudentsCount: json['enrolled_students_count'],
+    comments: List<dynamic>.from(json['comments']),
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'meeting_link': meetingLink,
+    'scheduled_at': scheduledAt.toIso8601String(),
+    'scheduled_for_humans': scheduledForHumans,
+    'course': course.toJson(),
+    'instructor': instructor.toJson(),
+    'enrolled_students_count': enrolledStudentsCount,
+    'comments': comments,
+  };
+}
+
+
+class Links {
+  final String? first;
+  final String? last;
+  final String? prev;
+  final String? next;
+
+
+  Links({
+    this.first,
+    this.last,
+    this.prev,
+    this.next,
+  });
+
+  factory Links.fromJson(Map<String, dynamic> json) {
+    return Links(
+      first: json['first'],
+      last: json['last'],
+      prev: json['prev'],
+      next: json['next'],
+    );
+  }
+}
+
+class Meta {
+  final int currentPage;
+  final int? from;
+  final int lastPage;
+  final List<Link> links;
+  final String path;
+  final int perPage;
+  final int? to;
+  final int total;
+
+  Meta({
+    required this.currentPage,
+    this.from,
+    required this.lastPage,
+    required this.links,
+    required this.path,
+    required this.perPage,
+    this.to,
+    required this.total,
+  });
+
+  factory Meta.fromJson(Map<String, dynamic> json) {
+    return Meta(
+      currentPage: json['current_page'],
+      from: json['from'],
+      lastPage: json['last_page'],
+      links: (json['links'] as List)
+          .map((e) => Link.fromJson(e))
+          .toList(),
+      path: json['path'],
+      perPage: json['per_page'],
+      to: json['to'],
+      total: json['total'],
+    );
+  }
+}
+
+class Course {
+  final int id;
+  final String title;
+
+  Course({
+    required this.id,
+    required this.title,
+  });
+
+  factory Course.fromJson(Map<String, dynamic> json) => Course(
+    id: json['id'],
+    title: json['title'],
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+  };
+}
+
+
+
+
+

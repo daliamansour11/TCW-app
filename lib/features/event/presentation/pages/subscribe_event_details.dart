@@ -1,21 +1,21 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:sizer/sizer.dart';
-import 'package:tcw/core/shared/shared_widget/custom_container.dart';
-import 'package:tcw/core/shared/shared_widget/custom_text.dart';
-import 'package:tcw/core/theme/app_colors.dart';
-import 'package:tcw/core/utils/asset_utils.dart';
-import 'package:tcw/features/event/data/models/event_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/shared/shared_widget/custom_container.dart';
+import '../../../../core/shared/shared_widget/custom_text.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../data/models/event_model.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   const EventDetailsScreen({super.key, required this.eventItem});
-  final EventItem eventItem;
+  final Meeting eventItem;
 
   @override
   State<EventDetailsScreen> createState() => _EventDetailsScreenState();
 }
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,8 +49,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                  const Icon(Icons.date_range,
                      size: 14, color: AppColors.primaryColor),
                  const SizedBox(width: 4),
-                 const      CustomText(
-                   'Monday, 4 Mar 2025',
+                 CustomText(
+                   DateFormat('EEEE, d MMM yyyy').format(widget.eventItem.scheduledAt),
                    fontSize: 12,
                  ),
                  const SizedBox(width: 8),
@@ -58,7 +58,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                      size: 14, color: AppColors.primaryColor),
                  const SizedBox(width: 4),
                  CustomText(
-                   widget.eventItem.instructor?.name ?? '',
+                   widget.eventItem.instructor.name ?? '',
                    fontSize: 12,
                    color: Colors.grey.shade600,
                  ),
@@ -92,31 +92,26 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   }
 
   Widget _buildVideoSection() {
-    return CustomContainer(
+    return GestureDetector(
+        onTap:() async {
+          final url = widget.eventItem.meetingLink;
+          if (url != null && await canLaunch(url)) {
+            await launch(url);
+          }
+        },
+
+
+    child:  CustomContainer(
       height: 200,
       borderRadius: 16,
       color: Colors.grey.shade300,
-      image: DecorationImage(
+      image: const DecorationImage(
         fit: BoxFit.cover,
         image: NetworkImage(
-          widget.eventItem.thumbUrl ??
               'https://img.freepik.com/free-photo/speaker-stage-conference-hall_23-2148918160.jpg',
         ),
       ),
-      // child:const Stack(
-      //   children: [
-      //     Positioned(
-      //       right: 12,
-      //       top: 12,
-      //       child: Icon(
-      //         Icons.play_circle_fill,
-      //         size: 60,
-      //         color: Colors.white,
-      //       ),
-      //     ),
-      //   ],
-      // ),
-    );
+    ));
   }
 
   Widget _buildAboutEvent() {
@@ -128,8 +123,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        Text(
-          widget.eventItem.subTitle ?? '',
+        Text('${ widget.eventItem.subTitle ?? ''}',
+
           style: const TextStyle(fontSize: 14),
         ),
       ],

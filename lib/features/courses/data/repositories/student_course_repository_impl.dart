@@ -14,7 +14,9 @@ abstract class StudentCourseRepository {
   });
   Future<ApiResponse<CourseDetailModel>> getCourseDetails(int courseId);
   Future<ApiResponse<CertificateModel>> downloadCertificate(int courseId);
-  Future<ApiResponse<bool>> updateLastViewed(LastViewedModel lastViewedData);
+  Future<ApiResponse<bool>> updateLastViewed(  int courseId,
+      int sectionId,
+      int lessonId,);
   Future<ApiResponse<LastViewedModel>> getLastViewed();
   Future<ApiResponse<List<LessonModel>>> getCourseLessons(int courseId) ;
 
@@ -54,8 +56,10 @@ class StudentCourseRepositoryImpl implements StudentCourseRepository {
   }
 
   @override
-  Future<ApiResponse<bool>> updateLastViewed(LastViewedModel lastViewedData) {
-    return studentCourseDatasourceImpl.updateLastViewed(lastViewedData);
+  Future<ApiResponse<bool>> updateLastViewed(  int courseId,
+       int sectionId,
+       int lessonId,) {
+    return studentCourseDatasourceImpl.updateLastViewed(courseId,sectionId,lessonId);
   }
 
   @override

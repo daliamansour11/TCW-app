@@ -16,25 +16,13 @@ class EventScreen extends StatefulWidget {
   @override
   State<EventScreen> createState() => _EventScreenState();
 }
-
 class _EventScreenState extends State<EventScreen> {
   final bool isSubscribe = true;
-  bool _isLoading = true;
-
-  void toggleAlert(int index) {
-    setState(() {});
-  }
 
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 12), () {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    });
+    context.read<EventCubit>().getEvents();
   }
 
   @override
@@ -52,46 +40,16 @@ class _EventScreenState extends State<EventScreen> {
       body: BlocBuilder<EventCubit, EventState>(
         builder: (context, state) {
           if (state is EventLoading) {
-            if (_isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              return Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Something went wrong or took too long.'),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _isLoading = true;
-                        });
-                        context.read<EventCubit>()..getEvents();
-                        Timer(const Duration(seconds: 12), () {
-                          if (mounted) {
-                            setState(() {
-                              _isLoading = false;
-                            });
-                          }
-                        });
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
-            }
+            return const Center(child: CircularProgressIndicator());
           } else if (state is EventLoaded) {
-            if (state.event.data.isEmpty) {
+            final events = state.event.data;
+            if (events.isEmpty) {
               return const Center(child: Text('No Events found.'));
             }
-
-            final allEvents = state.event.data;
-
             return ListView.builder(
-              itemCount: allEvents.length,
+              itemCount: events.length,
               itemBuilder: (context, index) {
-                final eventItem = allEvents[index];
+                final eventItem = events[index];
                 return isSubscribe
                     ? SubscribeEventItemWidget(event: eventItem)
                     : NonSubscribeEventItemWidget(event: eventItem);
@@ -107,3 +65,94 @@ class _EventScreenState extends State<EventScreen> {
     );
   }
 }
+
+// class _EventScreenState extends State<EventScreen> {
+//   final bool isSubscribe = true;
+//   bool _isLoading = true;
+//
+//   void toggleAlert(int index) {
+//     setState(() {});
+//   }
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     Timer(const Duration(seconds: 12), () {
+//       if (mounted) {
+//         setState(() {
+//           _isLoading = false;
+//         });
+//       }
+//     });
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const CustomText('Events'),
+//         actions: [
+//           IconButton(
+//             icon: const Icon(Icons.calendar_today_outlined),
+//             onPressed: () => Zap.toNamed(AppRoutes.eventCalendarScreen),
+//           ),
+//         ],
+//       ),
+//       body: BlocBuilder<EventCubit, EventState>(
+//         builder: (context, state) {
+//           if (state is EventLoading) {
+//             // if (_isLoading) {
+//               return const Center(child: CircularProgressIndicator());
+//             // } else {
+//             //   return Center(
+//             //     child: Column(
+//             //       mainAxisSize: MainAxisSize.min,
+//             //       children: [
+//             //         const Text('Something went wrong or took too long.'),
+//             //         const SizedBox(height: 10),
+//             //         ElevatedButton(
+//             //           onPressed: () {
+//             //             setState(() {
+//             //               _isLoading = true;
+//             //             });
+//             //             context.read<EventCubit>()..getEvents();
+//             //             Timer(const Duration(seconds: 12), () {
+//             //               if (mounted) {
+//             //                 setState(() {
+//             //                   _isLoading = false;
+//             //                 });
+//             //               }
+//             //             });
+//             //           },
+//             //           child: const Text('Retry'),
+//             //         ),
+//             //       ],
+//             //     ),
+//             //   );
+//             // }
+//           } else if (state is EventLoaded) {
+//             if (state.event.data.isEmpty) {
+//               return const Center(child: Text('No Events found.'));
+//             }
+//
+//             final allEvents = state.event.data;
+//
+//             return ListView.builder(
+//               itemCount: allEvents.length,
+//               itemBuilder: (context, index) {
+//                 final eventItem = allEvents[index];
+//                 return isSubscribe
+//                     ? SubscribeEventItemWidget(event: allEvents[index])
+//                     : NonSubscribeEventItemWidget(event: eventItem);
+//               },
+//             );
+//           } else if (state is EventError) {
+//             return Center(child: Text('Error: ${state.message}'));
+//           } else {
+//             return const Center(child: Text('Something went wrong.'));
+//           }
+//         },
+//       ),
+//     );
+//   }
+

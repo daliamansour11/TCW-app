@@ -86,8 +86,8 @@ class _ReelEndpoints {
 class _EventEndpoints {
   const _EventEndpoints();
 
-  String get base => '${ApiUrl.baseUrl}/events';
-  String  getEventDetails (int eventId) => '$base/events/$eventId';
+  String get base => '${ApiUrl.baseUrl}/meetings';
+  String  getEventDetails (int eventId) => '$base/meetings/$eventId';
 
 
 

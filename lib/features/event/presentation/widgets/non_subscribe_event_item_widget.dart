@@ -1,11 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tcw/core/routes/app_routes.dart';
 import 'package:tcw/features/event/data/models/event_model.dart';
 import 'package:zapx/zapx.dart';
 
+import '../../../../core/shared/shared_widget/custom_text.dart';
+
 class NonSubscribeEventItemWidget extends StatelessWidget {
   const NonSubscribeEventItemWidget({super.key, required this.event});
-  final EventItem event;
+  final Meeting event;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,7 @@ class NonSubscribeEventItemWidget extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.green)),
-            Text(event.subTitle??'',
+            Text('${event.subTitle??''}',
                 style: const TextStyle(fontSize: 13, color: Colors.grey)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -34,15 +37,17 @@ class NonSubscribeEventItemWidget extends StatelessWidget {
                   children: [
                     const Icon(Icons.calendar_month,
                         size: 16, color: Colors.grey),
-                    Text('${DateTime.now().day}',
-                        style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    CustomText(
+                      DateFormat('EEEE, d MMM yyyy').format(event.scheduledAt),
+                      fontSize: 12,
+                    ),
                   ],
                 ),
                 Row(
                   spacing: 6,
                   children: [
                     const Icon(Icons.person, size: 16, color: Colors.grey),
-                    Text(event.instructor?.name??'',
+                    Text(event.instructor.name??'',
                         style: const TextStyle(fontSize: 12, color: Colors.grey)),
                   ],
                 ),

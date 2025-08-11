@@ -6,7 +6,7 @@ import 'package:tcw/features/event/data/models/event_model.dart';
 class EventDetailsNonSubscribedScreen extends StatefulWidget {
   const EventDetailsNonSubscribedScreen({super.key, required this.eventItem});
 
-  final EventItem eventItem;
+  final Meeting eventItem;
 
   @override
   State<EventDetailsNonSubscribedScreen> createState() =>
@@ -32,7 +32,8 @@ class _EventDetailsNonSubscribedScreenState
               Center(
                 child: CustomText(
                   widget.eventItem.title ?? '',
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
                 ),
               ),
             ],
@@ -44,8 +45,8 @@ class _EventDetailsNonSubscribedScreenState
                 const Icon(Icons.date_range,
                     size: 14, color: AppColors.primaryColor),
                 const SizedBox(width: 4),
-                const CustomText(
-                  'Monday, 4 Mar 2025',
+                 CustomText(
+                  '${widget.eventItem.scheduledAt}',
                   fontSize: 12,
                 ),
                 const SizedBox(width: 8),
@@ -53,7 +54,7 @@ class _EventDetailsNonSubscribedScreenState
                     size: 14, color: AppColors.primaryColor),
                 const SizedBox(width: 4),
                 CustomText(
-                  widget.eventItem.instructor?.name ?? '',
+                  widget.eventItem.instructor.name ?? '',
                   fontSize: 12,
                   color: Colors.grey.shade600,
                 ),
@@ -87,8 +88,8 @@ class _EventDetailsNonSubscribedScreenState
             const Icon(Icons.date_range,
                 size: 14, color: AppColors.primaryColor),
             const SizedBox(width: 4),
-            const CustomText(
-              'Monday, 4 Mar 2025', // Replace with real date if needed
+             CustomText(
+              '${widget.eventItem.scheduledAt}',
               fontSize: 12,
             ),
             const SizedBox(width: 12),
@@ -122,9 +123,8 @@ class _EventDetailsNonSubscribedScreenState
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Text(
-            widget.eventItem.subTitle ??
-                'No description available for this event.',
+          Text('${  widget.eventItem.subTitle ?? 'No description available for this event.'}',
+
             style: const TextStyle(fontSize: 14),
           ),
         ],

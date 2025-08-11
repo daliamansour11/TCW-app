@@ -51,16 +51,22 @@ class StudentCourseCubit extends Cubit<StudentCourseState> {
       emit(StudentCourseError(result.message ?? 'Failed to load courses'));
     }
   }
-  Future<void> updateLastViewed(LastViewedModel model) async {
+  Future<void> updateLastViewed(
+      int courseId,
+      int sectionId,
+      int lessonId,
+      ) async {
     emit(StudentCourseLoading());
-    final response = await repository.updateLastViewed(model);
+
+    final response = await repository.updateLastViewed(courseId, sectionId, lessonId);
 
     if (response.isError) {
       emit(StudentCourseError(response.message ?? 'Failed to update last viewed'));
     } else {
-      emit(LastViewedLoaded(model));
+      await getLastViewed();
     }
   }
+
 
 
   Future<void> downloadCertificate(int courseId) async {

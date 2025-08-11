@@ -7,7 +7,6 @@ import 'package:tcw/core/shared/shared_widget/custom_image.dart';
 import 'package:tcw/core/shared/shared_widget/custom_text.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/core/utils/asset_utils.dart';
-import 'package:tcw/features/courses/data/models/course_model.dart';
 import 'package:tcw/core/routes/app_routes.dart';
 import 'package:tcw/features/courses/data/models/lesson_model.dart';
 import 'package:tcw/features/courses/data/models/section_model.dart';
@@ -36,19 +35,12 @@ class _LessonCardState extends State<LessonCard> {
   }
 
   void _updateLastViewed() {
-    final lastViewed = LastViewedModel(
-      id: 0,
-      userId: 0,
-      lastViewedCourse: widget.lessonModel.courseId ?? 0,
-      lastViewedSection: widget.lessonModel.sectionId ?? 0,
-      lastViewedLesson: widget.lessonModel.id ?? 0,
-      lastViewedQuiz: null,
-      lastViewedAssignment: null,
-      createdAt: null,
-      updatedAt: null,
-    );
 
-    context.read<StudentCourseCubit>().updateLastViewed(lastViewed);
+    context.read<StudentCourseCubit>().updateLastViewed(
+      widget.lessonModel.courseId ?? 0,
+      widget.lessonModel.sectionId ?? 0,
+      widget.lessonModel.id ?? 0,
+    );
   }
 
   Future<void> getUpdatedView() async {

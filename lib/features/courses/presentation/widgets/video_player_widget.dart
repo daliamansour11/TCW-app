@@ -46,19 +46,19 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with WidgetsBindi
     if (_isYoutube) {
       await _initYoutube();
     } else {
-      await _initMp4();
+      // await _initMp4();
     }
   }
 
   Future<void> _initYoutube() async {
     final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl) ?? '';
-    final lastPosition = await _continueWatchingManager.getLastPosition(widget.videoUrl);
+    // final lastPosition = await _continueWatchingManager.getLastPosition(widget.videoUrl);
 
     _ytController = YoutubePlayerController(
       initialVideoId: videoId,
       flags: YoutubePlayerFlags(
         autoPlay: false,
-        startAt: lastPosition,
+        // startAt: lastPosition,
         controlsVisibleAtStart: false,
       ),
     );
@@ -68,32 +68,32 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with WidgetsBindi
     setState(() {});
   }
 
-  Future<void> _initMp4() async {
-    _mp4Controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
-    await _mp4Controller!.initialize();
-
-    final lastPositionSeconds = await _continueWatchingManager.getLastPosition(widget.videoUrl);
-    if (lastPositionSeconds > 0 && lastPositionSeconds < _mp4Controller!.value.duration.inSeconds) {
-      await _mp4Controller!.seekTo(Duration(seconds: lastPositionSeconds));
-    }
-
-    _mp4Controller!.setLooping(false);
-    _mp4Controller!.addListener(_checkMp4Progress);
-
-    _startProgressTimer();
-    setState(() {});
-    _mp4Controller!.play();
-  }
+  // Future<void> _initMp4() async {
+  //   _mp4Controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+  //   await _mp4Controller!.initialize();
+  //
+  //   // final lastPositionSeconds = await _continueWatchingManager.getLastPosition(widget.videoUrl);
+  //   if (lastPositionSeconds > 0 && lastPositionSeconds < _mp4Controller!.value.duration.inSeconds) {
+  //     await _mp4Controller!.seekTo(Duration(seconds: lastPositionSeconds));
+  //   }
+  //
+  //   _mp4Controller!.setLooping(false);
+  //   _mp4Controller!.addListener(_checkMp4Progress);
+  //
+  //   _startProgressTimer();
+  //   setState(() {});
+  //   _mp4Controller!.play();
+  // }
 
   void _startProgressTimer() {
     _progressTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      _saveProgress();
+      // _saveProgress();
     });
   }
 
   void _checkMp4Progress() {
     if (_mp4Controller!.value.position >= _mp4Controller!.value.duration) {
-      _removeFromContinueWatching();
+      // _removeFromContinueWatching();
     }
     if (_mp4Controller!.value.isPlaying != _isPlaying) {
       setState(() => _isPlaying = _mp4Controller!.value.isPlaying);
@@ -105,31 +105,31 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with WidgetsBindi
     final duration = _ytController!.metadata.duration;
 
     if (position >= duration) {
-      _removeFromContinueWatching();
+      // _removeFromContinueWatching();
     }
   }
 
-  void _saveProgress() {
-      if (_isYoutube && _ytController != null) {
-        final position = _ytController!.value.position.inSeconds;
-        _continueWatchingManager.saveOrUpdateVideoPosition(
-          videoUrl: widget.videoUrl,
-          positionSeconds: position,
-        );
-      } else if (_mp4Controller != null && _mp4Controller!.value.isInitialized) {
-        final position = _mp4Controller!.value.position.inSeconds;
-        _continueWatchingManager.saveOrUpdateVideoPosition(
-          videoUrl: widget.videoUrl,
-          positionSeconds: position,
-        );
-      }
-    }
+  // void _saveProgress() {
+  //     if (_isYoutube && _ytController != null) {
+  //       final position = _ytController!.value.position.inSeconds;
+  //       _continueWatchingManager.saveOrUpdateVideoPosition(
+  //         videoUrl: widget.videoUrl,
+  //         positionSeconds: position,
+  //       );
+  //     } else if (_mp4Controller != null && _mp4Controller!.value.isInitialized) {
+  //       final position = _mp4Controller!.value.position.inSeconds;
+  //       _continueWatchingManager.saveOrUpdateVideoPosition(
+  //         videoUrl: widget.videoUrl,
+  //         positionSeconds: position,
+  //       );
+  //     }
+  //   }
 
 
 
-  Future<void> _removeFromContinueWatching() async {
-    await _continueWatchingManager.removeVideo(widget.videoUrl);
-  }
+  // Future<void> _removeFromContinueWatching() async {
+  //   await _continueWatchingManager.removeVideo(widget.videoUrl);
+  // }
 
   @override
   void dispose() {
@@ -143,7 +143,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with WidgetsBindi
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
-      _saveProgress();
+      // _saveProgress();
       if (_mp4Controller?.value.isPlaying ?? false) _mp4Controller!.pause();
       _ytController?.pause();
     }

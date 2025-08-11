@@ -299,7 +299,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
       create: (context) => EventCubit(
           EventRepositoryImp(EventDataSourceImpl())
       )..getEvents(),
-      child:  EventDetailsScreen(eventItem: args.data as EventItem ),
+      child:  EventDetailsScreen(eventItem: args.data as Meeting ),
     ),
     transition: transition,
   ),
@@ -364,7 +364,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
             id: 3,
             question:
             'What tools do you recommend for effective time management?'),
-      ],
+      ], meetingUrl: args.data as String,
     ),
     transition: transition,
   ),
@@ -386,6 +386,8 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
         providers: [
           BlocProvider(
             create: (_) => CourseTasksCubit(CourseTaskRepositoriesImp(TaskDataSourceImp()))..getCourseTasks(lesson.id??0),
+          ),   BlocProvider(
+              create: (_) => StudentCourseCubit(StudentCourseRepositoryImpl()),
           ),
 
         ],

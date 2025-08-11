@@ -1,16 +1,18 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:tcw/core/constansts/context_extensions.dart';
-import 'package:tcw/core/theme/app_colors.dart';
-import 'package:tcw/core/routes/app_routes.dart';
-import 'package:tcw/core/utils/asset_utils.dart';
-import 'package:tcw/features/event/data/models/event_model.dart';
+import '../../../../core/constansts/context_extensions.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/asset_utils.dart';
+import '../../data/models/event_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../pages/live_event_screen.dart';
 
 class EventSlider extends StatefulWidget {
   const EventSlider({super.key, required this.events});
-  final List<EventItem> events;
+  final List<Meeting> events;
 
   @override
   State<EventSlider> createState() => _EventSliderState();
@@ -33,6 +35,8 @@ class _EventSliderState extends State<EventSlider> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return SizedBox(
       height: context.propHeight(230),
       child: PageView.builder(
@@ -46,7 +50,7 @@ class _EventSliderState extends State<EventSlider> {
     );
   }
 
-  Widget _buildEventCard(BuildContext context, EventItem event) {
+  Widget _buildEventCard(BuildContext context, Meeting event) {
     return Container(
       margin: const EdgeInsets.only(right: 8),
       decoration: BoxDecoration(
@@ -65,7 +69,7 @@ class _EventSliderState extends State<EventSlider> {
           _buildOverlay(),
           _buildTopDetails(context, event),
           _buildTitle(context, event),
-          _buildJoinButton(context),
+          _buildJoinButton(context,event),
           _buildIndicator(),
         ],
       ),
@@ -88,31 +92,37 @@ class _EventSliderState extends State<EventSlider> {
     );
   }
 
-  Widget _buildTopDetails(BuildContext context, EventItem event) {
+  Widget _buildTopDetails(BuildContext context, Meeting event) {
+    DateTime startDateTime = event.scheduledAt;
+    DateTime endDateTime = event.scheduledAt.add(Duration(hours: 1));
+    final dateFormat = DateFormat('EEEE, d MMM yyyy');
+    final timeFormat = DateFormat('hh:mm a');
+
+    final formattedDate = dateFormat.format(startDateTime);
+    final formattedStart = timeFormat.format(startDateTime);
+    final formattedEnd = timeFormat.format(endDateTime);
+
     return Padding(
       padding: EdgeInsets.all(context.propHeight(12)),
       child: Align(
         alignment: Alignment.topRight,
         child: Row(
-          spacing: 4,
+          mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.calendar_today, color: Colors.white, size: 14),
-            Text('25-6-2025',
-              // event.date ?? '',
-              style: GoogleFonts.poppins(fontSize: 10, color: Colors.white),
-            ),
+            const SizedBox(width: 4),
+            Text(formattedDate, style: GoogleFonts.poppins(fontSize: 10, color: Colors.white)),
+            const SizedBox(width: 8),
             const Icon(Icons.access_time, color: Colors.white, size: 14),
-            Text('02.00 - 3.30',
-              // event.time ?? '',
-              style: GoogleFonts.poppins(fontSize: 10, color: Colors.white),
-            ),
+            const SizedBox(width: 4),
+            Text('$formattedStart - $formattedEnd', style: GoogleFonts.poppins(fontSize: 10, color: Colors.white)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTitle(BuildContext context, EventItem event) {
+  Widget _buildTitle(BuildContext context, Meeting event) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Align(
@@ -130,7 +140,7 @@ class _EventSliderState extends State<EventSlider> {
     );
   }
 
-  Widget _buildJoinButton(BuildContext context) {
+  Widget _buildJoinButton(BuildContext context,Meeting event) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Align(
@@ -144,8 +154,23 @@ class _EventSliderState extends State<EventSlider> {
             ),
           ),
           onPressed: () {
-            Modular.to.pushNamed(AppRoutes.liveEventScreen);
+            final url = event.meetingLink;
+            if (url != null && url.isNotEmpty) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => LiveEventScreen(
+                    meetingUrl: url,
+                    questions: [], //
+                  ),
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Cannot open meeting link')),
+              );
+            }
           },
+
           child: Row(
             mainAxisSize: MainAxisSize.min,
             spacing: 5,
