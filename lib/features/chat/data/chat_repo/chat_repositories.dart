@@ -1,13 +1,14 @@
 import '../../../../core/apis/api_response.dart';
 import '../chat_data_source/chat_data_source.dart';
 import '../models/chat_response_model.dart';
+import '../models/conversation_mssages_response.dart';
 
 abstract class ChatRepositories {
   Future<ApiResponse<void>> sendMessage(String content, int receiver_id);
 
-  Future<ApiResponse<List<InboxResponse>>> getConversations();
+  Future<ApiResponse<InboxResponse>> getConversations();
 
-  Future<ApiResponse<List<InboxResponse>>> getConversationMessages(
+  Future<ApiResponse<List<ChatMessage>>> getConversationMessages(
       int conversationId);
 }
 
@@ -19,12 +20,12 @@ class  ChatRepositoriesImp extends  ChatRepositories{
   ChatRepositoriesImp(this._dataSourceImp);
 
   @override
-  Future<ApiResponse<List<InboxResponse>>> getConversationMessages(int conversationId)async {
+  Future<ApiResponse<List<ChatMessage>>> getConversationMessages(int conversationId)async {
    return await _dataSourceImp.getConversationMessages(conversationId);
   }
 
   @override
-  Future<ApiResponse<List<InboxResponse>>> getConversations()async {
+  Future<ApiResponse<InboxResponse>> getConversations()async {
     return await _dataSourceImp.getConversations();
 
   }

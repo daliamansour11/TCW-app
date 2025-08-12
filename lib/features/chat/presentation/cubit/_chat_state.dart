@@ -9,15 +9,24 @@ final class ChatInitial extends ChatState {}
 
 class ConversationLoading extends ChatState {}
 
-class ConversationLoaded extends ChatState {
-  final List<InboxResponse> messages;
-  ConversationLoaded(this.messages);
-}class SendMessageLoaded extends ChatState {
+
+class ConversationsListLoaded extends ChatState {
+  final InboxResponse conversations;
+  ConversationsListLoaded(this.conversations);
+}
+
+class ConversationMessagesLoaded extends ChatState {
+  final List<ChatMessage> messages;
+  ConversationMessagesLoaded(this.messages);
+}
+
+class MessageSentLoaded extends ChatState {
   final List<Message> messages;
-  SendMessageLoaded(this.messages);
+  MessageSentLoaded(this.messages);
 }
 
 class ConversationError extends ChatState {
   final String error;
   ConversationError(this.error);
 }
+

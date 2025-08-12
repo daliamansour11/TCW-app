@@ -4,12 +4,13 @@ import '../../../../core/apis/api_response.dart';
 import '../../../../core/apis/api_service.dart';
 import '../../../../core/apis/apis_url.dart';
 import '../models/chat_response_model.dart';
+import '../models/conversation_mssages_response.dart';
 
 
 abstract class ChatDataSource{
   Future<ApiResponse<void>> sendMessage();
-  Future<ApiResponse<List<InboxResponse>>> getConversations();
-  Future<ApiResponse<List<InboxResponse>>> getConversationMessages(int conversationId);
+  Future<ApiResponse<InboxResponse>> getConversations();
+  Future<ApiResponse<List<ChatMessage>>> getConversationMessages(int conversationId);
 
   }
 
@@ -58,8 +59,7 @@ class ChatDataSourceImp {
   }
 
 
-  // List all conversations for the student
-  Future<ApiResponse<List<InboxResponse>>> getConversations() async {
+  Future<ApiResponse<InboxResponse>> getConversations() async {
     final response = await ApiService.instance.get(
       ApiUrl.chats.base,
       withToken: true,
@@ -67,16 +67,13 @@ class ChatDataSourceImp {
 
     if (response.isError) return response.error();
 
-    final rawList = response.mapData['data']?['data'];
-    if (rawList is! List) return response.copyWith(data: []);
+    final inboxResponse = InboxResponse.fromJson(response.mapData);
 
-    final list = rawList.map((e) => InboxResponse.fromJson(e)).toList();
-
-    return response.copyWith(data: list);
+    return response.copyWith(data: inboxResponse);
   }
 
-  // Get all messages for a specific conversation id
-  Future<ApiResponse<List<InboxResponse>>> getConversationMessages(
+
+  Future<ApiResponse<List<ChatMessage>>> getConversationMessages(
       int conversationId) async {
     final response = await ApiService.instance.get(
       '${ApiUrl.chats.base}/$conversationId',
@@ -95,7 +92,7 @@ class ChatDataSourceImp {
       return response.copyWith(data: []);
     }
 
-    final list = rawList.map((e) => InboxResponse.fromJson(e)).toList();
+    final list = rawList.map((e) => ChatMessage.fromJson(e)).toList();
 
     return response.copyWith(data: list);
   }

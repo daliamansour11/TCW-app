@@ -1,34 +1,30 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:tcw/features/chat/data/models/message_model.dart';
-import 'package:tcw/features/chat/presentation/widgets/chat_input_widget.dart';
-import 'package:tcw/features/chat/presentation/widgets/message_bubble.dart';
+import '../../../auth/data/datasources/auth_local_datasource_impl.dart';
+import '../../../auth/data/models/user_model.dart';
+import '../../data/models/message_model.dart';
+import '../widgets/chat_input_widget.dart';
+import '../widgets/message_bubble.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/_chat_cubit.dart'; // adjust path
 
 class ChatScreen extends StatefulWidget {
-  final int liveId;
-  const ChatScreen({super.key, required this.liveId});
+  final int chatId;
+  const ChatScreen({super.key, required this.chatId});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final List<Message> messages = [];
-
-  void addMessage(String text, {required bool isMe}) {
+  UserModel? currentUser;
+  Future<void> _loadCurrentUser() async {
+    final authLocal = AuthLocalDatasourceImpl();
+    final user = await authLocal.getLoggedUser();
     setState(() {
-      messages.add(
-        Message(message: text, time: _getCurrentTime(), isMe: isMe, name: '', email: ''),
-      );
+      currentUser = user;
     });
   }
-  String _getCurrentTime() {
-    final now = TimeOfDay.now();
-    final hour = now.hourOfPeriod == 0 ? 12 : now.hourOfPeriod;
-    final minute = now.minute.toString().padLeft(2, '0');
-    final period = now.period == DayPeriod.am ? 'AM' : 'PM';
-    return "$hour:$minute $period";
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -37,26 +33,56 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final current = messages[index];
-                final previous = index > 0 ? messages[index - 1] : null;
-                final next =
-                index < messages.length - 1 ? messages[index + 1] : null;
+            child: BlocBuilder<ChatCubit, ChatState>(
+              builder: (context, state) {
+                if (state is ConversationLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is ConversationMessagesLoaded) {
+                  final messageList =
+                      state.messages;
+                  if (messageList.isEmpty) {
+                    return const Center(child: Text('No messages'));
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: messageList.length,
+                    itemBuilder: (context, index) {
+                      final current = messageList[index];
+                      final previous =
+                          index > 0 ? messageList[index - 1] : null;
+                      final next = index < messageList.length - 1
+                          ? messageList[index + 1]
+                          : null;
 
-                return MessageBubble(
-                  message: current,
-                  showAvatar: previous == null || previous.isMe != current.isMe,
-                  showTime: next == null || next.isMe != current.isMe,
-                );
+                      return MessageBubble(
+                        message: Message(
+                          message: current.content,
+                          time: DateFormat('hh:mm a').format(current.createdAt),
+                          isMe: !current.isReceived,
+                          name: '',
+                          email: '',
+                        ),
+                        showAvatar: previous == null ||
+                            previous.senderId != current.senderId,
+                        showTime:
+                            next == null || next.senderId != current.senderId,
+                      );
+                    },
+                  );
+                } else if (state is ConversationError) {
+                  return Center(child: Text('Error: ${state.error}'));
+                }
+                return const SizedBox.shrink();
               },
             ),
           ),
+
+          // Send Message
           ChatInputWidget(
-            liveId: widget.liveId,
-            onLocalSend: (text) => addMessage(text, isMe: true),
+            chatId: widget.chatId,
+            onLocalSend: (text) {
+              context.read<ChatCubit>().sendMessage(widget.chatId, text);
+            },
           ),
         ],
       ),

@@ -57,9 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 compactHeight: 53,
               ),
               buildHeader(context),
-                  // trailing: ShowMoreTileWidget(
-                  //   onTab: () => Zap.toNamed(AppRoutes.programmesView),
-                  // )
+
 
               BlocBuilder<ProgramCubit, ProgramState>(
                 builder: (context, state) {

@@ -3,91 +3,89 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import 'package:modular_interfaces/src/route/modular_arguments.dart';
-import 'package:tcw/features/ai/presentation/pages/ai_screen.dart';
-import 'package:tcw/features/auth/data/datasources/auth_local_datasource_impl.dart';
-import 'package:tcw/features/auth/data/datasources/auth_remote_datasource_impl.dart';
-import 'package:tcw/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:tcw/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:tcw/features/auth/presentation/pages/forget_password_screen.dart';
-import 'package:tcw/features/auth/presentation/pages/login_screen.dart';
-import 'package:tcw/features/auth/presentation/pages/next_or_back_screen.dart';
-import 'package:tcw/features/auth/presentation/pages/on_bording_screens.dart';
-import 'package:tcw/features/auth/presentation/pages/register_screen.dart';
-import 'package:tcw/features/auth/presentation/pages/reset_password_screen.dart';
-import 'package:tcw/features/auth/presentation/pages/splash_screen.dart';
-import 'package:tcw/features/auth/presentation/pages/verification_screen.dart';
-import 'package:tcw/features/chat/presentation/pages/group_chat_screen.dart';
-import 'package:tcw/features/chat/presentation/pages/groups_screen.dart';
-import 'package:tcw/features/chat/presentation/pages/inbox_screen.dart';
-import 'package:tcw/features/chat/presentation/pages/message_screen.dart';
-import 'package:tcw/features/chat/presentation/pages/new_group_screen.dart';
-import 'package:tcw/features/courses/data/datasources/course_datasource_impl.dart';
-import 'package:tcw/features/courses/data/models/task_model.dart';
-import 'package:tcw/features/courses/data/repositories/course_repository_impl.dart';
-import 'package:tcw/features/courses/data/repositories/student_course_repository_impl.dart';
-import 'package:tcw/features/courses/presentation/cubit/course/courses_cubit.dart';
-import 'package:tcw/features/courses/presentation/cubit/student/student_course_cubit.dart';
-import 'package:tcw/features/courses/presentation/pages/course_datails_screen.dart';
-import 'package:tcw/features/courses/presentation/pages/courses_screen.dart';
-import 'package:tcw/features/courses/presentation/pages/lesson_screen.dart';
-import 'package:tcw/features/courses/presentation/pages/my_library_screen.dart';
-import 'package:tcw/features/courses/presentation/pages/recommended_courses_screen.dart';
-import 'package:tcw/features/event/data/data_source/event_data_source.dart';
-import 'package:tcw/features/event/data/models/event_model.dart';
-import 'package:tcw/features/event/data/repositories/event_repository.dart';
-import 'package:tcw/features/event/presentation/cubit/event_cubit.dart';
-import 'package:tcw/features/event/presentation/pages/subscribe_event_details.dart';
-import 'package:tcw/features/notification/data/data_scource/notification_data_source.dart';
-import 'package:tcw/features/notification/data/repositories/notification_repository.dart';
-import 'package:tcw/features/notification/presentation/cubit/notification_cubit.dart';
-import 'package:tcw/features/payment/presentation/pages/new_card_screen.dart';
-import 'package:tcw/features/payment/presentation/pages/proccess_pay_screen.dart';
-import 'package:tcw/features/profile/presentation/pages/profile_screen.dart';
-import 'package:tcw/features/programmes/data/data_source/program_datasource_impl.dart';
-import 'package:tcw/features/programmes/data/models/program_detail_model.dart';
-import 'package:tcw/features/programmes/data/repositories/programs_repository_impl.dart';
-import 'package:tcw/features/programmes/presentation/cubit/program_cubit.dart';
+import '../../features/ai/presentation/pages/ai_screen.dart';
+import '../../features/auth/data/datasources/auth_local_datasource_impl.dart';
+import '../../features/auth/data/datasources/auth_remote_datasource_impl.dart';
+import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/presentation/cubit/auth_cubit.dart';
+import '../../features/auth/presentation/pages/forget_password_screen.dart';
+import '../../features/auth/presentation/pages/login_screen.dart';
+import '../../features/auth/presentation/pages/next_or_back_screen.dart';
+import '../../features/auth/presentation/pages/on_bording_screens.dart';
+import '../../features/auth/presentation/pages/register_screen.dart';
+import '../../features/auth/presentation/pages/reset_password_screen.dart';
+import '../../features/auth/presentation/pages/splash_screen.dart';
+import '../../features/auth/presentation/pages/verification_screen.dart';
+import '../../features/chat/presentation/pages/group_chat_screen.dart';
+import '../../features/chat/presentation/pages/groups_screen.dart';
+import '../../features/chat/presentation/pages/inbox_screen.dart';
+import '../../features/chat/presentation/pages/message_screen.dart';
+import '../../features/chat/presentation/pages/new_group_screen.dart';
+import '../../features/courses/data/datasources/course_datasource_impl.dart';
+import '../../features/courses/data/models/task_model.dart';
+import '../../features/courses/data/repositories/course_repository_impl.dart';
+import '../../features/courses/data/repositories/student_course_repository_impl.dart';
+import '../../features/courses/presentation/cubit/course/courses_cubit.dart';
+import '../../features/courses/presentation/cubit/student/student_course_cubit.dart';
+import '../../features/courses/presentation/pages/course_datails_screen.dart';
+import '../../features/courses/presentation/pages/courses_screen.dart';
+import '../../features/courses/presentation/pages/lesson_screen.dart';
+import '../../features/courses/presentation/pages/my_library_screen.dart';
+import '../../features/courses/presentation/pages/recommended_courses_screen.dart';
+import '../../features/event/data/data_source/event_data_source.dart';
+import '../../features/event/data/models/event_model.dart';
+import '../../features/event/data/repositories/event_repository.dart';
+import '../../features/event/presentation/cubit/event_cubit.dart';
+import '../../features/event/presentation/pages/subscribe_event_details.dart';
+import '../../features/notification/data/data_scource/notification_data_source.dart';
+import '../../features/notification/data/repositories/notification_repository.dart';
+import '../../features/notification/presentation/cubit/notification_cubit.dart';
+import '../../features/payment/presentation/pages/new_card_screen.dart';
+import '../../features/payment/presentation/pages/proccess_pay_screen.dart';
+import '../../features/profile/presentation/pages/profile_screen.dart';
+import '../../features/programmes/data/data_source/program_datasource_impl.dart';
+import '../../features/programmes/data/repositories/programs_repository_impl.dart';
+import '../../features/programmes/presentation/cubit/program_cubit.dart';
 
-import 'package:tcw/features/reels/data/models/reel_history_model.dart';
-import 'package:tcw/features/reels/data/repositories/reel_repository_imp.dart';
-import 'package:tcw/features/reels/presentation/cubit/create_reel_cubit.dart';
-import 'package:tcw/features/reels/presentation/cubit/reel_interactions/add_comment_cubit.dart';
-import 'package:tcw/features/reels/presentation/cubit/reel_interactions/get_comment_cubit.dart';
-import 'package:tcw/features/reels/presentation/cubit/reel_interactions/reel_toggle_on_like_cubit.dart';
-import 'package:tcw/features/reels/presentation/cubit/reels_cubit.dart';
-import 'package:tcw/features/tasks/data/data_source/task_data_source_imp.dart';
-import 'package:tcw/features/tasks/data/repositories/course_task_repositories.dart';
-import 'package:tcw/features/tasks/presentation/cubit/course_tasks_cubit.dart';
-import 'package:tcw/features/tasks/presentation/pages/new_task_screen.dart';
-import 'package:tcw/features/tasks/presentation/pages/task_detail_screen.dart';
-import 'package:tcw/features/event/presentation/pages/event_calendar_screen.dart';
-import 'package:tcw/features/programmes/presentation/pages/programe_details_view.dart';
-import 'package:tcw/features/programmes/presentation/pages/programmes_view.dart';
-import 'package:tcw/features/reels/presentation/pages/create_reel_page.dart';
-import 'package:tcw/features/reels/presentation/pages/reel_view_screen.dart';
-import 'package:tcw/features/tasks/presentation/pages/tasks_screen.dart';
-import 'package:tcw/features/courses/presentation/pages/wish_list_screen.dart';
-import 'package:tcw/features/courses/presentation/pages/your_courses_screen.dart';
-import 'package:tcw/features/event/data/models/question_model.dart';
-import 'package:tcw/features/event/presentation/pages/event_screen.dart';
-import 'package:tcw/features/event/presentation/pages/live_event_screen.dart';
-import 'package:tcw/features/home/presentation/pages/home_layout_screen.dart';
-import 'package:tcw/features/notification/presentation/pages/notification_screen.dart';
-import 'package:tcw/features/points/presentation/pages/points_rewards_screen.dart';
-import 'package:tcw/features/reels/data/models/reel_model.dart';
-import 'package:tcw/features/reels/presentation/pages/media_screen.dart';
-import 'package:tcw/features/reels/presentation/pages/reels_history_page.dart';
-import 'package:tcw/features/setting/presentation/pages/personal_details_screen.dart';
-import 'package:tcw/features/setting/presentation/pages/setting_screen.dart';
-import 'package:tcw/features/setting/presentation/pages/support_screen.dart';
-import 'package:tcw/core/routes/app_routes.dart';
-import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
+import '../../features/reels/data/models/reel_history_model.dart';
+import '../../features/reels/data/repositories/reel_repository_imp.dart';
+import '../../features/reels/presentation/cubit/create_reel_cubit.dart';
+import '../../features/reels/presentation/cubit/reel_interactions/add_comment_cubit.dart';
+import '../../features/reels/presentation/cubit/reel_interactions/get_comment_cubit.dart';
+import '../../features/reels/presentation/cubit/reel_interactions/reel_toggle_on_like_cubit.dart';
+import '../../features/reels/presentation/cubit/reels_cubit.dart';
+import '../../features/tasks/data/data_source/task_data_source_imp.dart';
+import '../../features/tasks/data/repositories/course_task_repositories.dart';
+import '../../features/tasks/presentation/cubit/course_tasks_cubit.dart';
+import '../../features/tasks/presentation/pages/new_task_screen.dart';
+import '../../features/tasks/presentation/pages/task_detail_screen.dart';
+import '../../features/event/presentation/pages/event_calendar_screen.dart';
+import '../../features/programmes/presentation/pages/programe_details_view.dart';
+import '../../features/programmes/presentation/pages/programmes_view.dart';
+import '../../features/reels/presentation/pages/create_reel_page.dart';
+import '../../features/reels/presentation/pages/reel_view_screen.dart';
+import '../../features/tasks/presentation/pages/tasks_screen.dart';
+import '../../features/courses/presentation/pages/wish_list_screen.dart';
+import '../../features/courses/presentation/pages/your_courses_screen.dart';
+import '../../features/event/data/models/question_model.dart';
+import '../../features/event/presentation/pages/event_screen.dart';
+import '../../features/event/presentation/pages/live_event_screen.dart';
+import '../../features/home/presentation/pages/home_layout_screen.dart';
+import '../../features/notification/presentation/pages/notification_screen.dart';
+import '../../features/points/presentation/pages/points_rewards_screen.dart';
+import '../../features/reels/data/models/reel_model.dart';
+import '../../features/reels/presentation/pages/media_screen.dart';
+import '../../features/reels/presentation/pages/reels_history_page.dart';
+import '../../features/setting/presentation/pages/personal_details_screen.dart';
+import '../../features/setting/presentation/pages/setting_screen.dart';
+import '../../features/setting/presentation/pages/support_screen.dart';
+import 'app_routes.dart';
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
 
 import '../../features/chat/data/chat_data_source/chat_data_source.dart';
 import '../../features/chat/data/chat_repo/chat_repositories.dart';
 import '../../features/chat/presentation/cubit/_chat_cubit.dart';
 import '../../features/courses/data/models/lesson_model.dart';
-import '../../features/courses/data/models/section_model.dart';
 
 TransitionType transition = TransitionType.upToDown;
 
@@ -203,6 +201,12 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
         create: (context) => EventCubit(
             EventRepositoryImp(EventDataSourceImpl())
         )..getEvents(),        //
+        //
+        ),
+   BlocProvider(
+        create: (context) => ChatCubit(
+            ChatRepositoriesImp(ChatDataSourceImp())
+        )..fetchConversationList(),        //
         //
         ),
 
@@ -458,7 +462,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
                 int userId = 0;
 
                 if (authCubit.state is AuthLoggedIn) {
-                  userId = (authCubit.state as AuthLoggedIn).user.id ?? 0;
+                  userId = (authCubit.state as AuthLoggedIn).user.id;
                 } else if (authCubit.state is AuthRegistered) {
                 }
 
@@ -493,23 +497,28 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
     child: (_, ModularArguments args) => const ReelsHistoryPage(),
     transition: transition,
   ),
-
   ChildRoute(
     AppRoutes.inboxScreen,
     child: (_, ModularArguments args) {
-      return          const InboxScreen();
-
-      // final int chatId=args.data as int;
-   //    BlocProvider(
-   //      create: (context) => ChatCubit(ChatRepositoriesImp(ChatDataSourceImp()))
-   //        ..fetchMessages( chatId ),
-      // );
+      return
+           BlocProvider(
+             create: (context) => ChatCubit(ChatRepositoriesImp(ChatDataSourceImp()))
+               ..fetchConversationList(  ),
+             child:const InboxScreen(),
+        );
     },
     transition: transition,
   ),
   ChildRoute(
     AppRoutes.chatScreen,
-    child: (_, ModularArguments args) =>  ChatScreen(liveId: args.data as int,),
+    child: (_, ModularArguments args) {
+    final chatId =args.data as int;
+  return    BlocProvider(
+        create: (context) => ChatCubit(ChatRepositoriesImp(ChatDataSourceImp()))
+          ..fetchConversationMessages(chatId),
+      child: ChatScreen(chatId:chatId ),
+      );
+},
     transition: transition,
   ),
 // groups

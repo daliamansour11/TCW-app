@@ -4,13 +4,15 @@ import 'package:tcw/core/shared/shared_widget/custom_button.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/features/event/presentation/cubit/event_cubit.dart';
 import 'package:zap_sizer/zap_sizer.dart';
+
+import '../cubit/_chat_cubit.dart';
 class ChatInputWidget extends StatefulWidget {
-  final int liveId;
+  final int chatId;
   final Function(String) onLocalSend;
 
   const ChatInputWidget({
     super.key,
-    required this.liveId,
+    required this.chatId,
     required this.onLocalSend,
   });
 
@@ -25,11 +27,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
       widget.onLocalSend(text);
-
-      context.read<EventCubit>().addCommentInLive(
-        liveId: widget.liveId,
-        body: text,
-      );
+      context.read<ChatCubit>().sendMessage(widget.chatId, text);
 
       _controller.clear();
     }

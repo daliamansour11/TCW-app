@@ -149,51 +149,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               EventSlider(events: sampleMeetings),
-              // BlocBuilder<EventCubit, EventState>(
-              //   builder: (context, state) {
-              //     if (state is EventLoading) {
-              //       if (_isLoading) {
-              //         return const Center(child: CircularProgressIndicator());
-              //       } else {
-              //         return Center(
-              //           child: Column(
-              //             mainAxisSize: MainAxisSize.min,
-              //             children: [
-              //               const Text('Something went wrong or took too long.'),
-              //               const SizedBox(height: 10),
-              //               ElevatedButton(
-              //                 onPressed: () {
-              //                   setState(() {
-              //                     _isLoading = true;
-              //                   });
-              //                   context.read<EventCubit>()..getEvents();
-              //                   Timer(const Duration(seconds: 12), () {
-              //                     if (mounted) {
-              //                       setState(() {
-              //                         _isLoading = false;
-              //                       });
-              //                     }
-              //                   });
-              //                 },
-              //                 child: const Text('Retry'),
-              //               ),
-              //             ],
-              //           ),
-              //         );
-              //       }          } else if (state is EventLoaded) {
-              //       final events = state.event.data;
-              //       if (events.isEmpty) {
-              //         return Center(child: const CustomText('No Events Available'));
-              //       }
-              //       return EventSlider(events: events);
-              //     } else if (state is EventError) {
-              //       return CustomText('Error: ${state.message}');
-              //     } else {
-              //       return const SizedBox();
-              //     }
-              //   },
-              //
-              // ),
+              BlocBuilder<EventCubit, EventState>(
+                builder: (context, state) {
+                  if (state is EventLoading) {
+                    if (_isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('Something went wrong or took too long.'),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                                context.read<EventCubit>()..getEvents();
+                                Timer(const Duration(seconds: 12), () {
+                                  if (mounted) {
+                                    setState(() {
+                                      _isLoading = false;
+                                    });
+                                  }
+                                });
+                              },
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }          } else if (state is EventLoaded) {
+                    final events = state.event.data;
+                    if (events.isEmpty) {
+                      return Center(child: const CustomText('No Events Available'));
+                    }
+                    return EventSlider(events: events);
+                  } else if (state is EventError) {
+                    return CustomText('Error: ${state.message}');
+                  } else {
+                    return const SizedBox();
+                  }
+                },
+
+              ),
               _buildSectionHeader(
                 'Reels History',
                 trailing: ShowMoreTileWidget(

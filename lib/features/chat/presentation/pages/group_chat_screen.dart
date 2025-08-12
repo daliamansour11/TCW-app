@@ -37,7 +37,7 @@ class GroupChatScreen extends StatelessWidget {
             )
 
           ),
-          ChatInputWidget(liveId: liveId, onLocalSend: (String ) {  },),
+          ChatInputWidget(chatId: liveId, onLocalSend: (String ) {  },),
         ],
       );
     }
@@ -95,7 +95,7 @@ class GroupChatScreen extends StatelessWidget {
             )
 
           ),
-          ChatInputWidget(liveId: liveId, onLocalSend: (String ) {  },),
+          ChatInputWidget(chatId: liveId, onLocalSend: (String ) {  },),
         ],
       ),
     );
