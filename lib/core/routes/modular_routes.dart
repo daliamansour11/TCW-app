@@ -83,6 +83,9 @@ import 'package:tcw/features/setting/presentation/pages/support_screen.dart';
 import 'package:tcw/core/routes/app_routes.dart';
 import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
 
+import '../../features/chat/data/chat_data_source/chat_data_source.dart';
+import '../../features/chat/data/chat_repo/chat_repositories.dart';
+import '../../features/chat/presentation/cubit/_chat_cubit.dart';
 import '../../features/courses/data/models/lesson_model.dart';
 import '../../features/courses/data/models/section_model.dart';
 
@@ -349,23 +352,27 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
 
   ChildRoute(
     AppRoutes.liveEventScreen,
-    child: (_, ModularArguments args) =>
-        LiveEventScreen(
-      questions: [
-        QuestionModel(
+    child: (_, ModularArguments args) {
+      final data = args.data as Map<String, dynamic>;
+      return LiveEventScreen(
+        questions: [
+          QuestionModel(
             id: 1,
-            question:
-            'What are the best techniques to overcome procrastination?'),
-        QuestionModel(
+            question: 'What are the best techniques to overcome procrastination?',
+          ),
+          QuestionModel(
             id: 2,
-            question:
-            'How can I create a daily routine that maximizes productivity?'),
-        QuestionModel(
+            question: 'How can I create a daily routine that maximizes productivity?',
+          ),
+          QuestionModel(
             id: 3,
-            question:
-            'What tools do you recommend for effective time management?'),
-      ], meetingUrl: args.data as String,
-    ),
+            question: 'What tools do you recommend for effective time management?',
+          ),
+        ],
+        meetingUrl: data['meetingUrl'] as String,
+        liveId: data['liveId'] as int,
+      );
+    },
     transition: transition,
   ),
   ChildRoute(
@@ -489,12 +496,20 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
 
   ChildRoute(
     AppRoutes.inboxScreen,
-    child: (_, ModularArguments args) => const InboxScreen(),
+    child: (_, ModularArguments args) {
+   final int chatId=args.data as int;
+
+      return BlocProvider(
+        create: (context) => ChatCubit(ChatRepositoriesImp(ChatDataSourceImp()))
+          ..fetchMessages( chatId ),
+        child: const InboxScreen(),
+      );
+    },
     transition: transition,
   ),
   ChildRoute(
     AppRoutes.chatScreen,
-    child: (_, ModularArguments args) => const ChatScreen(),
+    child: (_, ModularArguments args) =>  ChatScreen(liveId: args.data as int,),
     transition: transition,
   ),
 // groups
@@ -505,7 +520,8 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
   ),
   ChildRoute(
     AppRoutes.groupChatScreen,
-    child: (_, ModularArguments args) => const GroupChatScreen(),
+    child: (_, ModularArguments args) => 
+        GroupChatScreen(liveId: args.data as int,),
     transition: transition,
   ),
   ChildRoute(

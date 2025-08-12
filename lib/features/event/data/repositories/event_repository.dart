@@ -7,7 +7,9 @@ import 'package:tcw/features/event/data/models/event_model.dart';
 abstract  class EventRepository{
    Future<ApiResponse<EventModel>>getEvents();
    Future<ApiResponse<EventModel>>getEventDetails(int eventId);
-}
+   Future<ApiResponse<Comment>> addCommentInLive({required int liveId,required String body});
+
+   }
 
 class EventRepositoryImp extends EventRepository{
   EventRepositoryImp(this._dataSource);
@@ -24,5 +26,8 @@ class EventRepositoryImp extends EventRepository{
     return await _dataSource.getEventDetails(eventId);
 
   }
+  @override
+  Future<ApiResponse<Comment>> addCommentInLive({required int liveId,required String body})async {
+    return await _dataSource.addCommentInLive( liveId: liveId, body: body);
 
-}
+}}

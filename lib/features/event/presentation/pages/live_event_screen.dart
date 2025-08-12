@@ -13,9 +13,10 @@ import '../../data/models/question_model.dart';
 import 'package:zap_sizer/zap_sizer.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 class LiveEventScreen extends StatefulWidget {
-  const LiveEventScreen({super.key, required this.questions, required this.meetingUrl});
+  const LiveEventScreen({super.key, required this.questions, required this.meetingUrl, required this.liveId});
   final List<QuestionModel> questions;
   final String meetingUrl;
+   final int liveId;
   @override
   State<LiveEventScreen> createState() => _LiveEventScreenState();
 }
@@ -150,6 +151,7 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
               ),
             ],
           ),
+          const SizedBox(height: 12),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -289,7 +291,7 @@ class _LiveEventScreenState extends State<LiveEventScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          const GroupChatScreen(isWidgetOnly: true),
+           GroupChatScreen(isWidgetOnly: true, liveId: widget.liveId,),
           const SizedBox(height: 15),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

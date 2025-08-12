@@ -1,68 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/shared/shared_widget/custom_text.dart';
 import 'package:tcw/core/theme/app_colors.dart';
-import 'package:tcw/features/chat/data/models/message_model.dart';
 import 'package:tcw/features/chat/presentation/widgets/chat_input_widget.dart';
 import 'package:tcw/features/chat/presentation/widgets/group_message_bubble.dart';
+import 'package:tcw/features/event/presentation/cubit/event_cubit.dart';
 
 class GroupChatScreen extends StatelessWidget {
-  const GroupChatScreen({super.key, this.isWidgetOnly = false});
   final bool isWidgetOnly;
-  static final List<Message> messages = [
-    Message(
-      text:
-          'Lorem ipsum dolor sit amet consectetur non arcu non mauris quis diam lectus commodo.',
-      time: '10:40 AM',
-      isMe: false,
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-    ),
-    Message(
-      text: 'Thank you',
-      time: '10:40 AM',
-      isMe: false,
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-    ),
-    Message(
-      text: 'Lorem ipsum dolor sit amet consectetur',
-      time: '11:45 AM',
-      isMe: false,
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-    ),
-    Message(
-      text:
-          'Lorem ipsum dolor sit amet consectetur non arcu non mauris quis diam lectus commodo.',
-      time: '10:40 AM',
-      isMe: false,
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-    ),
-    Message(
-      text: 'Thank you',
-      time: '10:40 AM',
-      isMe: true,
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-    ),
-  ];
+  final int liveId;
+
+  const GroupChatScreen({
+    super.key,
+    this.isWidgetOnly = false,
+    required this.liveId,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (isWidgetOnly) {
       return Column(
         children: [
-          ...messages.map((e) => GroupMessageBubble(message: e)),
-          const ChatInputWidget(),
+          Expanded(
+            child: BlocBuilder<EventCubit, EventState>(
+              builder: (context, state) {
+                final messages = state is EventCommentLoaded ? state.liveComments : [];
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    return GroupMessageBubble(message: messages[index]);
+                  },
+                );
+              },
+            )
+
+          ),
+          ChatInputWidget(liveId: liveId, onLocalSend: (String ) {  },),
         ],
       );
     }
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            //back to the previous screen
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Column(
           children: [
@@ -89,15 +75,27 @@ class GroupChatScreen extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                return GroupMessageBubble(message: messages[index]);
+            child: BlocBuilder<EventCubit, EventState>(
+              builder: (context, state) {
+                final messages = state is EventCommentLoaded ? state.liveComments : [];
+
+                if (messages.isEmpty) {
+                  return const Center(
+                    child: Text('No messages yet'),
+                  );
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    return GroupMessageBubble(message: messages[index]);
+                  },
+                );
               },
-            ),
+            )
+
           ),
-          const ChatInputWidget(),
+          ChatInputWidget(liveId: liveId, onLocalSend: (String ) {  },),
         ],
       ),
     );

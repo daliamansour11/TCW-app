@@ -11,7 +11,7 @@ class MessageTile extends StatelessWidget {
     required this.time,
     required this.message,
     required this.imageUrl,
-    this.backgroundColor,
+    this.backgroundColor, required this.isMe, this.avatarUrl,
   });
   final String name;
   final String email;
@@ -19,6 +19,9 @@ class MessageTile extends StatelessWidget {
   final String message;
   final String imageUrl;
   final Color? backgroundColor;
+  final bool isMe;
+  final String? avatarUrl;
+
 
   @override
   Widget build(BuildContext context) {

@@ -84,7 +84,6 @@ class MeetingResponse {
   }
 }
 
-
 class Meeting {
   final int id;
   final String title;
@@ -96,7 +95,7 @@ class Meeting {
   final String subTitle;
   final Instructor instructor;
   final int enrolledStudentsCount;
-  final List<dynamic> comments;
+  final List<Comment> comments;
 
   Meeting({
     required this.id,
@@ -125,7 +124,7 @@ class Meeting {
     course: Course.fromJson(json['course']),
     instructor: Instructor.fromJson(json['instructor']),
     enrolledStudentsCount: json['enrolled_students_count'],
-    comments: List<dynamic>.from(json['comments']),
+    comments: List<Comment>.from(json['comments']),
   );
 
   Map<String, dynamic> toJson() => {
@@ -140,8 +139,34 @@ class Meeting {
     'comments': comments,
   };
 }
+class Comment {
+  final int id;
+  final String body;
+  final String createdAt;
+  final Instructor author;
 
+  Comment({
+    required this.id,
+    required this.body,
+    required this.createdAt,
+    required this.author,
+  });
 
+  factory Comment.fromJson(Map<String, dynamic> json) {
+    return Comment(
+      id: json['id'],
+      body: json['body'],
+      createdAt: json['created_at'],
+      author: Instructor.fromJson(json['author']),
+    );
+  }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'body': body,
+    'created_at': createdAt,
+    'author': author.toJson(),
+  };
+}
 class Links {
   final String? first;
   final String? last;

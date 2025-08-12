@@ -1,58 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:tcw/core/shared/shared_widget/custom_text.dart';
-import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/features/chat/data/models/message_model.dart';
 import 'package:tcw/features/chat/presentation/widgets/chat_input_widget.dart';
 import 'package:tcw/features/chat/presentation/widgets/message_bubble.dart';
 
-class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
+class ChatScreen extends StatefulWidget {
+  final int liveId;
+  const ChatScreen({super.key, required this.liveId});
 
-  static final List<Message> messages = [
-    Message(
-      text:
-          'Lorem ipsum dolor sit amet consectetur non arcu non mauris quis diam lectus commodo.',
-      time: '10:40 AM',
-      isMe: false,
-    ),
-    Message(text: 'Thank you', time: '10:40 AM', isMe: false),
-    Message(text: 'Hey Sophie! How are you?', time: '11:41 AM', isMe: true),
-    Message(
-      text:
-          'Lorem ipsum dolor sit amet consectetur non arcu non mauris quis diam lectus commodo.',
-      time: '11:41 AM',
-      isMe: true,
-    ),
-    Message(
-        text: 'Lorem ipsum dolor sit amet consectetur',
-        time: '11:45 AM',
-        isMe: false),
-  ];
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final List<Message> messages = [];
+
+  void addMessage(String text, {required bool isMe}) {
+    setState(() {
+      messages.add(
+        Message(message: text, time: _getCurrentTime(), isMe: isMe, name: '', email: ''),
+      );
+    });
+  }
+  String _getCurrentTime() {
+    final now = TimeOfDay.now();
+    final hour = now.hourOfPeriod == 0 ? 12 : now.hourOfPeriod;
+    final minute = now.minute.toString().padLeft(2, '0');
+    final period = now.period == DayPeriod.am ? 'AM' : 'PM';
+    return "$hour:$minute $period";
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Row(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 10,
-          children: [
-            CircleAvatar(
-              radius: 18,
-            ),
-            CustomText(
-              'Ramy Ahmed',
-              fontWeight: FontWeight.bold,
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.call, color: AppColors.primaryColor),
-            onPressed: () {},
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Chat')),
       body: Column(
         children: [
           Expanded(
@@ -63,7 +44,7 @@ class ChatScreen extends StatelessWidget {
                 final current = messages[index];
                 final previous = index > 0 ? messages[index - 1] : null;
                 final next =
-                    index < messages.length - 1 ? messages[index + 1] : null;
+                index < messages.length - 1 ? messages[index + 1] : null;
 
                 return MessageBubble(
                   message: current,
@@ -73,7 +54,10 @@ class ChatScreen extends StatelessWidget {
               },
             ),
           ),
-          const ChatInputWidget(),
+          ChatInputWidget(
+            liveId: widget.liveId,
+            onLocalSend: (text) => addMessage(text, isMe: true),
+          ),
         ],
       ),
     );

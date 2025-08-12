@@ -153,24 +153,33 @@ class _EventSliderState extends State<EventSlider> {
               borderRadius: BorderRadius.circular(30),
             ),
           ),
-          onPressed: () {
+          // onPressed: () {
+          //   final url = event.meetingLink;
+          //   if (url != null && url.isNotEmpty) {
+          //     Navigator.of(context).push(
+          //       MaterialPageRoute(
+          //         builder: (context) => LiveEventScreen(
+          //           meetingUrl: url,
+          //           questions: [], liveId: widget.events.first.id,
+          //         ),
+          //       ),
+          //     );
+          //   } else {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       const SnackBar(content: Text('Cannot open meeting link')),
+          //     );
+          //   }
+          // },
+          onPressed: () async {
             final url = event.meetingLink;
-            if (url != null && url.isNotEmpty) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => LiveEventScreen(
-                    meetingUrl: url,
-                    questions: [], //
-                  ),
-                ),
-              );
+            if (url != null && await canLaunch(url)) {
+              await launch(url);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Cannot open meeting link')),
               );
             }
           },
-
           child: Row(
             mainAxisSize: MainAxisSize.min,
             spacing: 5,

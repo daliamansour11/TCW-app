@@ -33,6 +33,31 @@ class EventCubit extends Cubit<EventState> {
       emit(EventError(result.message ?? 'Failed to load course details'));
     }
   }
+  Future<void> addCommentInLive({
+    required int liveId,
+    required String body,
+  }) async {
+    emit(EventLoading());
+    final result = await _repository.addCommentInLive(liveId: liveId, body: body);
+
+    if (result.isSuccess && result.data != null) {
+      final newComment = result.data!;
+      List<Comment> updatedComments = [];
+
+      if (state is EventCommentLoaded) {
+        updatedComments = List.from((state as EventCommentLoaded).liveComments)
+          ..add(newComment);
+      } else {
+        updatedComments = [newComment];
+      }
+
+      emit(EventCommentLoaded(liveComments: updatedComments));
+
+    } else {
+      emit(EventError(result.message ?? 'Failed to add comment'));
+    }
+  }
+
 
   Future<void> loadMoreEvents() async {
     if (events?.links.next == null) return;

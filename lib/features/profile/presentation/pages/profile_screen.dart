@@ -38,6 +38,7 @@ import 'package:zapx/zapx.dart';
 import '../../../courses/data/local_data_source/local_storage.dart';
 import '../../../courses/data/models/lesson_model.dart';
 import '../../../courses/presentation/widgets/lesson_card.dart';
+import '../../../event/data/models/live_model_details.dart' hide Meeting;
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -50,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   EnrolledCourseModel? courses;
-    CoursesViewmodel? viewmodel;
+  CoursesViewmodel? viewmodel;
   bool  _isLoading = true;
 
   @override
@@ -73,10 +74,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       );});
     // _continueWatchingFuture = _continueWatchingManager.getContinueWatchingVideos();
-    }
+  }
 
 
-late  final List<VideoItem> videos;
+  late  final List<VideoItem> videos;
+  final List<Meeting> sampleMeetings = [
+    Meeting(
+      id: 1,
+      title: "Intro to Programming",
+      meetingLink: "https://meet.google.com/poa-dgpu-etr",
+      scheduledAt: DateTime.parse("2025-08-15 10:00:00"),
+      scheduledForHumans: "4 days from now",
+      course: Course(id: 3, title: "Design"),
+      subTitle: 'null',
+      // instructor: Instructor(id: 37, name: "Dalia Mansour"),
+      enrolledStudentsCount: 0,
+      comments: [],
+      thumbUrl: "https://example.com/image1.jpg", instructor: Instructor(id: 37, name: "Dalia Mansour"),
+    ),
+    Meeting(
+      id: 2,
+      title: "Advanced Design",
+      meetingLink: "https://meet.google.com/xyz-abc-def",
+      scheduledAt: DateTime.parse("2025-08-20 15:00:00"),
+      scheduledForHumans: "9 days from now",
+      course: Course(id: 4, title: "Advanced Course"),
+      subTitle: '',
+      instructor: Instructor(id: 38, name: "John Doe"),
+      enrolledStudentsCount: 4,
+      comments: [],
+      thumbUrl: "https://example.com/image2.jpg",
+    ),
+  ];
+
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -111,57 +143,58 @@ late  final List<VideoItem> videos;
                 child: const UserHeader(),
               ),
               _buildStats(),
-               SearchFilterWidget(
+              SearchFilterWidget(
                 onChanged: (value) {
                   context.read<StudentCourseCubit>().fetchEnrolledCourses(search: value);
                 },
               ),
-      BlocBuilder<EventCubit, EventState>(
-        builder: (context, state) {
-          if (state is EventLoading) {
-            if (_isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              return Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Something went wrong or took too long.'),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _isLoading = true;
-                        });
-                        context.read<EventCubit>()..getEvents();
-                        Timer(const Duration(seconds: 12), () {
-                          if (mounted) {
-                            setState(() {
-                              _isLoading = false;
-                            });
-                          }
-                        });
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
-            }          } else if (state is EventLoaded) {
-            final events = state.event.data;
-            if (events.isEmpty) {
-              return const CustomText('No Events Available');
-            }
-            return EventSlider(events: events);
-          } else if (state is EventError) {
-            return CustomText('Error: ${state.message}');
-          } else {
-            return const SizedBox();
-          }
-        },
-
-      ),
-      _buildSectionHeader(
+              EventSlider(events: sampleMeetings),
+              // BlocBuilder<EventCubit, EventState>(
+              //   builder: (context, state) {
+              //     if (state is EventLoading) {
+              //       if (_isLoading) {
+              //         return const Center(child: CircularProgressIndicator());
+              //       } else {
+              //         return Center(
+              //           child: Column(
+              //             mainAxisSize: MainAxisSize.min,
+              //             children: [
+              //               const Text('Something went wrong or took too long.'),
+              //               const SizedBox(height: 10),
+              //               ElevatedButton(
+              //                 onPressed: () {
+              //                   setState(() {
+              //                     _isLoading = true;
+              //                   });
+              //                   context.read<EventCubit>()..getEvents();
+              //                   Timer(const Duration(seconds: 12), () {
+              //                     if (mounted) {
+              //                       setState(() {
+              //                         _isLoading = false;
+              //                       });
+              //                     }
+              //                   });
+              //                 },
+              //                 child: const Text('Retry'),
+              //               ),
+              //             ],
+              //           ),
+              //         );
+              //       }          } else if (state is EventLoaded) {
+              //       final events = state.event.data;
+              //       if (events.isEmpty) {
+              //         return Center(child: const CustomText('No Events Available'));
+              //       }
+              //       return EventSlider(events: events);
+              //     } else if (state is EventError) {
+              //       return CustomText('Error: ${state.message}');
+              //     } else {
+              //       return const SizedBox();
+              //     }
+              //   },
+              //
+              // ),
+              _buildSectionHeader(
                 'Reels History',
                 trailing: ShowMoreTileWidget(
                   onTab: () => Zap.toNamed(AppRoutes.reelsHistoryPage),
@@ -186,24 +219,24 @@ late  final List<VideoItem> videos;
                       itemBuilder: (context, index) {
                         final reel = reels[index];
                         return GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.reelViewScreen,
-                              arguments: Datum.fromHistory(reel),
-                            );
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: CachedNetworkImage(
-                        height: 25.h, width:30.w, fit: BoxFit.cover,
-                        placeholder: (context, url) => Image.asset(AssetUtils.programPlaceHolder),
-                        errorWidget: (context, url, error) =>
-                        Image.asset(
-                        AssetUtils.reel,
-                        fit: BoxFit.cover,),                        imageUrl:                               reel.thumbnailUrl,
-                        ),
-                        ));
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.reelViewScreen,
+                                arguments: Datum.fromHistory(reel),
+                              );
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: CachedNetworkImage(
+                                height: 25.h, width:30.w, fit: BoxFit.cover,
+                                placeholder: (context, url) => Image.asset(AssetUtils.programPlaceHolder),
+                                errorWidget: (context, url, error) =>
+                                    Image.asset(
+                                      AssetUtils.reel,
+                                      fit: BoxFit.cover,),                        imageUrl:                               reel.thumbnailUrl,
+                              ),
+                            ));
                       },
                     ),
                   );
@@ -309,7 +342,7 @@ late  final List<VideoItem> videos;
                       return const Center(child: Text('No Programs found.'));
                     }
 
-                        return CourseListScreen(courses: state.courses);
+                    return CourseListScreen(courses: state.courses);
 
                   } else if (state is StudentCourseError) {
                     return Center(child: Text('Error: ${state.message}'));
@@ -333,7 +366,7 @@ late  final List<VideoItem> videos;
                     ),
                     title: Text('Rawan',
                         style:
-                            GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                        GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                     subtitle: Text('Mentor',
                         style: GoogleFonts.poppins(color: Colors.grey)),
                     trailing: CustomButton(
@@ -407,10 +440,10 @@ late  final List<VideoItem> videos;
   }
 
   Widget _buildSectionHeader(
-    String title, {
-    String? subTitle,
-    Widget? trailing,
-  }) {
+      String title, {
+        String? subTitle,
+        Widget? trailing,
+      }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(

@@ -10,6 +10,7 @@ class ApiUrl {
   static const reels = _ReelEndpoints();
   static const notification = _NotificationEndpoints();
   static const events = _EventEndpoints();
+  static const chats = _ChatEndpoints();
 }
 
 /// Endpoints for authentication-related operations.
@@ -88,6 +89,18 @@ class _EventEndpoints {
 
   String get base => '${ApiUrl.baseUrl}/meetings';
   String  getEventDetails (int eventId) => '$base/meetings/$eventId';
+  String  addCommentInLive (int  liveId) => '$base/meetings/$liveId/comments';
+
+
+
+}class _ChatEndpoints {
+  const _ChatEndpoints();
+
+  String get base => '${ApiUrl.baseUrl}/student/conversation';
+  String  getChatList () => '$base';
+  String  getStudentChat (int  chatId) => '$base/$chatId"';
+  String  sendMessage () => '$base"';
+
 
 
 

@@ -10,7 +10,6 @@ class MessageBubble extends StatelessWidget {
     required this.showAvatar,
     required this.showTime,
   });
-
   final Message message;
   final bool showAvatar;
   final bool showTime;
@@ -52,7 +51,7 @@ class MessageBubble extends StatelessWidget {
             borderRadius: radius,
           ),
           child: CustomText(
-            message.text,
+            message.message,
             fontWeight: FontWeight.w400,
           ),
         ),

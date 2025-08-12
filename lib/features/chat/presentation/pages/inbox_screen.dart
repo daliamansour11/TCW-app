@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
 import 'package:tcw/core/shared/shared_widget/custom_container.dart';
@@ -24,31 +25,31 @@ class InboxScreen extends StatelessWidget {
             Row(
               children: List.generate(
                   5,
-                  (index) => Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Stack(
-                          children: [
-                            const CircleAvatar(
-                              radius: 20,
-                              // backgroundImage: NetworkImage(
-                              //     'https://i.pravatar.cc/150?img=${index + 1}'),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: CustomContainer(
-                                color: Colors.green,
-                                padding: 4,
-                                isCircle: true,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1.5,
-                                ),
-                              ),
-                            )
-                          ],
+                      (index) => Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Stack(
+                      children: [
+                        const CircleAvatar(
+                          radius: 20,
+                          // backgroundImage: NetworkImage(
+                          //     'https://i.pravatar.cc/150?img=${index + 1}'),
                         ),
-                      )),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: CustomContainer(
+                            color: Colors.green,
+                            padding: 4,
+                            isCircle: true,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 1.5,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  )),
             ),
             Row(
               spacing: 10,
@@ -74,25 +75,25 @@ class InboxScreen extends StatelessWidget {
                     email: 'Ramy@gmail.com',
                     time: '5 min ago',
                     message:
-                        'Lorem ipsum dolor sit amet consectetur non arcu non mauris quis diam lectus commodo.',
-                    imageUrl: 'https://i.pravatar.cc/150?img=11',
+                    'Lorem ipsum dolor sit amet consectetur non arcu non mauris quis diam lectus commodo.',
+                    imageUrl: 'https://i.pravatar.cc/150?img=11', isMe: true,
                   ),
                   MessageTile(
                     name: 'Mohamed Amir',
                     email: 'Mohamed@gmail.com',
                     time: '10 min ago',
                     message:
-                        'Lorem ipsum dolor sit amet consectetur non arcu non mauris quis diam lectus commodo.',
+                    'Lorem ipsum dolor sit amet consectetur non arcu non mauris quis diam lectus commodo.',
                     imageUrl: 'https://i.pravatar.cc/150?img=12',
-                    backgroundColor: Color(0xFFF6F6F6),
+                    backgroundColor: Color(0xFFF6F6F6), isMe: true,
                   ),
                   MessageTile(
                     name: 'Ahmed Ali',
                     email: 'Ahmed@gmail.com',
                     time: '20 min ago',
                     message:
-                        'Lorem ipsum dolor sit amet consectetur non arcu non mauris quis diam lectus commodo.',
-                    imageUrl: 'https://i.pravatar.cc/150?img=13',
+                    'Lorem ipsum dolor sit amet consectetur non arcu non mauris quis diam lectus commodo.',
+                    imageUrl: 'https://i.pravatar.cc/150?img=13', isMe: true,
                   ),
                 ],
               ),

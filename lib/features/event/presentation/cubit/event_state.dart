@@ -19,7 +19,30 @@ class EventDetailsLoaded extends EventState {
   final EventModel event ;
 
 
+}class EventCommentLoaded extends EventState {
+  final List<Comment> liveComments; // <-- new
+  final bool isLoading;
+  final String? error;
+
+  EventCommentLoaded({
+    this.liveComments = const [],
+    this.isLoading = false,
+    this.error,
+  });
+
+  EventState copyWith({
+    List<Comment>? liveComments,
+    bool? isLoading,
+    String? error,
+  }) {
+    return EventCommentLoaded(
+      liveComments: liveComments ?? this.liveComments,
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+    );
+  }
 }
+
 
 class EventError extends EventState {
   EventError(this.message);
