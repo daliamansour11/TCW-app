@@ -497,13 +497,13 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
   ChildRoute(
     AppRoutes.inboxScreen,
     child: (_, ModularArguments args) {
-   final int chatId=args.data as int;
+      return          const InboxScreen();
 
-      return BlocProvider(
-        create: (context) => ChatCubit(ChatRepositoriesImp(ChatDataSourceImp()))
-          ..fetchMessages( chatId ),
-        child: const InboxScreen(),
-      );
+      // final int chatId=args.data as int;
+   //    BlocProvider(
+   //      create: (context) => ChatCubit(ChatRepositoriesImp(ChatDataSourceImp()))
+   //        ..fetchMessages( chatId ),
+      // );
     },
     transition: transition,
   ),
