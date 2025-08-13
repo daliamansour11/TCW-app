@@ -6,6 +6,9 @@ import 'package:tcw/features/courses/data/models/course_model.dart';
 import 'package:tcw/features/courses/data/models/lesson_model.dart';
 import 'package:tcw/features/courses/data/models/section_model.dart';
 
+import '../models/course_details_model.dart';
+import '../models/wishlist_model.dart';
+
 abstract class CourseDatasource {
   Future<ApiResponse<List<CourseModel>>> getCourses({
     int limit,
@@ -18,7 +21,7 @@ abstract class CourseDatasource {
     bool? featured,
   });
 
-  Future<ApiResponse<CourseModel>> getCourseDetails(int courseId);
+  Future<ApiResponse<CourseDetailsModel>> getCourseDetails(int courseId);
 
   Future<ApiResponse<List<CategoryModel>>> getCategories({
     int limit,
@@ -26,7 +29,8 @@ abstract class CourseDatasource {
     bool subCategory,
   });
   Future<ApiResponse<List<SectionModel>>> getCourseLessons(int courseId);
-
+  Future<ApiResponse<WishlistModel>> toggleLikeOnCourses(
+      int courseId);
 }
 
 class CourseDatasourceImpl implements CourseDatasource {
@@ -66,14 +70,14 @@ class CourseDatasourceImpl implements CourseDatasource {
   }
 
   @override
-  Future<ApiResponse<CourseModel>> getCourseDetails(int courseId) async {
+  Future<ApiResponse<CourseDetailsModel>> getCourseDetails(int courseId) async {
     final response = await ApiService.instance.get(
       '${ApiUrl.course.getCourseDetails}/$courseId',
     );
 
     if (response.isError) return response.error();
 
-    final data = CourseModel.fromJson(response.mapData['data']);
+    final data = CourseDetailsModel.fromJson(response.mapData['data']);
 
     return response.copyWith(data: data);
   }
@@ -115,5 +119,41 @@ class CourseDatasourceImpl implements CourseDatasource {
         .toList();
     return response.copyWith(data: lesson);
 
+  }
+
+  @override
+  Future<ApiResponse<WishlistModel>> toggleLikeOnCourses(int courseId)async {
+    try {
+      final response = await ApiService.instance.post(
+          '${ApiUrl.course.addCoursesToWishList(courseId)}',
+          data: {},
+          withToken: true
+      );
+
+      if (response.isError) {
+        return response.copyWith<WishlistModel>(
+          data: null,
+          message: response.message ?? 'Failed to toggle like',
+        );
+      }
+
+      try {
+        final interactionResponse = WishlistModel.fromJson(
+            response.mapData);
+        return response.copyWith(data: interactionResponse);
+      } catch (e) {
+        return response.copyWith(
+          data: null,
+          message: 'Failed to parse response: ${e.toString()}',
+        );
+      }
+    } catch (e) {
+      return ApiResponse<WishlistModel>(
+        data: null,
+        mapData: {},
+        statusCode: 500,
+        message: 'Unexpected error: ${e.toString()}',
+      );
+    }
   }
 }

@@ -1,109 +1,113 @@
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tcw/core/shared/shared_widget/search_filter_widget.dart';
-import 'package:tcw/core/constansts/context_extensions.dart';
-import 'package:tcw/core/shared/shared_widget/bot_button_widget.dart';
-import 'package:tcw/features/courses/presentation/cubit/course/courses_cubit.dart';
-import 'package:tcw/features/courses/presentation/widgets/lesson_card.dart';
+import '../../../../core/shared/shared_widget/app_bar.dart';
+import '../../../../core/shared/shared_widget/custom_button.dart';
+import '../../../../core/shared/shared_widget/custom_container.dart';
+import '../../../../core/shared/shared_widget/custom_text.dart';
+import '../../../../core/shared/shared_widget/riyal_logo.dart';
+import '../cubit/course/courses_cubit.dart';
+import '../widgets/program_expansion_tile_widget.dart';
+import '../widgets/program_subscribe_rounds_widget.dart';
+import '../widgets/course_topbar_details.dart';
+import '../../../../core/routes/app_routes.dart';
+import 'package:zap_sizer/zap_sizer.dart';
+import 'package:zapx/zapx.dart';
 
-class CourseDetailsScreen extends StatelessWidget {
-  const CourseDetailsScreen({super.key, required this.courseId});
+class CourseDetailsScreen extends StatefulWidget {
+  const CourseDetailsScreen({required this.courseId, super.key});
 
   final int courseId;
+
+  @override
+  State<CourseDetailsScreen> createState() => _ProgrameDetailsViewState();
+}
+
+class _ProgrameDetailsViewState extends State<CourseDetailsScreen> {
+  bool  _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<CourseCubit>()..fetchCourseDetails(widget.courseId);
+    Timer(Duration(seconds: 12), () {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });}
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Column(
-              children: [
-                SizedBox(height: context.propHeight(32)),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.black),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    SizedBox(width: context.propWidth(12)),
-                    Text(
-                      'Understanding Concept of React',
-                      style: context.textTheme.headlineLarge?.copyWith(fontSize: 18),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Ramy Badr',
-                      style: TextStyle(
-                        color: Color(0xFF7B8392),
-                        fontSize: 12,
-                        fontFamily: 'Lato',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Container(
-                      width: 5,
-                      height: 5,
-                      margin: const EdgeInsets.symmetric(horizontal: 6),
-                      decoration: const ShapeDecoration(
-                        color: Color(0xFFE2E2EA),
-                        shape: OvalBorder(),
-                      ),
-                    ),
-                    const Text(
-                      'Sun, 9 March 2025',
-                      style: TextStyle(
-                        color: Color(0xFF7B8392),
-                        fontSize: 12,
-                        fontFamily: 'Lato',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: context.propHeight(12)),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: SearchFilterWidget(),
-                ),
-                SizedBox(height: context.propHeight(24)),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: BlocBuilder<CourseCubit, CourseState>(
-                      builder: (context, state) {
-                        if (state is CourseLoading) {
-                          return const Center(child: CircularProgressIndicator());
-                        } else if (state is CourseLessonsLoaded || state is CourseLoadingMore) {
-                          final lessons = (state is CourseLessonsLoaded)
-                              ? state.lesson
-                              : context.read<CourseCubit>().courseLessons;
-                          if (lessons.isEmpty) {
-                            return const Center(child: Text('No lessons found.'));
-                          }
-                          return ListView.separated(
-                            padding: const EdgeInsets.only(bottom: 80),
-                            separatorBuilder: (context, index) => SizedBox(height: context.propHeight(12)),
-                            itemCount: lessons.length,
-                            itemBuilder: (context, index) {
-                              return LessonCard(courseId: courseId, section:lessons[index], lessonModel: lessons[index].lessons.first ,);
-                            },
-                          );
-                        }
-                        return const SizedBox();
-                      },
+    return BlocBuilder<CourseCubit, CourseState>(
+      builder: (context, state) {
+        String appBarTitle = 'TCWTIR';
+
+        if (state is CourseDetailLoaded && state.course != null) {
+          final isSubscribed = state.course.data!.isSubscribed ?? false;
+          appBarTitle = isSubscribed? 'TCWTIR' : (state.course.data!.title ?? 'Program Details');
+        }
+
+        return Scaffold(
+            appBar: CustomAppBar(title: appBarTitle),
+            body: Builder(
+              builder: (_) {
+                if (state is CourseLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is CourseDetailLoaded) {
+                  final details = state.course;
+                  if (details.data == null) {
+                    return const Center(child: Text('No data available'));
+                  }
+                  final  isSubscribed = state.course.data?.isSubscribed ?? false;
+                  return ListView(
+                    padding: const EdgeInsets.all(10),
+                    children: [
+                      if (isSubscribed==true)
+                        const CustomText('Round 1'),
+                      CourseTopBarDetails(details),
+                      if (isSubscribed==true)
+                        ProgramSubscribeRoundsWidget(details)
+                      else
+                        ProgramUnSubscribeExpansionTileWidget(details),
+                    ],
+                  );
+                } else if (state is CourseError) {
+                  return Center(child: Text(state.message));
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+            bottomNavigationBar: (state is CourseDetailLoaded && state.course.data != null&& state.course.data?.isSubscribed==false)
+
+                ?
+            CustomContainer(
+              height: 15.h,
+              padding: 8,
+              child: Row(
+                spacing: 5,
+                children: [
+                  Flexible(
+                    child: CustomButton(
+                      title: 'Enroll Now',
+                      onPressed: () => Zap.toNamed(AppRoutes.proccessPayScreen),
+                      backgroundColor: Colors.black,
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          const BotButtonWidget(),
-        ],
-      ),
+                  const SizedBox.shrink(),
+                  const RiyalLogo(),
+                  CustomText('${state.course.data?.price ?? 200} SAR'),
+                ],
+              ),
+            ):const SizedBox.shrink()
+        );
+      },
     );
   }
+
+
 }

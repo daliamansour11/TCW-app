@@ -19,13 +19,13 @@ import '../../../programmes/data/models/program_detail_model.dart';
 import '../../data/local_data_source/local_storage.dart';
 import '../../data/models/last_viewed_model.dart';
 import '../../data/models/lesson_model.dart';
-import '../../data/models/section_model.dart';
+import '../../data/models/section_model.dart' hide Instructor;
 import '../cubit/student/student_course_cubit.dart';
 import '../widgets/video_player_widget.dart';
 class LessonScreen extends StatefulWidget {
   final LessonModel lesson;
-// final  Instructor? instructorName;
-  const LessonScreen({super.key, required this.lesson, });
+final  Instructor? instructorName;
+  const LessonScreen({super.key, required this.lesson, this.instructorName, });
 
   @override
   State<LessonScreen> createState() => _LessonScreenState();
@@ -132,7 +132,6 @@ class _LessonScreenState extends State<LessonScreen> {
     if (!_addedToContinueWatching) {
       _updateLastViewed();
     }
-
     super.dispose();
 }
 
@@ -140,7 +139,7 @@ class _LessonScreenState extends State<LessonScreen> {
   Widget build(BuildContext context) {
     final lesson = widget.lesson;
     final videoUrl = lesson.video?.linkPath ?? '';
-
+    final instructorName = widget.instructorName ?? 'Unknown Instructor';
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -216,58 +215,7 @@ class _LessonScreenState extends State<LessonScreen> {
                 ),
               ),
 
-              // SizedBox(
-              //   height: 150,
-              //   child: _continueWatching.isEmpty
-              //       ? Center(
-              //     child: Text(
-              //       'No items yet.',
-              //       style: context.textTheme.bodyMedium?.copyWith(color: const Color(0xFF9E9E9E)),
-              //     ),
-              //   )
-              //       : ListView.separated(
-              //     scrollDirection: Axis.horizontal,
-              //     itemCount: _continueWatching.length,
-              //     separatorBuilder: (_, __) => const SizedBox(width: 12),
-              //     itemBuilder: (context, index) {
-              //       final item = _continueWatching[index];
-              //       final itemVideoUrl = item['videoUrl'] as String? ?? '';
-              //       final title = item['title'] as String? ?? 'Untitled';
-              //       final thumbnail = getVideoThumbnail(itemVideoUrl);
-              //       return GestureDetector(
-              //         onTap: () async {
-              //           // Navigate to lesson screen. we pass a Map — adapt on receiver if needed.
-              //           Zap.toNamed(AppRoutes.lessonScreen, arguments: item);
-              //         },
-              //         child: Column(
-              //           children: [
-              //             ClipRRect(
-              //               borderRadius: BorderRadius.circular(12),
-              //               child: Image.network(
-              //                 thumbnail,
-              //                 height: 100,
-              //                 width: 160,
-              //                 fit: BoxFit.cover,
-              //               ),
-              //             ),
-              //             const SizedBox(height: 8),
-              //             SizedBox(
-              //               width: 160,
-              //               child: Text(
-              //                 title,
-              //                 style: context.textTheme.bodyMedium?.copyWith(
-              //                   fontWeight: FontWeight.w600,
-              //                 ),
-              //                 maxLines: 2,
-              //                 overflow: TextOverflow.ellipsis,
-              //               ),
-              //             ),
-              //           ],
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
+
             ],
           ),
         ),

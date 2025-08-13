@@ -52,6 +52,7 @@ class _StudentCourseEndpoints {
 
   String get getCourseTasks => '${ApiUrl.baseUrl}/student/assignment';
   String getCourseTasksDetails(int courseId) => '${ApiUrl.baseUrl}/student/assignment/$courseId';
+  String addCoursesToWishList(int courseId) => '${ApiUrl.baseUrl}/student/wishlist/toggle/$courseId';
 
 }
 
@@ -65,6 +66,7 @@ class _CourseEndpoints {
   String get getCategories => '$base-category';
   String  getCourseDetails (int courseId) => '$base/details/$courseId';
   String getCourseLesson(int courseId) => '${ApiUrl.baseUrl}/student/lesson-resource/$courseId';
+  String addCoursesToWishList(int courseId) => '${ApiUrl.baseUrl}/student/wishlist/toggle/$courseId';
 
 }class _NotificationEndpoints {
   const _NotificationEndpoints();

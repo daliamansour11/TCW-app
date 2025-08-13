@@ -13,6 +13,9 @@ import 'package:tcw/features/programmes/presentation/widgets/programme_item_widg
 import 'package:tcw/features/reels/presentation/pages/media_screen.dart';
 import 'package:tcw/features/reels/presentation/reel_viewmodel.dart';
 
+import '../../../courses/presentation/cubit/course/courses_cubit.dart';
+import '../../../courses/presentation/widgets/course_item_widget.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -59,9 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
               buildHeader(context),
 
 
-              BlocBuilder<ProgramCubit, ProgramState>(
+              BlocBuilder<CourseCubit, CourseState>(
                 builder: (context, state) {
-                  if (state is ProgramLoading) {
+                  if (state is CourseLoading) {
                     if (_isLoading) {
                       return const Center(child: CircularProgressIndicator());
                     } else {
@@ -76,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 setState(() {
                                   _isLoading = true;
                                 });
-                                context.read<ProgramCubit>().fetchPrograms();
+                                context.read<CourseCubit>().fetchCourses();
                                 Timer(const Duration(seconds: 12), () {
                                   if (mounted) {
                                     setState(() {
@@ -93,11 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
 
 
-                } else if (state is ProgramLoaded ||
-                      state is ProgramLoadingMore) {
-                    final courses = (state is ProgramLoaded)
-                        ? (state).programs
-                        : context.read<ProgramCubit>().allProgram;
+                } else if (state is CoursesLoaded ||
+                      state is CourseLoadingMore) {
+                    final courses = (state is CoursesLoaded)
+                        ? (state).courses
+                        : context.read<CourseCubit>().allCourses;
                     if (courses.isEmpty) {
                       return const Center(child: Text('No courses found.'));
                     }
@@ -107,11 +110,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: courses.length,
                       itemBuilder: (context, index) {
-                        final program = courses[index];
-                        return ProgrammeItemWidget(program: program); // Fixed props
+                        final course = courses[index];
+                        return CourseItemWidget(program: course); // Fixed props
                       },
                     );
-                  } else if (state is ProgramError) {
+                  } else if (state is CourseError) {
                     return Center(child: Text(state.message));
                   }
                   return const SizedBox.shrink();

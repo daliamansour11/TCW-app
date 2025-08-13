@@ -1,18 +1,19 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:tcw/core/shared/shared_widget/custom_button.dart';
-import 'package:tcw/core/shared/shared_widget/custom_container.dart';
-import 'package:tcw/core/shared/shared_widget/custom_image.dart';
-import 'package:tcw/core/shared/shared_widget/custom_text.dart';
-import 'package:tcw/core/shared/shared_widget/riyal_logo.dart';
-import 'package:tcw/core/theme/app_colors.dart';
-import 'package:tcw/core/utils/asset_utils.dart';
-import 'package:tcw/features/courses/data/models/course_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/shared/shared_widget/custom_button.dart';
+import '../../../../core/shared/shared_widget/custom_container.dart';
+import '../../../../core/shared/shared_widget/custom_image.dart';
+import '../../../../core/shared/shared_widget/custom_text.dart';
+import '../../../../core/shared/shared_widget/riyal_logo.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/asset_utils.dart';
 
-import 'package:tcw/core/routes/app_routes.dart';
-import 'package:tcw/features/programmes/data/models/programme_model.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../data/models/programme_model.dart';
 import 'package:zap_sizer/zap_sizer.dart';
 import 'package:zapx/zapx.dart';
+
+import '../../../courses/presentation/cubit/course/courses_cubit.dart';
 
 class ProgrammeItemWidget extends StatefulWidget {
   const ProgrammeItemWidget({required this.program, super.key}); // Fixed props
@@ -58,8 +59,10 @@ class _ProgrammeItemWidgetState extends State<ProgrammeItemWidget> {
                       isFavorite ? Icons.favorite : Icons.favorite_border,
                       color: isFavorite ? Colors.red : Colors.grey,
                     ),
-                    onPressed: () {
-
+                    onPressed: ()async {
+                      await context.read<CourseCubit>().toggleCourseWishlist(
+                         widget.program.id??0,
+                      );
                       setState(() {
                         isFavorite = !isFavorite;
                       });

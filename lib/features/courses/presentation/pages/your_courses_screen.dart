@@ -28,7 +28,6 @@ class MyCourseScreen extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: SearchFilterWidget(),
                 ),
-
                 SizedBox(height: context.propHeight(12)),
                 Expanded(
                   child: Padding(

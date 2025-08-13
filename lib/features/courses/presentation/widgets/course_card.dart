@@ -6,11 +6,23 @@ import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/features/courses/data/models/course_model.dart';
 
-class CourseCard extends StatelessWidget {
+import '../cubit/course/courses_cubit.dart';
+
+class CourseCard extends StatefulWidget {
 
   const CourseCard({super.key, required this.course});
   final CourseModel course;
 
+  @override
+  State<CourseCard> createState() => _CourseCardState();
+}
+
+class _CourseCardState extends State<CourseCard> {
+  bool isFavorite = false;
+
+  @override
+  void initState() {
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,15 +40,34 @@ class CourseCard extends StatelessWidget {
                 child: CachedNetworkImage(
                     height: 180, width:double.infinity, fit: BoxFit.cover,
                   placeholder: (context, url) => Image.asset(AssetUtils.programPlaceHolder),
-                  errorWidget: (context, url, error) =>const Icon(Icons.error), imageUrl: course.thumb.toString(),
+                  errorWidget: (context, url, error) =>const Icon(Icons.error), imageUrl: widget.course.thumbUrl.toString(),
 
                 ),
               ),
-              const Positioned(
-                top: 8,
-                right: 8,
-                child: Icon(Icons.favorite_border, color: Colors.white),
+              Positioned(
+                top: 6,
+
+                right: 6,
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: IconButton(
+                    icon: Icon(
+                      size: 18,
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : Colors.grey,
+                    ),
+                    onPressed: ()async {
+                      await context.read<CourseCubit>().toggleCourseWishlist(
+                         widget.course.id??0,
+                      );
+                      setState(() {
+                        isFavorite = !isFavorite;
+                      });
+                    },
+                  ),
+                ),
               ),
+
             ],
           ),
           Padding(
@@ -46,12 +77,12 @@ class CourseCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text('${course.title}',
+                    Text('${widget.course.title}',
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     Text(
-                      '${course.price} \$',
+                      '${widget.course.price} \$',
                       style: const TextStyle(
                           color: Color(0xFF4B248B),
                           fontWeight: FontWeight.bold),
@@ -63,22 +94,22 @@ class CourseCard extends StatelessWidget {
                   children: [
                     const Icon(Icons.menu_book, size: 16, color: Colors.amber),
                     const SizedBox(width: 4),
-                    Text('${course.totalLessons} lessons'),
+                    Text('${widget.course.lessonsCount} lessons'),
                     const Spacer(),
                     const Icon(Icons.access_time, size: 16, color: Colors.amber),
                     const SizedBox(width: 4),
-                    Text(course.totalEnrolls.toString()),
+                    Text(widget.course.enrolledStudents.toString()),
                     const SizedBox(width: 12),
                     const Icon(Icons.people, size: 16, color: Colors.amber),
                     const SizedBox(width: 4),
-                    Text('${course.isFree}'),
+                    Text('${widget.course.discount}'),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundImage: Image.network(course.thumb.toString()).image,
+                      backgroundImage: Image.network(widget.course.thumbUrl.toString()).image,
                       radius: 16,
                     ),
                     const SizedBox(width: 8),

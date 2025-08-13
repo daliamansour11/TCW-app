@@ -5,6 +5,9 @@ import 'package:tcw/features/courses/data/models/enrolled_course_model.dart';
 import 'package:tcw/features/courses/data/models/last_viewed_model.dart';
 import 'package:tcw/features/courses/data/models/certificate_model.dart';
 
+import '../../../../../core/apis/api_response.dart';
+import '../../../data/models/wishlist_model.dart';
+
 part 'student_course_state.dart';
 class StudentCourseCubit extends Cubit<StudentCourseState> {
   StudentCourseCubit(this.repository) : super(StudentCourseInitial());
@@ -89,4 +92,53 @@ class StudentCourseCubit extends Cubit<StudentCourseState> {
     emit(StudentCourseError(result.message ?? 'Failed to load course details'));
     }
   }
+  List<LessonModel> favoriteLessons = [];
+  List<LessonModel> courseLessons = [];
+
+  Future<ApiResponse<WishlistModel>?> toggleLessonWishlist(int lessonId) async {
+    emit(StudentCourseLoading());
+
+    ApiResponse<WishlistModel>? response;
+
+    try {
+      response = await repository.toggleLikeOnCourses(lessonId);
+
+      if (response.data != null) {
+        final wishlistModel = response.data!;
+
+        LessonModel? addedLesson;
+        try {
+          addedLesson = favoriteLessons.firstWhere((lesson) => lesson.id == lessonId);
+        } catch (e) {
+          addedLesson = null;
+        }
+
+        if (wishlistModel.isWishlisted) {
+          if (addedLesson == null) {
+            LessonModel? lessonToAdd;
+            try {
+              lessonToAdd = courseLessons.firstWhere((lesson) => lesson.id == lessonId);
+            } catch (e) {
+              lessonToAdd = null;
+            }
+            if (lessonToAdd != null) {
+              favoriteLessons.add(lessonToAdd);
+            }
+          }
+        } else {
+          favoriteLessons.removeWhere((lesson) => lesson.id == lessonId);
+        }
+
+        emit(CourseLessonsLoaded(List.from(favoriteLessons)));
+      } else {
+        emit(StudentCourseError(response.message ?? 'Failed to toggle lesson wishlist'));
+      }
+    } catch (e) {
+      emit(StudentCourseError('Error: ${e.toString()}'));
+    }
+
+    return response;
+  }
+
+
 }

@@ -175,19 +175,12 @@ class _InboxScreenState extends State<InboxScreen> {
             const Row(
               children: [
                 CustomText('Messages', fontWeight: FontWeight.bold),
+                // ... your badge container
               ],
             ),
             const SizedBox(height: 10),
             Expanded(
-              child:  BlocConsumer<ChatCubit, ChatState>(
-                listener: (context, state) {
-                  if (state is ConversationError) {
-                    // Show error message as a SnackBar or Dialog
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.error)),
-                    );
-                  }
-                },
+              child: BlocBuilder<ChatCubit, ChatState>(
                 builder: (context, state) {
                   if (state is ConversationLoading) {
                     if (_isLoading) {
@@ -244,7 +237,7 @@ class _InboxScreenState extends State<InboxScreen> {
                       },
                     );
                   } else if (state is ConversationError) {
-                    return const Center(child: Text('Error: cannot fetch conversation'));
+                    return const Center(child: Text('Error:Cannot fetch Conversations'));
                   }
 
                   return const SizedBox.shrink();

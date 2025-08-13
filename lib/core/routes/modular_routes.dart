@@ -208,6 +208,11 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
             ChatRepositoriesImp(ChatDataSourceImp())
         )..fetchConversationList(),        //
         //
+        ),   BlocProvider(
+        create: (context) => CourseCubit(
+            CourseRepositoryImpl(CourseDatasourceImpl())
+        )..fetchCourses(),        //
+        //
         ),
 
 
@@ -263,6 +268,7 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
       providers: [
         BlocProvider(create: (_) => ProfileCubit()),
         BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(NotificationDataSourceImpl()))),
+        BlocProvider(create: (_) => CourseCubit(CourseRepositoryImpl(CourseDatasourceImpl()))),
 
       ],
       child: const PersonalDetailsScreen(),
@@ -274,6 +280,7 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
 providers: [
 BlocProvider(create: (_) => ProfileCubit()),
 BlocProvider(create: (_) => ProgramCubit(ProgramRepositoryImpl(ProgramDatasourceImpl()))),
+BlocProvider(create: (_) => CourseCubit(CourseRepositoryImpl(CourseDatasourceImpl()))),
 BlocProvider(create: (_) => StudentCourseCubit(StudentCourseRepositoryImpl())),
 BlocProvider(create: (_) => EventCubit(EventRepositoryImp(EventDataSourceImpl()))),
 BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(NotificationDataSourceImpl()))),
@@ -326,7 +333,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
           create: (_) => StudentCourseCubit(StudentCourseRepositoryImpl()),
         ),
       ],
-      child: const CoursesScreen(),
+      child:  CoursesScreen(),
     ),
     transition: transition,
   ),
@@ -343,7 +350,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
   ChildRoute(
     AppRoutes.courseDetailsScreen,
     child: (_, ModularArguments args) {
-      final courseId = args.data is int ? args.data as int : 0; // fallback 0
+      final courseId = args.data is int ? args.data as int : 0;
 
       return BlocProvider(
         create: (context) => CourseCubit(CourseRepositoryImpl(CourseDatasourceImpl()))..getCourseLessons(courseId),

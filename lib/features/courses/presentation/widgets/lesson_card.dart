@@ -12,26 +12,38 @@ import 'package:tcw/features/courses/data/models/lesson_model.dart';
 import 'package:tcw/features/courses/data/models/section_model.dart';
 import 'package:zap_sizer/zap_sizer.dart';
 
+import '../../data/models/course_model.dart';
 import '../../data/models/last_viewed_model.dart';
 import '../cubit/student/student_course_cubit.dart';
 
 class LessonCard extends StatefulWidget {
-  const LessonCard({Key? key, required this.courseId, required this.section, required this.lessonModel, }) : super(key: key);
+  const LessonCard({Key? key, required this.courseId, required this.section, required this.lessonModel,  this.onWishlistToggle, required this.isWishlisted, }) : super(key: key);
   final SectionModel section;
   final int  courseId;
   final LessonModel lessonModel;
+  final VoidCallback? onWishlistToggle;
+  final bool isWishlisted;
+
 
   @override
   State<LessonCard> createState() => _LessonCardState();
 }
 
 class _LessonCardState extends State<LessonCard> {
-
+  bool isWishlisted = false;
   @override
   void initState() {
     super.initState();
     getUpdatedView();
     _updateLastViewed();
+  }
+  void _handleWishlistToggle() {
+    setState(() {
+      isWishlisted = !isWishlisted;
+    });
+    if (widget.onWishlistToggle != null) {
+      widget.onWishlistToggle!();
+    }
   }
 
   void _updateLastViewed() {
@@ -90,11 +102,28 @@ class _LessonCardState extends State<LessonCard> {
                   right: 8,
                   child: CircleAvatar(
                     backgroundColor: Colors.white.withValues(alpha: 0.3),
-                    child: const Icon(
-                      Icons.favorite_border,
-                      color: Colors.white,
-                      size: 18,
+                    child:IconButton(
+                      onPressed: () async {
+                        _handleWishlistToggle();
+
+                        final response = await context.read<StudentCourseCubit>().toggleLessonWishlist(widget.lessonModel.id ?? 0);
+
+                        if (response == null || response.isError) {
+                          setState(() {
+                            isWishlisted = !isWishlisted;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Failed to update favorite status')),
+                          );
+                        }
+                      },
+                      icon: Icon(
+                        isWishlisted ? Icons.favorite : Icons.favorite_border,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                     ),
+
                   ),
                 ),
               ],

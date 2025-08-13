@@ -1,37 +1,36 @@
 import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tcw/core/shared/log/logger.dart';
-import 'package:tcw/core/shared/shared_widget/custom_button.dart';
-import 'package:tcw/core/shared/shared_widget/custom_container.dart';
-import 'package:tcw/core/shared/shared_widget/custom_text.dart';
-import 'package:tcw/core/shared/shared_widget/search_filter_widget.dart';
-import 'package:tcw/core/utils/asset_utils.dart';
-import 'package:tcw/core/shared/shared_widget/show_more_tile_widget.dart';
-import 'package:tcw/core/theme/app_colors.dart';
-import 'package:tcw/features/auth/data/models/user_model.dart';
-import 'package:tcw/features/courses/data/models/enrolled_course_model.dart';
-import 'package:tcw/features/courses/presentation/courses_viewmodel.dart';
-import 'package:tcw/features/courses/presentation/cubit/student/student_course_cubit.dart';
-import 'package:tcw/features/courses/presentation/widgets/vertical_course_card.dart';
-import 'package:tcw/features/courses/presentation/widgets/courses_list_screen.dart';
-import 'package:tcw/features/event/data/models/event_model.dart';
-import 'package:tcw/features/event/presentation/cubit/event_cubit.dart';
-import 'package:tcw/features/event/presentation/widgets/event_slider_widget.dart';
-import 'package:tcw/features/notification/presentation/cubit/notification_cubit.dart';
-import 'package:tcw/features/profile/data/model/video_item.dart';
-import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
-import 'package:tcw/features/profile/presentation/widgets/hour_chart.dart';
-import 'package:tcw/features/profile/presentation/widgets/state_item_widget.dart';
-import 'package:tcw/features/profile/presentation/widgets/user_header_widget.dart';
-import 'package:tcw/features/programmes/presentation/cubit/program_cubit.dart';
-import 'package:tcw/features/reels/data/datasource/local_data_source/reel_history.dart';
-import 'package:tcw/features/reels/data/models/reel_history_model.dart';
-import 'package:tcw/features/reels/data/models/reel_model.dart';
-import 'package:tcw/core/routes/app_routes.dart';
+import '../../../../core/shared/log/logger.dart';
+import '../../../../core/shared/shared_widget/custom_button.dart';
+import '../../../../core/shared/shared_widget/custom_container.dart';
+import '../../../../core/shared/shared_widget/custom_text.dart';
+import '../../../../core/shared/shared_widget/search_filter_widget.dart';
+import '../../../../core/utils/asset_utils.dart';
+import '../../../../core/shared/shared_widget/show_more_tile_widget.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../auth/data/models/user_model.dart';
+import '../../../courses/data/models/enrolled_course_model.dart';
+import '../../../courses/presentation/courses_viewmodel.dart';
+import '../../../courses/presentation/cubit/course/courses_cubit.dart';
+import '../../../courses/presentation/cubit/student/student_course_cubit.dart';
+import '../../../courses/presentation/widgets/courses_list_screen.dart';
+import '../../../event/data/models/event_model.dart';
+import '../../../event/presentation/cubit/event_cubit.dart';
+import '../../../event/presentation/widgets/event_slider_widget.dart';
+import '../../../notification/presentation/cubit/notification_cubit.dart';
+import '../../data/model/video_item.dart';
+import '../cubit/profile_cubit.dart';
+import '../widgets/hour_chart.dart';
+import '../widgets/state_item_widget.dart';
+import '../widgets/user_header_widget.dart';
+import '../../../programmes/presentation/cubit/program_cubit.dart';
+import '../../../reels/data/datasource/local_data_source/reel_history.dart';
+import '../../../reels/data/models/reel_history_model.dart';
+import '../../../reels/data/models/reel_model.dart';
+import '../../../../core/routes/app_routes.dart';
 import 'package:zap_sizer/zap_sizer.dart';
 import 'package:zapx/zapx.dart';
 
@@ -60,6 +59,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NotificationCubit>().fetchStudentPushNotification();
       context.read<StudentCourseCubit>()..fetchEnrolledCourses(limit: 10,offset: 1);
+      context.read<CourseCubit>()..fetchCourses(limit: 10,offset: 1);
+
       context.read<EventCubit>()..getEvents();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         viewmodel = CoursesViewmodel(context);
@@ -331,7 +332,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // ),
               _buildSectionHeader('Your Programs',
                   trailing: ShowMoreTileWidget(
-                    onTab: () => Zap.toNamed(AppRoutes.programmesView),
+                    onTab: () => Zap.toNamed(AppRoutes.coursesScreen),
                   )),
               BlocBuilder<StudentCourseCubit, StudentCourseState>(
                 builder: (context, state) {

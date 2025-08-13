@@ -18,7 +18,7 @@ class CoursesLoaded extends CourseState {
 
 class CourseDetailLoaded extends CourseState {
   CourseDetailLoaded(this.course);
-  final CourseModel course;
+  final CourseDetailsModel course;
 }
 
 class CategoriesLoaded extends CourseState {
@@ -42,5 +42,10 @@ class UpdateLastViewedError  extends CourseState{
 }
 class CourseLessonsLoaded extends CourseState {
   CourseLessonsLoaded(this.lesson);
+
   final List<SectionModel> lesson;
+
+}class ToggleLikeSuccess extends CourseState {
+  ToggleLikeSuccess(this.wishlists);
+  final WishlistModel wishlists;
 }

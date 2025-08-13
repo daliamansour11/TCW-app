@@ -4,6 +4,10 @@ import 'package:tcw/features/courses/data/models/course_model.dart';
 import 'package:tcw/features/courses/data/models/section_model.dart';
 import 'package:tcw/features/courses/data/repositories/course_repository_impl.dart';
 
+import '../../../../../core/apis/api_response.dart';
+import '../../../data/models/course_details_model.dart';
+import '../../../data/models/wishlist_model.dart';
+
 part 'courses_state.dart';
 
 class CourseCubit extends Cubit<CourseState> {
@@ -76,14 +80,15 @@ class CourseCubit extends Cubit<CourseState> {
     }
   }
 
+
   Future<void> fetchCourseDetails(int courseId) async {
     emit(CourseLoading());
     final result = await repository.getCourseDetails(courseId);
 
-    if (result.isSuccess) {
+    if (result.isSuccess && result.data != null) {
       emit(CourseDetailLoaded(result.data!));
     } else {
-      emit(CourseError(result.message ?? 'Failed to load course details'));
+      emit(CourseError(result.message ?? 'Failed to load program details'));
     }
   }
 
@@ -117,6 +122,36 @@ class CourseCubit extends Cubit<CourseState> {
       emit(CourseError(result.message ?? 'Failed to load course details'));
     }
   }
+  List<CourseModel> favoriteCourses = [];
+  Future<ApiResponse<WishlistModel>?> toggleCourseWishlist(int courseId) async {
+    emit(CourseLoading());
+
+    try {
+      final response = await repository.toggleLikeOnCourses(courseId);
+      if (response.data != null) {
+        final updatedWishlisted = response.data!.isWishlisted;
+
+        final index = allCourses.indexWhere((c) => c.id == courseId);
+        if (index != -1) {
+          final updatedCourse = allCourses[index].copyWith(isWishlisted: updatedWishlisted);
+          final updatedCourses = List<CourseModel>.from(allCourses);
+          updatedCourses[index] = updatedCourse;
+          allCourses = updatedCourses;
+          emit(CoursesLoaded(updatedCourses));
+        } else {
+          emit(CourseError('Course not found'));
+        }
+      } else {
+        emit(CourseError(response.message ?? 'Failed to toggle wishlist'));
+      }
+      return response;
+    } catch (e) {
+      emit(CourseError('Error: ${e.toString()}'));
+      return null;
+    }
+  }
+
+
 }
 
 
