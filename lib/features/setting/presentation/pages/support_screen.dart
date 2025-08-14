@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/custom_button.dart';
@@ -40,8 +41,8 @@ class _SupportScreenState extends State<SupportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'Support & Complaints',
+      appBar: CustomAppBar(
+        title: 'support_and_complaints'.tr(),
       ),
       body: Column(
         children: [
@@ -54,34 +55,34 @@ class _SupportScreenState extends State<SupportScreen> {
                   spacing: 10,
                   children: [
                     Label(
-                      label: 'Complaint title',
+                      label: 'complaint_title'.tr(),
                       context: context,
                     ),
                     CustomTextField(
                       controller: _complaintTitle,
                       hintStyle: const TextStyle(color: Colors.grey),
-                      hintText: 'Enter your complaint title',
+                      hintText: 'enter_complaint_title'.tr(),
                       keyboardType: TextInputType.name,
                       obscureText: false,
                       validator: (value) => value!.isEmpty
-                          ? 'Please enter complaint title'
+                          ? 'please_enter_complaint_title'.tr()
                           : null,
                     ),
                     Label(
-                      label: 'Complaint Type',
+                      label: 'complaint_type'.tr(),
                       context: context,
                     ),
                     CustomTextField(
                       controller: complaintType,
-                      hintText: 'Technical issue',
+                      hintText: 'technical_issue'.tr(),
                       keyboardType: TextInputType.name,
                       obscureText: false,
                       validator: (value) =>
-                          value!.isEmpty ? 'Please enter complaint type' : null,
+                      value!.isEmpty ? 'please_enter_complaint_type'.tr() : null,
                       hintStyle: const TextStyle(color: Colors.grey),
                     ),
                     Label(
-                      label: 'Details',
+                      label: 'details'.tr(),
                       context: context,
                     ),
                     LargeTextField(
@@ -106,9 +107,9 @@ class _SupportScreenState extends State<SupportScreen> {
               color: Colors.white,
             ),
             onPressed: () {
-              viewmodel.showSuccessDialog('Your complaint has been submitted!');
+              viewmodel.showSuccessDialog('complaint_submitted'.tr());
             },
-            title: 'Submit',
+            title: 'submit'.tr(),
           ),
         ],
       ).paddingAll(10),

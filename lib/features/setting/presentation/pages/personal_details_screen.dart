@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
@@ -5,11 +6,11 @@ import 'package:tcw/core/shared/shared_widget/custom_button.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
 import 'package:tcw/core/shared/shared_widget/custom_image.dart';
 import 'package:tcw/core/shared/shared_widget/custom_text_form_field.dart';
-import 'package:tcw/core/utils/toast_util.dart';
-import 'package:tcw/features/auth/data/models/user_model.dart';
 import 'package:tcw/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:tcw/features/profile/presentation/profile_viewmodel.dart';
 import 'package:tcw/features/setting/presentation/widgets/label_widget.dart';
+
+import '../../../auth/data/models/user_model.dart';
 
 class PersonalDetailsScreen extends StatefulWidget {
   const PersonalDetailsScreen({super.key});
@@ -40,8 +41,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'Personal Details',
+      appBar: CustomAppBar(
+        title: 'personal_details'.tr(),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -55,7 +56,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   children: [
                     BlocBuilder<ProfileCubit, ProfileState>(
                       buildWhen: (previous, current) =>
-                          current is ProfileLoaded,
+                      current is ProfileLoaded,
                       builder: (context, state) => CircleAvatar(
                         backgroundColor: Colors.black.withValues(alpha: 0.5),
                         backgroundImage: viewModel.imagePath == null
@@ -79,7 +80,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                           backgroundColor: Colors.white.withValues(alpha: 0.5),
                           child: IconButton(
                             icon:
-                                const Icon(Icons.camera_alt_outlined, size: 20),
+                            const Icon(Icons.camera_alt_outlined, size: 20),
                             onPressed: viewModel.pickImage,
                             splashRadius: 24,
                           ),
@@ -91,28 +92,28 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               ),
               Label(
                 context: context,
-                label: 'First name',
+                label: 'first_name'.tr(),
               ),
               CustomTextField(
                 controller: viewModel.firstNameController,
                 hintStyle: const TextStyle(color: Colors.grey),
-                hintText: 'First name',
+                hintText: 'first_name'.tr(),
                 keyboardType: TextInputType.name,
               ),
               const SizedBox(height: 16),
-              Label(context: context, label: 'Last name'),
+              Label(context: context, label: 'last_name'.tr()),
               CustomTextField(
                 controller: viewModel.lastNameController,
-                hintText: 'Last name',
+                hintText: 'last_name'.tr(),
                 keyboardType: TextInputType.name,
                 hintStyle: const TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 16),
-              Label(context: context, label: 'Phone number'),
+              Label(context: context, label: 'phone_number'.tr()),
               CustomTextField(
                 hintStyle: const TextStyle(color: Colors.grey),
                 controller: viewModel.phoneController,
-                hintText: '0121564548',
+                hintText: 'phone_placeholder'.tr(),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 32),
@@ -126,7 +127,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     color: Colors.white,
                   ),
                   onPressed: viewModel.saveChanges,
-                  title: 'Save Changes',
+                  title: 'save_changes'.tr(),
                 ),
               ),
             ],

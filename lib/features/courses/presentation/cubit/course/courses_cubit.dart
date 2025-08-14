@@ -124,32 +124,40 @@ class CourseCubit extends Cubit<CourseState> {
   }
   List<CourseModel> favoriteCourses = [];
   Future<ApiResponse<WishlistModel>?> toggleCourseWishlist(int courseId) async {
-    emit(CourseLoading());
+    final index = allCourses.indexWhere((c) => c.id == courseId);
+    if (index == -1) {
+      emit(CourseError('Course not found'));
+      return null;
+    }
+
+    final currentCourse = allCourses[index];
+    final updatedCourse = currentCourse.copyWith(
+      isWishlisted: !(currentCourse.isWishlisted ?? false),
+    );
+
+    allCourses = List<CourseModel>.from(allCourses)..[index] = updatedCourse;
+    emit(CoursesLoaded(allCourses));
 
     try {
       final response = await repository.toggleLikeOnCourses(courseId);
       if (response.data != null) {
-        final updatedWishlisted = response.data!.isWishlisted;
-
-        final index = allCourses.indexWhere((c) => c.id == courseId);
-        if (index != -1) {
-          final updatedCourse = allCourses[index].copyWith(isWishlisted: updatedWishlisted);
-          final updatedCourses = List<CourseModel>.from(allCourses);
-          updatedCourses[index] = updatedCourse;
-          allCourses = updatedCourses;
-          emit(CoursesLoaded(updatedCourses));
-        } else {
-          emit(CourseError('Course not found'));
-        }
+        final serverUpdated = updatedCourse.copyWith(
+          isWishlisted: response.data!.isWishlisted,
+        );
+        allCourses[index] = serverUpdated;
+        emit(CoursesLoaded(List<CourseModel>.from(allCourses)));
       } else {
-        emit(CourseError(response.message ?? 'Failed to toggle wishlist'));
+        allCourses[index] = currentCourse;
+        emit(CoursesLoaded(List<CourseModel>.from(allCourses)));
       }
       return response;
     } catch (e) {
-      emit(CourseError('Error: ${e.toString()}'));
+      allCourses[index] = currentCourse;
+      emit(CoursesLoaded(List<CourseModel>.from(allCourses)));
       return null;
     }
   }
+
 
 
 }

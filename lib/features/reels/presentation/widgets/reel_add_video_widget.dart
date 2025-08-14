@@ -1,5 +1,6 @@
 import 'dart:io' show File;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,7 +14,7 @@ class ReelAddVideoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CustomContainer(
+    return CustomContainer(
       width: double.infinity,
       color: Colors.white,
       borderRadius: 20,
@@ -23,21 +24,21 @@ class ReelAddVideoWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 10,
         children: [
-          SizedBox.shrink(),
-          Icon(Icons.video_call, size: 50, color: Colors.grey),
+          const SizedBox.shrink(),
+          const Icon(Icons.video_call, size: 50, color: Colors.grey),
           CustomText(
-            'Add the Video here',
+            'reel.Add_the_Video_here'.tr(),
             color: AppColors.primaryColor,
             fontSize: 18,
             fontWeight: FontWeight.w800,
           ),
-          CustomText(
-            'Click the video icon to add a video',
+           CustomText(
+               'reel.Click_to_add_video'.tr(),
             color: AppColors.hintTextColor,
             fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
-          SizedBox.shrink(),
+          const SizedBox.shrink(),
         ],
       ),
     );
@@ -81,7 +82,6 @@ class _ReelAddVideoWidgetState extends State<ReelsAddVideoWidget> {
 
       request.files.add(await http.MultipartFile.fromPath('video', file.path));
 
-      // إذا كنت تحتاج إلى توكن:
       request.headers.addAll({
         'Authorization': 'Bearer YOUR_TOKEN',
         'Accept': 'application/json',
@@ -152,7 +152,7 @@ class _ReelAddVideoWidgetState extends State<ReelsAddVideoWidget> {
       ),
     );
     // onPressed: () async {
-    //   File? pickedVideo = await pickVideo(); // طبعًا لازم تكتبي الدالة pickVideo بنفسك
+    //   File? pickedVideo = await pickVideo(); // ickVideo بنفسك
     //   if (pickedVideo != null) {
     //     await _uploadVideoWithDio(pickedVideo, context);
     //   }

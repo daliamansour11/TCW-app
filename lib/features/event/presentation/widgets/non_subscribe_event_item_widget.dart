@@ -13,51 +13,73 @@ class NonSubscribeEventItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: ()=>  Zap.toNamed(AppRoutes.nonSubscribeEventDetailsScreen,
-          arguments: event),
-
+      onTap: () => Zap.toNamed(
+        AppRoutes.nonSubscribeEventDetailsScreen,
+        arguments: event,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
           children: [
-            Text(event.title??'',
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green)),
-            Text('${event.subTitle??''}',
-                style: const TextStyle(fontSize: 13, color: Colors.grey)),
+            // Event title
+            Text(
+              event.title ?? tr('event_title'),
+              style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green),
+            ),
+            const SizedBox(height: 4),
+
+            // Event subtitle
+            Text(
+              event.subTitle ?? tr('no_description'),
+              style: const TextStyle(fontSize: 13, color: Colors.grey),
+            ),
+            const SizedBox(height: 8),
+
+            // Event meta info
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Date
                 Row(
-                  spacing: 6,
                   children: [
-                    const Icon(Icons.calendar_month,
-                        size: 16, color: Colors.grey),
+                    const Icon(Icons.calendar_month, size: 16, color: Colors.grey),
+                    const SizedBox(width: 4),
                     CustomText(
-                      DateFormat('EEEE, d MMM yyyy').format(event.scheduledAt),
+                      DateFormat.yMMMMEEEEd(context.locale.toString())
+                          .format(event.scheduledAt),
                       fontSize: 12,
                     ),
                   ],
                 ),
+
+                // Instructor
                 Row(
-                  spacing: 6,
                   children: [
                     const Icon(Icons.person, size: 16, color: Colors.grey),
-                    Text(event.instructor.name??'',
-                        style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    const SizedBox(width: 4),
+                    Text(
+                      event.instructor.name ?? tr('unknown_instructor'),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                   ],
                 ),
-            const    Row(
-                  spacing: 6,
+
+                // Time
+                const  Row(
                   children: [
-                   const  Icon(Icons.access_time_filled, size: 16, color: Colors.grey),
-                    Text('02.oo - 03.30',
-                        // event.time,
-                        style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    const Icon(Icons.access_time_filled, size: 16, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      // event.startTime != null && event.endTime != null
+                      //     ? '${event.startTime} - ${event.endTime}'
+                      //     :
+                    '02:00 - 03:30',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                   ],
                 ),
               ],

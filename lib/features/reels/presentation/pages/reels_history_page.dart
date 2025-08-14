@@ -138,7 +138,6 @@ class _ReelsHistoryPageState extends State<ReelsHistoryPage> {
   }
 
   Widget _buildReelItem(BuildContext context, ReelHistoryModel item) {
-    // FIX: Use the validated video URL
     final videoUrl = _getValidVideoUrl(item.videoUrl);
 
     return GestureDetector(
@@ -149,7 +148,7 @@ class _ReelsHistoryPageState extends State<ReelsHistoryPage> {
             builder: (_) => ReelViewScreen(
               reel: Datum.fromHistory(item),
               videoUrl: videoUrl,
-              user_id: item.user.id ?? 0,
+
             ),
           ),
         );

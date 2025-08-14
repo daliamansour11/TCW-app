@@ -6,7 +6,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/apis/apis_url.dart';
-import 'package:tcw/features/reels/data/datasource/local_data_source/reel_history.dart';
 import 'package:tcw/features/reels/data/datasource/reel_datasource_imp.dart';
 import 'package:tcw/features/reels/data/models/comment_model.dart' hide Datum;
 import 'package:tcw/features/reels/data/models/reel_model.dart';
@@ -17,15 +16,17 @@ import 'package:tcw/features/reels/presentation/pages/widgets/reel_vedio_player.
 import 'package:tcw/features/reels/presentation/pages/widgets/user_info_section.dart';
 import 'package:tcw/features/reels/presentation/reel_viewmodel.dart';
 
+import '../../../auth/data/datasources/auth_local_datasource_impl.dart';
+import '../../data/datasource/local_data_source/reel_history.dart';
+
 class ReelViewScreen extends StatefulWidget {
   const ReelViewScreen({
     super.key,
     required this.reel,
-    required this.videoUrl, this.user_id,
+    required this.videoUrl,
   });
   final Datum reel;
   final String videoUrl;
-  final user_id;
   @override
   State<ReelViewScreen> createState() => _ReelViewScreenState();
 }
@@ -40,18 +41,20 @@ class _ReelViewScreenState extends State<ReelViewScreen> {
   bool? isLikedByMe;
   Timer? _addToHistoryTimer;
   bool _hasAddedToHistory = false;
+  Future<int?> _getCurrentUserId() async {
+    final authLocal = AuthLocalDatasourceImpl();
+    final user = await authLocal.getLoggedUser();
+    return user?.id;
+  }
 
   void _onVideoStarted() {
     if (_hasAddedToHistory) return;
-
     _addToHistoryTimer?.cancel();
-    _addToHistoryTimer = Timer(const Duration(seconds: 5), () {
-      addReelToHistory(_reel);
+    _addToHistoryTimer = Timer(const Duration(seconds: 5), () async {
+      await addReelToHistory(_reel);
       _hasAddedToHistory = true;
-      debugPrint('Reel added to history after 5 seconds');
     });
-  }
-  @override
+  }  @override
   void initState() {
     super.initState();
     _reel = widget.reel;
@@ -77,7 +80,13 @@ class _ReelViewScreenState extends State<ReelViewScreen> {
     } catch (e) {
       // Handle error
     }
+  }void _deleteReel(int reelId) async {
+    final result = await context.read<CreateReelCubit>().deleteReel(reelId);
+    if (result.isSuccess) {
+      Navigator.pop(context, true);
+    }
   }
+
   String buildFullVideoUrl(String? videoUrl, String? videoPath) {
     if (videoUrl != null && videoUrl.isNotEmpty) {
       return videoUrl.replaceFirst('tcw.aspiregypt.com', 'tcw.de-mo.cloud');
@@ -131,7 +140,7 @@ class _ReelViewScreenState extends State<ReelViewScreen> {
           children: [
             ReelVideoPlayer(
               videoUrl: buildFullVideoUrl(_reel.videoUrl, _reel.videoPath),
-              onStartedPlaying: _onVideoStarted,
+              onStartedPlaying: _onVideoStarted, errorMessage: '',
             ),         SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
@@ -143,15 +152,23 @@ class _ReelViewScreenState extends State<ReelViewScreen> {
                       children: [
                         Expanded(child: UserInfoSection(reel: _reel)),
                         const SizedBox(width: 12),
-                        ActionButtonsColumn(
-                          key: ValueKey('${_reel.id}_${_likesCount}'),
-                          reel: _reel,
-                          isLiked: _isLiked,
-                          likesCount: _likesCount,
-                          commentCount: _commentCount,
-                          onLikeToggled: _handleLikeToggled,
-                          onCommentAdded: _handleCommentAdded,
-                          currentUserId: widget.reel.user?.id ?? 0,                        ),
+                        FutureBuilder<int?>(
+                          future: _getCurrentUserId(),
+                          builder: (context, snapshot) {
+                            final currentUserId = snapshot.data ?? 0;
+
+                            return ActionButtonsColumn(
+                              key: ValueKey('${_reel.id}_${_likesCount}'),
+                              reel: _reel,
+                              isLiked: _isLiked,
+                              likesCount: _likesCount,
+                              commentCount: _commentCount,
+                              onLikeToggled: _handleLikeToggled,
+                              onCommentAdded: _handleCommentAdded,
+                              currentUserId: currentUserId,
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ],

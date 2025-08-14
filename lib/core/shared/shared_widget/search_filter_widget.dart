@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SearchFilterWidget extends StatelessWidget {
-  const SearchFilterWidget({super.key,  this.onChanged});
+  const SearchFilterWidget({super.key, this.onChanged});
   final Function(String)? onChanged;
 
   @override
@@ -18,7 +19,6 @@ class SearchFilterWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
-              spacing: 12,
               children: [
                 const Icon(Icons.search, color: Colors.grey),
                 const SizedBox(width: 8),
@@ -26,7 +26,7 @@ class SearchFilterWidget extends StatelessWidget {
                   child: TextField(
                     onChanged: onChanged,
                     decoration: InputDecoration(
-                      hintText: 'Search your course here....',
+                      hintText: 'search_courses'.tr(),
                       hintStyle: GoogleFonts.poppins(fontSize: 12),
                       border: InputBorder.none,
                     ),
@@ -36,6 +36,7 @@ class SearchFilterWidget extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(width: 8),
         const Icon(Icons.filter_alt_outlined, size: 30),
       ],
     );

@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
-import 'package:tcw/core/constansts/context_extensions.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../../../../core/constansts/context_extensions.dart';
 
 class Label extends StatelessWidget {
   const Label({
@@ -14,12 +14,12 @@ class Label extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 6.0),
-        child: Text(
-          label,
-          style: context.textTheme.headlineLarge ?.copyWith(
-            fontSize: context.propWidth(16),
-          ),
-        ),
-      );
+    padding: const EdgeInsets.only(bottom: 6.0),
+    child: Text(
+      label.tr(),
+      style: context.textTheme.headlineLarge?.copyWith(
+        fontSize: context.propWidth(16),
+      ),
+    ),
+  );
 }

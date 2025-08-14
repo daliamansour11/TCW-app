@@ -6,6 +6,7 @@ import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/features/auth/data/models/onbording_model.dart';
 import 'package:tcw/core/routes/app_routes.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -18,9 +19,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
-  void _nextPage() {
+  void _nextPage() async {
+    final prefs = await SharedPreferences.getInstance();
     if (_currentIndex == onboardingPages.length - 1) {
-      // Navigate to main screen or login
+      await prefs.setBool('hasSeenOnboarding', true);
       Modular.to.pushReplacementNamed(AppRoutes.loginPage);
     } else {
       _pageController.nextPage(
@@ -33,27 +35,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   List<OnboardingModel> onboardingPages = [
     OnboardingModel(
       image: AssetUtils.onBording_1,
-      title: 'Start Your Learning Journey!',
-      description:
-          'Explore a learning platform designed just for you. Join study groups, complete tasks, and track your progress effortlessly.',
+      title: 'onboarding.title1'.tr(),
+      description: 'onboarding.desc1'.tr(),
     ),
     OnboardingModel(
       image: AssetUtils.onBording_2,
-      title: 'Learn Smarter, Not Harder!',
-      description:
-          'Save time with the "Mind Master" system, where you can join private groups and engage with educational content without distractions.',
+      title: 'onboarding.title2'.tr(),
+      description: 'onboarding.desc2'.tr(),
     ),
     OnboardingModel(
       image: AssetUtils.onBording_3,
-      title: 'All Your Tools in One Place!',
-      description:
-          'From your dashboard to progress tracking, we’ve designed a seamless experience to keep your learning organized and efficient.',
+      title: 'onboarding.title3'.tr(),
+      description: 'onboarding.desc3'.tr(),
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
     final isLast = _currentIndex == onboardingPages.length - 1;
+
     return Scaffold(
       body: Column(
         children: [
@@ -85,9 +85,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   curve: Curves.easeInOut,
                                 );
                               },
-                              icon: const Icon(
-                                Icons.arrow_back,
-                              ),
+                              icon: const Icon(Icons.arrow_back),
                             ),
                           if (!isLast)
                             TextButton(
@@ -96,12 +94,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 await prefs.setBool('hasSeenOnboarding', true);
                                 Modular.to.pushReplacementNamed(AppRoutes.loginPage);
                               },
-                              child: const Text(
-                                'Skip',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                ),
-                              ),
+                              child: Text('onboarding.skip'.tr(),
+                                  style: const TextStyle(color: Colors.black)),
                             ),
                         ],
                       ),
@@ -127,7 +121,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(
                           onboardingPages.length,
-                          (dotIndex) => AnimatedContainer(
+                              (dotIndex) => AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
                             margin: const EdgeInsets.symmetric(horizontal: 4),
                             height: context.propHeight(8),
@@ -175,7 +169,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               child: Text(
-                isLast ? 'Get Started' : 'Continue',
+                isLast ? 'onboarding.get_started'.tr() : 'onboarding.continue'.tr(),
                 style: context.textTheme.headlineLarge?.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,

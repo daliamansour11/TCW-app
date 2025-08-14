@@ -6,6 +6,7 @@ import 'package:tcw/features/courses/data/models/last_viewed_model.dart';
 import 'package:tcw/features/courses/data/models/lesson_model.dart';
 
 import '../models/course_details_model.dart';
+import '../models/student_course_details.dart';
 import '../models/wishlist_model.dart';
 
 abstract class StudentCourseRepository {
@@ -14,7 +15,7 @@ abstract class StudentCourseRepository {
     int offset = 1,
     String ? search,
   });
-  Future<ApiResponse<CourseDetailsModel>> getCourseDetails(int courseId);
+  Future<ApiResponse<EnrolledCourseDetailsModel>> getStudentCourseDetails(int courseId);
   Future<ApiResponse<CertificateModel>> downloadCertificate(int courseId);
   Future<ApiResponse<bool>> updateLastViewed(  int courseId,
       int sectionId,
@@ -36,8 +37,8 @@ class StudentCourseRepositoryImpl implements StudentCourseRepository {
   }
 
   @override
-  Future<ApiResponse<CourseDetailsModel>> getCourseDetails(int courseId) {
-    return studentCourseDatasourceImpl.getCourseDetails(courseId);
+  Future<ApiResponse<EnrolledCourseDetailsModel>> getStudentCourseDetails(int courseId) {
+    return studentCourseDatasourceImpl.getStudentCourseDetails(courseId);
   }
 
   @override

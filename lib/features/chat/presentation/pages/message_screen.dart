@@ -6,7 +6,7 @@ import '../../data/models/message_model.dart';
 import '../widgets/chat_input_widget.dart';
 import '../widgets/message_bubble.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubit/_chat_cubit.dart'; // adjust path
+import '../cubit/_chat_cubit.dart';
 
 class ChatScreen extends StatefulWidget {
   final int chatId;
@@ -26,10 +26,15 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  String formatTime(DateTime date) {
+    final locale = context.locale.languageCode;
+    final dateFormat = DateFormat.jm(locale); // hh:mm AM/PM مع اللغة المناسبة
+    return dateFormat.format(date);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat')),
+      appBar: AppBar(title: Text('chat'.tr())),
       body: Column(
         children: [
           Expanded(
@@ -38,10 +43,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (state is ConversationLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is ConversationMessagesLoaded) {
-                  final messageList =
-                      state.messages;
+                  final messageList = state.messages;
                   if (messageList.isEmpty) {
-                    return const Center(child: Text('No messages'));
+                    return Center(child: Text('no_messages'.tr()));
                   }
                   return ListView.builder(
                     padding: const EdgeInsets.all(16),
@@ -49,7 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     itemBuilder: (context, index) {
                       final current = messageList[index];
                       final previous =
-                          index > 0 ? messageList[index - 1] : null;
+                      index > 0 ? messageList[index - 1] : null;
                       final next = index < messageList.length - 1
                           ? messageList[index + 1]
                           : null;
@@ -65,12 +69,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         showAvatar: previous == null ||
                             previous.senderId != current.senderId,
                         showTime:
-                            next == null || next.senderId != current.senderId,
+                        next == null || next.senderId != current.senderId,
                       );
                     },
                   );
                 } else if (state is ConversationError) {
-                  return Center(child: Text('Error: ${state.error}'));
+                  return Center(
+                      child: Text('error_fetch_messages'.tr(args: [state.error])));
                 }
                 return const SizedBox.shrink();
               },

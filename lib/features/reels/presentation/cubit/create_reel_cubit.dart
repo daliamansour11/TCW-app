@@ -9,6 +9,8 @@ import 'package:tcw/features/reels/data/models/reel_response.dart';
 import 'package:tcw/features/reels/data/repositories/reel_repository.dart';
 import 'package:tcw/features/reels/presentation/cubit/reels_cubit.dart';
 
+import '../../data/datasource/local_data_source/reel_history.dart';
+
 part 'create_reel_state.dart';
 
 class CreateReelCubit extends Cubit<CreateReelState> {
@@ -55,6 +57,7 @@ class CreateReelCubit extends Cubit<CreateReelState> {
   Future<ApiResponse<String>> deleteReel(int reelId) async {
     emit(CreateReelLoading());
     final result = await reelRepository.deleteReel(reelId);
+    await removeReelFromHistory(reelId);
     if (result.isSuccess) {
       emit(ReelDeleteSuccess());
     } else {

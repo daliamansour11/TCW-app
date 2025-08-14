@@ -1,8 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:tcw/core/shared/shared_widget/app_bar.dart';
-import 'package:tcw/features/courses/data/models/course_model.dart';
-import 'package:tcw/features/courses/presentation/widgets/lesson_card.dart';
-
+import '../../../../core/shared/shared_widget/app_bar.dart';
+import '../../../../core/utils/asset_utils.dart';
+import '../widgets/lesson_card.dart';
 import '../../data/models/lesson_model.dart';
 import '../../data/models/section_model.dart';
 
@@ -19,6 +19,8 @@ class _WishListScreenState extends State<WishListScreen> {
   @override
   void initState() {
     super.initState();
+    // In a real app, you would load favorites from storage or API
+    // _loadFavoriteLessons();
   }
 
   void toggleWishlist(LessonModel lesson) {
@@ -29,16 +31,24 @@ class _WishListScreenState extends State<WishListScreen> {
         favoriteLessons.add(lesson);
       }
     });
+    // In a real app, you would save the updated list
+    // _saveFavoriteLessons();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Wish List'),
+      appBar: CustomAppBar(title: 'wishlist.title'.tr()),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: favoriteLessons.isEmpty
-            ? Center(child: Text('No favorite lessons yet.'))
+            ? EmptyStateWidget(
+          imagePath: AssetUtils.heart,
+          title: 'wishlist.empty_title'.tr(),
+          subtitle: 'wishlist.empty_subtitle'.tr(),
+          actionText: 'wishlist.browse_courses'.tr(),
+          onAction: () => Navigator.pop(context),
+        )
             : ListView.builder(
           itemCount: favoriteLessons.length,
           itemBuilder: (context, index) {
@@ -46,8 +56,12 @@ class _WishListScreenState extends State<WishListScreen> {
 
             final dummySection = SectionModel(
               id: lesson.sectionId ?? 0,
-              topic: lesson.title??''    ,
-              lessons: [lesson], description:lesson.description??'' ,    courseId:lesson.courseId??0, totalLessons:0, instructor: null,
+              topic: lesson.title ?? '',
+              lessons: [lesson],
+              description: lesson.description ?? '',
+              courseId: lesson.courseId ?? 0,
+              totalLessons: 0,
+              instructor: null,
             );
 
             return Padding(
@@ -67,3 +81,52 @@ class _WishListScreenState extends State<WishListScreen> {
   }
 }
 
+
+class EmptyStateWidget extends StatelessWidget {
+  final String imagePath;
+  final String title;
+  final String subtitle;
+  final String actionText;
+  final VoidCallback onAction;
+
+  const EmptyStateWidget({
+    super.key,
+    required this.imagePath,
+    required this.title,
+    required this.subtitle,
+    required this.actionText,
+    required this.onAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(imagePath, height: 150),
+            const SizedBox(height: 24),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.headlineSmall,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: onAction,
+              child: Text(actionText),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

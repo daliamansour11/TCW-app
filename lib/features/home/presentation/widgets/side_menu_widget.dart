@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/features/home/presentation/home_viewmodel.dart';
@@ -13,9 +14,7 @@ import 'package:tcw/core/routes/app_routes.dart';
 import 'package:zapx/zapx.dart';
 
 class SideMenu extends StatelessWidget {
-  const SideMenu({
-    super.key,
-  });
+  const SideMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,19 +25,20 @@ class SideMenu extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: context.propHeight(20)),
-                 BlocProvider(
+              BlocProvider(
                 create: (context) => ProfileCubit(),
-                child: const UserHeader()),
+                child: const UserHeader(),
+              ),
               SizedBox(height: context.propHeight(24)),
               _buildStats(context),
               const SizedBox(height: 20),
               const Divider(),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Text('overview',
-                      style: TextStyle(color: Colors.grey, fontSize: 12)),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: Text('overview'.tr(),
+                      style: const TextStyle(color: Colors.grey, fontSize: 12)),
                 ),
               ),
               MenuItem(
@@ -47,58 +47,58 @@ class SideMenu extends StatelessWidget {
                     Modular.to.popUntil((route) => route.isFirst);
                     Modular.to.pushNamed(AppRoutes.profilePage);
                   },
-                  title: 'Dashboard'),
+                  title: 'dashboard'.tr()),
               MenuItem(
                   icon: AssetUtils.eventIcon,
                   onTap: () {
                     Modular.to.popUntil((route) => route.isFirst);
                     Modular.to.pushNamed(AppRoutes.eventScreen);
                   },
-                  title: 'Events'),
+                  title: 'events'.tr()),
               MenuItem(
                   icon: Icons.move_to_inbox_outlined,
-                  title: 'Inbox',
+                  title: 'inbox'.tr(),
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.inboxScreen);
                   }),
               MenuItem(
                   icon: AssetUtils.coursesIcon,
-                  title: 'Programmes',
+                  title: 'programmes'.tr(),
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.programmesView);
                   }),
               MenuItem(
                   icon: AssetUtils.payMentIcon,
-                  title: 'Payments',
+                  title: 'payments'.tr(),
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.paymentsScreen);
                   }),
               MenuItem(
                   icon: AssetUtils.taskIcon,
-                  title: 'Task',
+                  title: 'task'.tr(),
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.tasksScreen);
                   }),
               MenuItem(
                   icon: AssetUtils.masterMindIcon,
-                  title: 'Master mind',
+                  title: 'master_mind'.tr(),
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.groupsScreen);
                   }),
               MenuItem(
                   icon: AssetUtils.tcwIcon,
-                  title: 'TCW media',
+                  title: 'tcw_media'.tr(),
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.tCWMediaScreen);
                   }),
               const SizedBox(height: 20),
               const Divider(),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Text('Setting',
-                      style: TextStyle(color: Colors.grey, fontSize: 12)),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: Text('settings'.tr(),
+                      style: const TextStyle(color: Colors.grey, fontSize: 12)),
                 ),
               ),
               MenuItem(
@@ -106,11 +106,11 @@ class SideMenu extends StatelessWidget {
                   onTap: () {
                     Modular.to.pushNamed(AppRoutes.settingsScreen);
                   },
-                  title: 'Setting'),
+                  title: 'setting'.tr()),
               MenuItem(
                 icon: AssetUtils.logOutIcon,
                 onTap: () => HomeViewmodel.logOutDialog(context),
-                title: 'Log out',
+                title: 'log_out'.tr(),
                 iconColor: Colors.red,
                 textColor: Colors.red,
               ),
@@ -129,21 +129,21 @@ Widget _buildStats(BuildContext context) {
 
       final List<Map<String, dynamic>> statsItems = [
         {
-          'lable': 'Notification',
+          'label': 'notification'.tr(),
           'icon': AssetUtils.notification,
           'count': '$unreadCount',
           'route': AppRoutes.notificationScreen,
           'args': true,
         },
         {
-          'lable': 'Points',
+          'label': 'points'.tr(),
           'icon': AssetUtils.point,
           'count': '100',
           'route': AppRoutes.pointsRewardsScreen,
           'args': true,
         },
         {
-          'lable': 'Rewards',
+          'label': 'rewards'.tr(),
           'icon': AssetUtils.rewards,
           'count': '2',
           'route': AppRoutes.pointsRewardsScreen,
@@ -159,7 +159,7 @@ Widget _buildStats(BuildContext context) {
             context: context,
             icon: item['icon'],
             count: item['count'],
-            label: item['lable'],
+            label: item['label'],
             onTab: () => Zap.toNamed(
               item['route'],
               arguments: item['args'],
@@ -170,28 +170,4 @@ Widget _buildStats(BuildContext context) {
       );
     },
   );
-}
-
-// ignore: unused_element
-class _StatItem extends StatelessWidget {
-  const _StatItem({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-  final IconData icon;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, size: 24, color: Colors.orange),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
-    );
-  }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EmailVerificationScreen extends StatelessWidget {
-
   EmailVerificationScreen({super.key});
   final TextEditingController emailController = TextEditingController();
 
@@ -16,9 +16,9 @@ class EmailVerificationScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Verification',
-          style: TextStyle(color: Colors.black),
+        title: Text(
+          'verification'.tr(),
+          style: const TextStyle(color: Colors.black),
         ),
         centerTitle: true,
       ),
@@ -28,9 +28,9 @@ class EmailVerificationScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 40),
-            const Text(
-              'Enter your email address below and we’ll send you a verification code to confirm it’s you.',
-              style: TextStyle(
+            Text(
+              'email_verification_message'.tr(),
+              style: const TextStyle(
                 fontSize: 16,
                 color: Colors.black87,
               ),
@@ -40,7 +40,7 @@ class EmailVerificationScreen extends StatelessWidget {
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
-                hintText: 'Enter your email',
+                hintText: 'enter_email'.tr(),
                 prefixIcon: const Icon(Icons.email_outlined),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -63,9 +63,9 @@ class EmailVerificationScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(24),
                   ),
                 ),
-                child: const Text(
-                  'Continue',
-                  style: TextStyle(color: Colors.white),
+                child: Text(
+                  'continue'.tr(),
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ),

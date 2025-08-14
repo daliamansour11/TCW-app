@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/apis/apis_url.dart';
@@ -76,7 +77,7 @@ class _MediaScreenState extends State<MediaScreen> {
       ),
     )
         : Scaffold(
-      appBar: const CustomAppBar(title: 'TCW Media'),
+      appBar: CustomAppBar(title: 'media.tcw_media'.tr()),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
@@ -97,7 +98,7 @@ class _MediaScreenState extends State<MediaScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'TCW Reels',
+            'media.tcw_reels'.tr(),
             style: context.textTheme.headlineMedium?.copyWith(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -111,7 +112,7 @@ class _MediaScreenState extends State<MediaScreen> {
               size: 18,
             ),
             label: Text(
-              'Create a Reel',
+              'media.create_reel'.tr(),
               style: context.textTheme.headlineMedium?.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -145,7 +146,7 @@ class _MediaScreenState extends State<MediaScreen> {
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () => context.read<ReelsCubit>().fetchReels(),
-                  child: const Text('Retry'),
+                  child: Text('common.retry'.tr()),
                 ),
               ],
             ),
@@ -184,14 +185,14 @@ class _MediaScreenState extends State<MediaScreen> {
             height: 120,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'No reels found',
-            style: TextStyle(fontSize: 16),
+          Text(
+            'media.no_reels_found'.tr(),
+            style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: () => Zap.toNamed(AppRoutes.createReelPage),
-            child: const Text('Create your first reel'),
+            child: Text('media.create_first_reel'.tr()),
           ),
         ],
       ),
@@ -309,7 +310,6 @@ class _MediaScreenState extends State<MediaScreen> {
             const SizedBox(width: 4),
             Text(
               _formatViewsCount(reel.viewsCount ?? 0),
-              // '${reel.viewsCount??0}',
               style: const TextStyle(
                 fontSize: 12,
                 color: Colors.white,
@@ -337,7 +337,6 @@ class _MediaScreenState extends State<MediaScreen> {
         builder: (_) =>
             ReelViewScreen(
               reel: reel,
-              user_id: reel.user?.id??0,
               videoUrl: videoUrl,
             ),
       ),
@@ -345,7 +344,7 @@ class _MediaScreenState extends State<MediaScreen> {
 
     if (updatedReel != null) {
       context.read<ReelsCubit>().updateReelStats(
-        reelId: updatedReel.id!,
+        reelId: updatedReel.id??0,
         isLiked: updatedReel.isLiked,
         likesCount: updatedReel.likesCount,
         commentsCount: updatedReel.commentsCount,

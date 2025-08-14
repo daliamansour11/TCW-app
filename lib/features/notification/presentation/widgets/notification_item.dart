@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:tcw/core/constansts/date_extensions.dart';
 import 'package:tcw/features/notification/data/models/notification_model.dart';
 import 'package:tcw/features/notification/presentation/cubit/notification_cubit.dart';
@@ -31,8 +32,6 @@ class NotificationItem extends StatelessWidget {
         context.read<NotificationCubit>().markNotificationAsRead(notification);
         handleNavigation(context);
       },
-
-
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
@@ -54,18 +53,24 @@ class NotificationItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(notification.title,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text(
+                    tr(notification.title),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
                   const SizedBox(height: 4),
-                  Text(notification.subtitle,
-                      style: const TextStyle(fontSize: 13, color: Colors.grey)),
+                  Text(
+                    tr(notification.subtitle),
+                    style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
-            Text(notification.createdAt.formatDateByYears,
-                style: const TextStyle(fontSize: 11, color: Colors.grey)),
+            Text(
+              notification.createdAt.formatDateByYears,
+              style: const TextStyle(fontSize: 11, color: Colors.grey),
+            ),
           ],
         ),
       ),

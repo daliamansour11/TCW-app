@@ -22,6 +22,7 @@ import '../../features/chat/presentation/pages/inbox_screen.dart';
 import '../../features/chat/presentation/pages/message_screen.dart';
 import '../../features/chat/presentation/pages/new_group_screen.dart';
 import '../../features/courses/data/datasources/course_datasource_impl.dart';
+import '../../features/courses/data/models/course_details_model.dart';
 import '../../features/courses/data/models/task_model.dart';
 import '../../features/courses/data/repositories/course_repository_impl.dart';
 import '../../features/courses/data/repositories/student_course_repository_impl.dart';
@@ -32,6 +33,7 @@ import '../../features/courses/presentation/pages/courses_screen.dart';
 import '../../features/courses/presentation/pages/lesson_screen.dart';
 import '../../features/courses/presentation/pages/my_library_screen.dart';
 import '../../features/courses/presentation/pages/recommended_courses_screen.dart';
+import '../../features/courses/presentation/widgets/program_subscribe_rounds_widget.dart';
 import '../../features/event/data/data_source/event_data_source.dart';
 import '../../features/event/data/models/event_model.dart';
 import '../../features/event/data/repositories/event_repository.dart';
@@ -481,7 +483,6 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
                   child: ReelViewScreen(
                     reel: reel,
                     videoUrl: reel.videoUrl ?? '',
-                    user_id: userId,
                   ),
                 );
               },
@@ -572,6 +573,17 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
         child: ProgrameDetailsView(
           programId: programId,
         ),
+      );
+    },
+    transition: transition,
+  ),ChildRoute(
+    AppRoutes.programSubscribeRoundsWidget,
+    child: (_, ModularArguments args) {
+      final programId = args.data  as CourseDetailsModel;
+
+      return BlocProvider(
+        create: (context) => StudentCourseCubit(StudentCourseRepositoryImpl())..getStudentCourseDetails(programId.data?.id??0),
+        child: ProgramSubscribeRoundsWidget(programId),
       );
     },
     transition: transition,

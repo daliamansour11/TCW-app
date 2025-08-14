@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/custom_button.dart';
@@ -42,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
           LoadingUtil.show();
         } else if (state is AuthLoggedIn) {
           LoadingUtil.close();
-          ToastUtil.show('Welcome ${state.user.name}');
+          ToastUtil.show(tr('welcome_user', args: [state.user.name]));
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Zap.offAllNamed(AppRoutes.homeLayout);
           });
@@ -63,75 +64,38 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     SizedBox(height: context.propHeight(32)),
                     Center(
-                      child: Text('Log in Page',
+                      child: Text(tr('login_page'),
                           style: context.textTheme.headlineMedium),
                     ),
                     SizedBox(height: context.propHeight(32)),
-                    // Container(
-                    //   width: double.infinity,
-                    //   padding: const EdgeInsets.symmetric(vertical: 14),
-                    //   decoration: BoxDecoration(
-                    //     borderRadius: BorderRadius.circular(50),
-                    //     color: Colors.white,
-                    //     boxShadow: [
-                    //       BoxShadow(
-                    //         color: Colors.grey.withValues(alpha: 0.1),
-                    //         spreadRadius: 3,
-                    //         blurRadius: 4,
-                    //         offset: const Offset(0, 2),
-                    //       ),
-                    //     ],
-                    //   ),
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: [
-                    //       Image.asset(AssetUtils.google,
-                    //           width: 30, height: 30),
-                    //       const SizedBox(width: 8),
-                    //       Text('Log In with Google',
-                    //           style: context.textTheme.headlineSmall),
-                    //     ],
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 24),
-                    // const Row(
-                    //   children: [
-                    //     Expanded(child: Divider()),
-                    //     Padding(
-                    //       padding: EdgeInsets.symmetric(horizontal: 8),
-                    //       child: Text('Or'),
-                    //     ),
-                    //     Expanded(child: Divider()),
-                    //   ],
-                    // ),
-                    const SizedBox(height: 24),
+
                     RoundedTextField(
-                      hint: 'Enter your E-mail',
+                      hint: tr('enter_email'),
                       icon: Icons.email_outlined,
                       controller: viewModel.emailController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return tr('please_enter_email');
                         }
                         if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}')
                             .hasMatch(value)) {
-                          return 'Enter a valid email';
+                          return tr('enter_valid_email');
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 16),
                     RoundedTextField(
-                      hint: 'Password',
+                      hint: tr('password'),
                       icon: Icons.lock_outline,
                       isPassword: true,
                       controller: viewModel.passwordController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return tr('please_enter_password');
                         }
                         if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return tr('password_min_length');
                         }
                         return null;
                       },
@@ -148,18 +112,18 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           },
                         ),
-                        const Text(
-                          'Remember me',
-                          style: TextStyle(fontSize: 12),
+                        Text(
+                          tr('remember_me'),
+                          style: const TextStyle(fontSize: 12),
                         ),
                         const Spacer(),
                         TextButton(
                           onPressed: () {
                             Zap.toNamed(AppRoutes.forgetPasswordScreen);
                           },
-                          child: const Text(
-                            'Forgot Password?',
-                            style: TextStyle(
+                          child: Text(
+                            tr('forgot_password'),
+                            style: const TextStyle(
                               color: Colors.brown,
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
@@ -177,19 +141,19 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
-                      title: 'Log In',
+                      title: tr('log_in'),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Don’t have an account? '),
+                        Text(tr('dont_have_account')),
                         TextButton(
                           onPressed: () {
                             Zap.toNamed(AppRoutes.registerPage);
                           },
-                          child: const Text(
-                            'Register Now',
-                            style: TextStyle(
+                          child: Text(
+                            tr('register_now'),
+                            style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
@@ -197,7 +161,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
-
                   ],
                 ),
               ),

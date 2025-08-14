@@ -9,6 +9,7 @@ import '../models/enrolled_course_model.dart';
 import '../models/last_viewed_model.dart';
 import '../models/lesson_model.dart';
 
+import '../models/student_course_details.dart';
 import '../models/wishlist_model.dart';
 
 abstract class StudentCourseDatasources {
@@ -17,7 +18,7 @@ abstract class StudentCourseDatasources {
   int offset,
   String? search,
 );
-  Future<ApiResponse<CourseDetailsModel>> getCourseDetails(int courseId);
+  Future<ApiResponse<EnrolledCourseDetailsModel>> getStudentCourseDetails(int courseId);
   Future<ApiResponse<CertificateModel>> downloadCertificate(int courseId);
   Future<ApiResponse<bool>> updateLastViewed( int courseId,
       int sectionId,
@@ -55,7 +56,7 @@ class StudentCourseDatasourceImpl implements StudentCourseDatasources {
 
 
     @override
-  Future<ApiResponse<CourseDetailsModel>> getCourseDetails(int courseId) async {
+  Future<ApiResponse<EnrolledCourseDetailsModel>> getStudentCourseDetails(int courseId) async {
     final response = await ApiService.instance
         .get(ApiUrl.studentCourse.getCourseClassRoomDetails(courseId)
     ,withToken: true,
@@ -63,7 +64,7 @@ class StudentCourseDatasourceImpl implements StudentCourseDatasources {
 
     if (response.isError) return response.error();
 
-    final course = CourseDetailsModel.fromJson(response.mapData['data']);
+    final course = EnrolledCourseDetailsModel.fromJson(response.mapData['data']);
     return response.copyWith(data: course);
   }
 

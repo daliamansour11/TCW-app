@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/routes/app_routes.dart';
@@ -63,48 +64,28 @@ class _CreateReelPageState extends State<CreateReelPage> {
           showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (context) =>
-                const Center(child: CircularProgressIndicator()),
+            builder: (_) => const Center(child: CircularProgressIndicator()),
           );
         } else if (state is CreateReelSuccess) {
-          Navigator.pop(context); // Close loading dialog
+          Navigator.pop(context); // close loading dialog
 
           if (widget.isEditing) {
-            customIconDialog(
-              context,
-              title: 'Caption Updated Successfully',
-              subTitle: '!',
-              buttons: CustomIconDialogButtons(
-                secondTitle: 'Watch My Reel',
-                firstOnPressed: () {
-                  Zap.back(); // just close dialog
-                },
-                secondOnPressed: () {
-                  Zap.toNamed(
-                    AppRoutes.reelViewScreen,
-                    arguments: {
-                      'reelId': widget.reelId,
-                    },
-                  );
-                },
-                firstTitle: 'Close',
-              ),
+            // Navigate directly to Reel View after editing
+            Zap.toNamed(
+              AppRoutes.reelViewScreen,
+              arguments: {'reelId': widget.reelId},
             );
           } else {
+            // Show success dialog for new reel
             customIconDialog(
               context,
-              title: 'Reel Posted Successfully',
-              subTitle:
-                  'You’ve earned 500 points — keep going, more rewards await!',
+              title: 'reel.post_success'.tr(),
+              subTitle: 'reel.earned_points'.tr(),
               buttons: CustomIconDialogButtons(
-                secondTitle: 'Watch My Reel',
-                firstOnPressed: () {
-                  Zap.toNamed(AppRoutes.pointsRewardsScreen);
-                },
-                secondOnPressed: () {
-                  Zap.toNamed(AppRoutes.tCWMediaScreen);
-                },
-                firstTitle: 'Check My Points',
+                secondTitle: 'reel.watch_my_reel'.tr(),
+                firstOnPressed: () => Zap.toNamed(AppRoutes.pointsRewardsScreen),
+                secondOnPressed: () => Zap.toNamed(AppRoutes.tCWMediaScreen),
+                firstTitle: 'reel.check_points'.tr(),
               ),
             );
           }
@@ -117,7 +98,9 @@ class _CreateReelPageState extends State<CreateReelPage> {
       },
       child: Scaffold(
         appBar: CustomAppBar(
-          title: widget.isEditing ? 'Edit Caption' : 'Create A Reel',
+          title: widget.isEditing
+              ? 'reel.edit_caption'.tr()
+              : 'reel.create_reel'.tr(),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -132,18 +115,16 @@ class _CreateReelPageState extends State<CreateReelPage> {
                   selectedVideo: _selectedVideo,
                 ),
               const SizedBox.shrink(),
-              const CustomText(
-                'Post Details',
-              ),
+              CustomText('reel.post_details'.tr()),
               const SizedBox(height: 10),
               CustomTextField(
                 controller: _captionController,
-                hintText: 'Describe your Reel..',
+                hintText: 'reel.describe_hint'.tr(),
                 maxLines: 5,
                 borderColor: Colors.grey.withValues(alpha: 0.5),
               ),
               const SizedBox.shrink(),
-              const CustomText('Who can see it'),
+              CustomText('reel.visibility'.tr()),
               const ReelSelectOptionsWidget(),
             ],
           ),
@@ -157,34 +138,48 @@ class _CreateReelPageState extends State<CreateReelPage> {
             children: [
               Flexible(
                 child: OutlinedButton(
-                    onPressed: Zap.back, child: const CustomText('Cancel')),
+                  onPressed: Zap.back,
+                  child: CustomText('common.cancel'.tr()),
+                ),
               ),
               Flexible(
-                child: CustomButton(
-                  onPressed: () {
-                    if (!widget.isEditing && _selectedVideo == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please select a video')),
-                      );
-                      return;
-                    }
-                    if (widget.isEditing) {
-                      viewModel.updateReelCaption(
-                        reelId: widget.reelId!,
-                        caption: _captionController.text,
-                      );
-                    } else {
-                      viewModel.createReel(
-                        caption: _captionController.text.isNotEmpty
-                            ? _captionController.text
-                            : null,
-                        video: _selectedVideo!,
-                      );
-                    }
+                child: BlocBuilder<CreateReelCubit, CreateReelState>(
+                  builder: (context, state) {
+                    final isLoading = state is CreateReelLoading;
+                    return CustomButton(
+                      onPressed: () {
+                      if (isLoading) return; // prevent action while loading
+
+                      if (!widget.isEditing && _selectedVideo == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('reel.select_video_error'.tr())),
+                        );
+                        return;
+                      }
+                      if (widget.isEditing) {
+                        viewModel.updateReelCaption(
+                          reelId: widget.reelId!,
+                          caption: _captionController.text,
+                        );
+                      } else {
+                        viewModel.createReel(
+                          caption: _captionController.text.isNotEmpty
+                              ? _captionController.text
+                              : null,
+                          video: _selectedVideo!,
+                        );
+                      }
+                    },
+
+                    removeWidth: true,
+                      backgroundColor: Colors.black,
+                      title: isLoading
+                          ? 'common.saving'.tr()
+                          : widget.isEditing
+                          ? 'common.save_changes'.tr()
+                          : 'reel.post_button'.tr(),
+                    );
                   },
-                  removeWidth: true,
-                  backgroundColor: Colors.black,
-                  title: widget.isEditing ? 'Save Changes' : 'Post Reel',
                 ),
               ),
             ],

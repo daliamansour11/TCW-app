@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/extensions/string_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/custom_image.dart';
@@ -30,54 +31,67 @@ class _UserHeaderState extends State<UserHeader> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProfileCubit, ProfileState>(builder: (context, state) {
-      final user = state is GetProfileLoaded ? state.user : userData;
-      return Center(
-        child: Column(
-          children: [
-            SizedBox(height: context.propHeight(widget.isAside ? 9 : 12)),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  width: context.propWidth(widget.isAside ? 50 : 70),
-                  height: context.propHeight(widget.isAside ? 50 : 70),
-                  child: CircularProgressIndicator(
-                    value: 0.6,
-                    strokeWidth: 4,
-                    backgroundColor: Colors.grey.shade300,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                        AppColors.primaryColor),
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        final user = state is GetProfileLoaded ? state.user : userData;
+        return Center(
+          child: Column(
+            children: [
+              SizedBox(height: context.propHeight(widget.isAside ? 9 : 12)),
+
+              // Profile image with progress
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: context.propWidth(widget.isAside ? 50 : 70),
+                    height: context.propHeight(widget.isAside ? 50 : 70),
+                    child: CircularProgressIndicator(
+                      value: 0.6,
+                      strokeWidth: 4,
+                      backgroundColor: Colors.grey.shade300,
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.primaryColor,
+                      ),
+                    ),
                   ),
-                ),
-                user!.imageWidget,
-              ],
-            ),
-            SizedBox(height: context.propHeight(widget.isAside ? 9 : 12)),
-            CustomText(
-              '${''.greeting}, ${user.getFirstName}',
-              textAlign: TextAlign.center,
-              fontSize: widget.isAside ? 12 : 16,
-              fontWeight: FontWeight.bold,
-            ),
-            SizedBox(height: context.propHeight(12)),
-            CustomText(
-           user.status ?? '',
-              textAlign: TextAlign.center,
-              fontSize: widget.isAside ? 12 : 16,
-              fontWeight: FontWeight.w200,
-              color: Colors.grey.shade600,
-            ),
-            CustomText(
-              'Your Goals',
-              textAlign: TextAlign.center,
-              fontSize: widget.isAside ? 12 : 16,
-              fontWeight: FontWeight.w200,
-              color: Colors.grey.shade600,
-            ),
-          ],
-        ),
-      );
-    });
+                  user!.imageWidget,
+                ],
+              ),
+
+              SizedBox(height: context.propHeight(widget.isAside ? 9 : 12)),
+
+              // Greeting
+              CustomText(
+                '${tr('greeting')}, ${user.getFirstName}',
+                textAlign: TextAlign.center,
+                fontSize: widget.isAside ? 12 : 16,
+                fontWeight: FontWeight.bold,
+              ),
+
+              SizedBox(height: context.propHeight(12)),
+
+              // User status
+              CustomText(
+                user.status ?? '',
+                textAlign: TextAlign.center,
+                fontSize: widget.isAside ? 12 : 16,
+                fontWeight: FontWeight.w200,
+                color: Colors.grey.shade600,
+              ),
+
+              // Goals title
+              CustomText(
+                tr('your_goals'),
+                textAlign: TextAlign.center,
+                fontSize: widget.isAside ? 12 : 16,
+                fontWeight: FontWeight.w200,
+                color: Colors.grey.shade600,
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

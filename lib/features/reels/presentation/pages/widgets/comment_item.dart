@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -63,7 +64,7 @@ class _CommentItemState extends State<CommentItem> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    comment.user?.name ?? 'Unknown',
+                    comment.user?.name ?? 'Unknown'.tr(),
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -97,7 +98,7 @@ class _CommentItemState extends State<CommentItem> {
                             const SizedBox(width: 4),
 
                             Text(
-                              'Like',
+                              'reel.like'.tr(),
                               style: TextStyle(
                                 color: Colors.grey.shade600,
                                 fontSize: 13,
@@ -116,7 +117,7 @@ class _CommentItemState extends State<CommentItem> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          'Reply',
+                          'reel.reply'.tr(),
                           style: TextStyle(
                             color: Colors.grey.shade600,
                             fontSize: 13,

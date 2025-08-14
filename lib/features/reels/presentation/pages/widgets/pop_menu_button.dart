@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/shared/shared_widget/custom_icon_dialog.dart';
@@ -65,7 +66,7 @@ class _PopMenuButtonState extends State<PopMenuButton> {
       listener: (context, state) {
         if (state is ReelDeleteSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Reel deleted successfully')),
+             SnackBar(content: Text('reel.success_delete'.tr())),
           );
           Navigator.pop(context);
         } else if (state is ReelActionsError) {

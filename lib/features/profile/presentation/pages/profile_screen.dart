@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/shared/log/logger.dart';
 import '../../../../core/shared/shared_widget/custom_button.dart';
 import '../../../../core/shared/shared_widget/custom_container.dart';
 import '../../../../core/shared/shared_widget/custom_text.dart';
@@ -11,33 +11,25 @@ import '../../../../core/shared/shared_widget/search_filter_widget.dart';
 import '../../../../core/utils/asset_utils.dart';
 import '../../../../core/shared/shared_widget/show_more_tile_widget.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../auth/data/models/user_model.dart';
+import '../../../auth/data/datasources/auth_local_datasource_impl.dart';
 import '../../../courses/data/models/enrolled_course_model.dart';
 import '../../../courses/presentation/courses_viewmodel.dart';
 import '../../../courses/presentation/cubit/course/courses_cubit.dart';
 import '../../../courses/presentation/cubit/student/student_course_cubit.dart';
 import '../../../courses/presentation/widgets/courses_list_screen.dart';
-import '../../../event/data/models/event_model.dart';
 import '../../../event/presentation/cubit/event_cubit.dart';
 import '../../../event/presentation/widgets/event_slider_widget.dart';
 import '../../../notification/presentation/cubit/notification_cubit.dart';
-import '../../data/model/video_item.dart';
 import '../cubit/profile_cubit.dart';
 import '../widgets/hour_chart.dart';
 import '../widgets/state_item_widget.dart';
 import '../widgets/user_header_widget.dart';
-import '../../../programmes/presentation/cubit/program_cubit.dart';
 import '../../../reels/data/datasource/local_data_source/reel_history.dart';
 import '../../../reels/data/models/reel_history_model.dart';
 import '../../../reels/data/models/reel_model.dart';
 import '../../../../core/routes/app_routes.dart';
 import 'package:zap_sizer/zap_sizer.dart';
 import 'package:zapx/zapx.dart';
-
-import '../../../courses/data/local_data_source/local_storage.dart';
-import '../../../courses/data/models/lesson_model.dart';
-import '../../../courses/presentation/widgets/lesson_card.dart';
-import '../../../event/data/models/live_model_details.dart' hide Meeting;
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -47,77 +39,43 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   EnrolledCourseModel? courses;
   CoursesViewmodel? viewmodel;
-  bool  _isLoading = true;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NotificationCubit>().fetchStudentPushNotification();
-      context.read<StudentCourseCubit>()..fetchEnrolledCourses(limit: 10,offset: 1);
-      context.read<CourseCubit>()..fetchCourses(limit: 10,offset: 1);
-
-      context.read<EventCubit>()..getEvents();
+      context
+          .read<StudentCourseCubit>()
+          .fetchEnrolledCourses(limit: 10, offset: 1);
+      context.read<CourseCubit>().fetchCourses(limit: 10, offset: 1);
+      context.read<EventCubit>().getEvents();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         viewmodel = CoursesViewmodel(context);
         viewmodel?.init();
-        Timer(Duration(seconds: 12), () {
+        Timer(const Duration(seconds: 12), () {
           if (mounted) {
             setState(() {
               _isLoading = false;
             });
           }
-        });}
-
-      );});
-    // _continueWatchingFuture = _continueWatchingManager.getContinueWatchingVideos();
+        });
+      });
+    });
   }
-
-
-  late  final List<VideoItem> videos;
-  final List<Meeting> sampleMeetings = [
-    Meeting(
-      id: 1,
-      title: "Intro to Programming",
-      meetingLink: "https://meet.google.com/poa-dgpu-etr",
-      scheduledAt: DateTime.parse("2025-08-15 10:00:00"),
-      scheduledForHumans: "4 days from now",
-      course: Course(id: 3, title: "Design"),
-      subTitle: 'null',
-      // instructor: Instructor(id: 37, name: "Dalia Mansour"),
-      enrolledStudentsCount: 0,
-      comments: [],
-      thumbUrl: "https://example.com/image1.jpg", instructor: Instructor(id: 37, name: "Dalia Mansour"),
-    ),
-    Meeting(
-      id: 2,
-      title: "Advanced Design",
-      meetingLink: "https://meet.google.com/xyz-abc-def",
-      scheduledAt: DateTime.parse("2025-08-20 15:00:00"),
-      scheduledForHumans: "9 days from now",
-      course: Course(id: 4, title: "Advanced Course"),
-      subTitle: '',
-      instructor: Instructor(id: 38, name: "John Doe"),
-      enrolledStudentsCount: 4,
-      comments: [],
-      thumbUrl: "https://example.com/image2.jpg",
-    ),
-  ];
-
-
+  Future<int?> getCurrentUserId() async {
+    final authLocal = AuthLocalDatasourceImpl();
+    final user = await authLocal.getLoggedUser();
+    return user?.id;
+  }
 
   @override
   Widget build(BuildContext context) {
-
-
-
-    logger.d(userData?.email);
     return Scaffold(
-
       key: _scaffoldKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -133,7 +91,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,10 +103,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _buildStats(),
               SearchFilterWidget(
                 onChanged: (value) {
-                  context.read<StudentCourseCubit>().fetchEnrolledCourses(search: value);
+                  context
+                      .read<StudentCourseCubit>()
+                      .fetchEnrolledCourses(search: value);
                 },
               ),
-              EventSlider(events: sampleMeetings),
               BlocBuilder<EventCubit, EventState>(
                 builder: (context, state) {
                   if (state is EventLoading) {
@@ -160,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text('Something went wrong or took too long.'),
+                             Text('error.something_went_wrong'.tr()),
                             const SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: () {
@@ -176,7 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   }
                                 });
                               },
-                              child: const Text('Retry'),
+                              child:  Text('retry'.tr()),
                             ),
                           ],
                         ),
@@ -184,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }          } else if (state is EventLoaded) {
                     final events = state.event.data;
                     if (events.isEmpty) {
-                      return Center(child: const CustomText('No Events Available'));
+                      return  Center(child: CustomText('profile.no_events'.tr()));
                     }
                     return EventSlider(events: events);
                   } else if (state is EventError) {
@@ -196,23 +154,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               ),
               _buildSectionHeader(
-                'Reels History',
+                'profile.reels_history'.tr(),
                 trailing: ShowMoreTileWidget(
                   onTab: () => Zap.toNamed(AppRoutes.reelsHistoryPage),
                 ),
               ),
+
+              const SizedBox(height: 8),
               FutureBuilder<List<ReelHistoryModel>>(
-                future: fetchLimitedReelsFromHistory(limit: 5),
+                future: fetchUserReelHistory(limit: 5),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const SizedBox(
+                      height: 150,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const CustomText('No recently watched reels.');
+                    return SizedBox(
+                      height: 150,
+                      child: Center(
+                        child: Text(
+                          'profile.no_recent_reels'.tr(),
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    );
                   }
 
                   final reels = snapshot.data!;
                   return SizedBox(
-                    height: 25.h,
+                    height: 150,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: reels.length,
@@ -220,24 +191,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemBuilder: (context, index) {
                         final reel = reels[index];
                         return GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                AppRoutes.reelViewScreen,
-                                arguments: Datum.fromHistory(reel),
-                              );
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: CachedNetworkImage(
-                                height: 25.h, width:30.w, fit: BoxFit.cover,
-                                placeholder: (context, url) => Image.asset(AssetUtils.programPlaceHolder),
-                                errorWidget: (context, url, error) =>
-                                    Image.asset(
-                                      AssetUtils.reel,
-                                      fit: BoxFit.cover,),                        imageUrl:                               reel.thumbnailUrl,
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.reelViewScreen,
+                              arguments: Datum.fromHistory(reel),
+                            );
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: CachedNetworkImage(
+                              imageUrl: reel.thumbnailUrl,
+                              width: 120,
+                              height: 150,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                color: Colors.grey.shade300,
                               ),
-                            ));
+                              errorWidget: (context, url, error) => Container(
+                                color: Colors.grey,
+                                child: const Icon(Icons.error, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        );
                       },
                     ),
                   );
@@ -245,7 +222,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
 
               _buildSectionHeader(
-                'Continue Watching',
+                'profile.continue_watching'.tr(),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   spacing: 5,
@@ -255,82 +232,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       isCircle: true,
                       color: Colors.transparent,
                       border: Border.all(color: Colors.black),
-                      child: const Icon(
-                        Icons.arrow_back_ios_new,
-                        size: 12,
-                      ),
+                      child: const Icon(Icons.arrow_back_ios_new, size: 12),
                     ),
                     const CustomContainer(
                       padding: 3,
                       isCircle: true,
                       color: Colors.black,
-                      child: Icon(
-                        Icons.arrow_forward_ios,
-                        size: 12,
-                        color: Colors.white,
-                      ),
+                      child: Icon(Icons.arrow_forward_ios,
+                          size: 12, color: Colors.white),
                     )
                   ],
                 ),
               ),
-
-              // SizedBox(
-              //   height: 160,
-              //   child: FutureBuilder<List<Map<String, dynamic>>>(
-              //     future: _continueWatchingFuture,
-              //     builder: (context, snapshot) {
-              //       if (snapshot.connectionState == ConnectionState.waiting) {
-              //         return const Center(child: CircularProgressIndicator());
-              //       }
-              //       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              //         return const Center(child: Text('No videos to continue watching.'));
-              //       }
-              //
-              //       final videos = snapshot.data!;
-              //
-              //       return ListView.separated(
-              //         scrollDirection: Axis.horizontal,
-              //         itemCount: videos.length,
-              //         separatorBuilder: (_, __) => const SizedBox(width: 8),
-              //         itemBuilder: (context, index) {
-              //           final video = videos[index];
-              //           final position = video['position'] ?? 0;
-              //           final videoUrl = video['videoUrl'] ?? '';
-              //           final videoId = video['videoId'] ?? '';
-              //
-              //           return GestureDetector(
-              //             onTap: () {
-              //               final lesson = LessonModel(
-              //                 id: videoId,
-              //                 video: videoUrl, resumePositionMs: null,
-              //               );
-              //
-              //               Zap.toNamed(
-              //                 AppRoutes.lessonScreen,
-              //                 arguments: lesson,
-              //               );
-              //             },
-              //
-              //             child: ClipRRect(
-              //               borderRadius: BorderRadius.circular(10),
-              //               child: CachedNetworkImage(
-              //                 width: 130,
-              //                 height: 160,
-              //                 fit: BoxFit.cover,
-              //                 imageUrl: videoUrl,
-              //                 placeholder: (context, url) =>
-              //                     Image.asset(AssetUtils.programPlaceHolder),
-              //                 errorWidget: (context, url, error) =>
-              //                     Image.asset(AssetUtils.programPlaceHolder),
-              //               ),
-              //             ),
-              //           );
-              //         },
-              //       );
-              //     },
-              //   ),
-              // ),
-              _buildSectionHeader('Your Programs',
+              _buildSectionHeader('profile.your_programs'.tr(),
                   trailing: ShowMoreTileWidget(
                     onTab: () => Zap.toNamed(AppRoutes.coursesScreen),
                   )),
@@ -340,22 +254,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is EnrolledCoursesLoaded) {
                     if (state.courses.isEmpty) {
-                      return const Center(child: Text('No Programs found.'));
+                      return Center(child: Text('profile.no_programs_found'.tr()));
                     }
-
                     return CourseListScreen(courses: state.courses);
-
                   } else if (state is StudentCourseError) {
-                    return Center(child: Text('Error: ${state.message}'));
+                    return Center(
+                        child: Text('${'error'.tr()}: ${state.message}'));
                   } else {
-                    return const Center(child: Text('Something went wrong.'));
+                    return Center(child: Text('error.something_went_wrong'.tr()));
                   }
                 },
               ),
-
-
-
-              _buildSectionHeader('Your Mentor',
+              _buildSectionHeader('profile.your_mentor'.tr(),
                   trailing: const Icon(Icons.add_circle_outline_sharp,
                       color: Colors.grey)),
               CustomContainer(
@@ -368,19 +278,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: Text('Rawan',
                         style:
                         GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Mentor',
+                    subtitle: Text('profile.mentor'.tr(),
                         style: GoogleFonts.poppins(color: Colors.grey)),
                     trailing: CustomButton(
                       onPressed: () {},
                       width: 10.w,
                       backgroundColor: Colors.black,
-                      title: 'Contact Now',
+                      title: 'profile.contact_now'.tr(),
                       style: CustomText.style(fontSize: 14),
                     )),
               ),
-
               const SizedBox(),
-              _buildSectionHeader('Weekly Study Hours'),
+              _buildSectionHeader('profile.weekly_study_hours'.tr()),
               const HourChart(),
               const SizedBox(),
             ],
@@ -397,21 +306,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         final List<Map<String, dynamic>> statsItems = [
           {
-            'lable': 'Notification',
+            'lable': 'profile.notification'.tr(),
             'icon': AssetUtils.notification,
             'count': '$unreadCount',
             'route': AppRoutes.notificationScreen,
             'args': true,
           },
           {
-            'lable': 'Points',
+            'lable': 'profile.points'.tr(),
             'icon': AssetUtils.point,
             'count': '100',
             'route': AppRoutes.pointsRewardsScreen,
             'args': true,
           },
           {
-            'lable': 'Rewards',
+            'lable': 'profile.rewards'.tr(),
             'icon': AssetUtils.rewards,
             'count': '2',
             'route': AppRoutes.pointsRewardsScreen,
@@ -439,7 +348,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
   }
-
   Widget _buildSectionHeader(
       String title, {
         String? subTitle,

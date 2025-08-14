@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -59,7 +60,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 showFirstIfAvailable: true,
                 compactHeight: 53,
               ),
-              buildHeader(context),
+      buildHeader(
+        context,
+        titleKey: 'programs',
+        // trailing: TextButton(
+        //   onPressed: () {},
+        //   child: Text(tr('see_all')),
+        // ),
+      ),
 
 
               BlocBuilder<CourseCubit, CourseState>(
@@ -72,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text('Something went wrong or took too long.'),
+                            Text('something_wrong'.tr()),
                             const SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: () {
@@ -88,21 +96,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                   }
                                 });
                               },
-                              child: const Text('Retry'),
+                              child: Text('retry'.tr()),
                             ),
                           ],
                         ),
                       );
                     }
-
-
-                } else if (state is CoursesLoaded ||
-                      state is CourseLoadingMore) {
+                  } else if (state is CoursesLoaded || state is CourseLoadingMore) {
                     final courses = (state is CoursesLoaded)
                         ? (state).courses
                         : context.read<CourseCubit>().allCourses;
                     if (courses.isEmpty) {
-                      return const Center(child: Text('No courses found.'));
+                      return Center(child: Text('no_courses_found'.tr()));
                     }
                     return ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
@@ -111,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: courses.length,
                       itemBuilder: (context, index) {
                         final course = courses[index];
-                        return CourseItemWidget(program: course); // Fixed props
+                        return CourseItemWidget(program: course);
                       },
                     );
                   } else if (state is CourseError) {

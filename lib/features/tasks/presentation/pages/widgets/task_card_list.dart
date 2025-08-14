@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
@@ -29,12 +30,12 @@ class TaskCardList extends StatelessWidget {
                 position: details.globalPosition,
                 actions: [
                   ActionItem(
-                    title: 'Edit',
+                    title: 'edit'.tr(),
                     icon: Icons.edit_document,
                     onTap: ()=>Zap.toNamed(AppRoutes.newTaskScreen, arguments: tasks[index]),
                   ),
                   ActionItem(
-                    title: 'Delete',
+                    title: 'delete'.tr(),
                     icon: CupertinoIcons.delete,
                     textColor: Colors.red,
                     iconColor: Colors.red,

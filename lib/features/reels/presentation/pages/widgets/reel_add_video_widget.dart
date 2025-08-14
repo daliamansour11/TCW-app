@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tcw/core/shared/shared_widget/custom_container.dart';
@@ -35,7 +36,7 @@ class _ReelAddVideoWidgetState extends State<ReelAddVideoWidget> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pick video: ${e.toString()}')),
+        SnackBar(content: Text('reel.Failed_to_pick_video: ${e.toString()}'.tr())),
       );
     }
   }

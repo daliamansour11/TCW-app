@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
 import 'package:tcw/core/shared/shared_widget/custom_button.dart';
@@ -32,7 +33,7 @@ class _TasksScreenState extends State<TasksScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Tasks'),
+      appBar: CustomAppBar(title: 'tasks'.tr()), // Localized
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -55,11 +56,14 @@ class _TasksScreenState extends State<TasksScreen> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SectionHeader(title: 'Tasks To Do', count: todoTasks.length),
+                          SectionHeader(
+                            count: todoTasks.length,
+                            titleKey: 'tasks_to_do'.tr(), // Localized
+                          ),
                           SizedBox(
                             height: context.propHeight(200),
                             child: todoTasks.isEmpty
-                                ? const Center(child: Text('No Task Found'))
+                                ? Center(child: Text('no_task_found'.tr()))
                                 : ListView.separated(
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
@@ -77,11 +81,14 @@ class _TasksScreenState extends State<TasksScreen> {
                           ),
                           SizedBox(height: context.propHeight(24)),
 
-                          SectionHeader(title: 'Completed Tasks', count: completedTasks.length),
+                          SectionHeader(
+                            count: completedTasks.length,
+                            titleKey: 'completed_tasks'.tr(), // Localized
+                          ),
                           SizedBox(
                             height: context.propHeight(200),
                             child: completedTasks.isEmpty
-                                ? const Center(child: Text('No Task Found'))
+                                ? Center(child: Text('no_task_found'.tr()))
                                 : ListView.separated(
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
@@ -109,7 +116,7 @@ class _TasksScreenState extends State<TasksScreen> {
 
                 SizedBox(height: context.propHeight(24)),
                 CustomButton(
-                  title: 'Add tasks',
+                  title: 'add_tasks'.tr(), // Localized
                   onPressed: () => Zap.toNamed(AppRoutes.newTaskScreen),
                   backgroundColor: Colors.black,
                 ),

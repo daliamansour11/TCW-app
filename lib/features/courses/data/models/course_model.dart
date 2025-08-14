@@ -13,8 +13,7 @@ class CourseModel {
   final bool? isFeatured;
   final dynamic discount;
   final bool? isSubscribed;
-  final bool? isWishlisted; // ضفتها هنا لو حابب تستخدمها
-
+  final bool? isWishlisted;
   CourseModel({
     this.id,
     this.title,

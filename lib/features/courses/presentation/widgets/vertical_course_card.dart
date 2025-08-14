@@ -58,7 +58,7 @@ class VerticalCourseCard extends StatelessWidget {
                           backgroundColor: Colors.grey[200],
                         ),
                         SizedBox(width: context.propWidth(8)),
-                         CustomText(course.instructor??''), // TODO: dynamic instructor name
+                         CustomText(course.instructor??''),
                       ],
                     ),
                     Text(
@@ -100,8 +100,8 @@ class VerticalCourseCard extends StatelessWidget {
                         textColor:  Colors.black,
                         onPressed: () {
                           Zap.toNamed(
-                            AppRoutes.courseDetailsScreen,
-                            arguments: course,
+                            AppRoutes.programSubscribeRoundsWidget,
+                            arguments:course.id,
                           );
                         },
                       ),

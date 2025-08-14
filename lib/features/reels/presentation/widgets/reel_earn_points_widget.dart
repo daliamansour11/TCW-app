@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tcw/core/shared/shared_widget/custom_container.dart';
 import 'package:tcw/core/shared/shared_widget/custom_image.dart';
@@ -10,19 +11,19 @@ class ReelEarnPointsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CustomContainer(
+    return  CustomContainer(
       borderRadius: 16,
-      fullPadding: EdgeInsets.all(10),
-      color: Color.fromRGBO(183, 146, 79, 0.1),
+      fullPadding:const EdgeInsets.all(10),
+      color:const Color.fromRGBO(183, 146, 79, 0.1),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 5,
         children: [
           CustomText(
-            'Create a Reel and earn 500 points!',
+            'reel.Create_Reel_earn_points'.tr(),
             color: AppColors.primaryColor,
           ),
-       CustomImage(
+    const   CustomImage(
             AssetUtils.notoPartyingFace,
           )
         ],

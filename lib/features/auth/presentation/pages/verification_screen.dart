@@ -88,7 +88,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
             );
               },
             ),
-            
+
             const SizedBox(height: 16),
             BlocBuilder<AuthCubit, AuthState>(
               buildWhen: (previous, current) => current is AuthOTPRemainingTime,

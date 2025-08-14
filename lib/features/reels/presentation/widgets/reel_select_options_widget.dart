@@ -1,6 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:tcw/core/shared/shared_widget/custom_text.dart';
-import 'package:tcw/core/theme/app_colors.dart';
+import '../../../../core/shared/shared_widget/custom_text.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class ReelSelectOptionsWidget extends StatelessWidget {
   const ReelSelectOptionsWidget({super.key});
@@ -11,12 +12,12 @@ class ReelSelectOptionsWidget extends StatelessWidget {
       children: [
         tileItem(
           icon: Icons.group_outlined,
-          title: 'Friends',
+          title: 'reel.friends'.tr(),
         ),
         const Divider(),
         tileItem(
           icon: Icons.alternate_email,
-          title: 'Mention',
+          title: 'reel.mention'.tr(),
         ),
       ],
     );

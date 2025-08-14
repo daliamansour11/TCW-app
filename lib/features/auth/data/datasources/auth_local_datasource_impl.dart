@@ -18,5 +18,11 @@ class AuthLocalDatasourceImpl {
 
   Future<void> logout(String token) async {
     await _storage.delete(StorageKey.userData);
+
+    Future<int?> getUserId() async {
+      final authLocal = AuthLocalDatasourceImpl();
+      final user = await authLocal.getLoggedUser();
+      return user?.id;
+    }
   }
-}
+  }

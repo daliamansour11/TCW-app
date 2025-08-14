@@ -6,6 +6,7 @@ import 'package:tcw/features/courses/data/models/last_viewed_model.dart';
 import 'package:tcw/features/courses/data/models/certificate_model.dart';
 
 import '../../../../../core/apis/api_response.dart';
+import '../../../data/models/student_course_details.dart';
 import '../../../data/models/wishlist_model.dart';
 
 part 'student_course_state.dart';
@@ -140,5 +141,14 @@ class StudentCourseCubit extends Cubit<StudentCourseState> {
     return response;
   }
 
+  Future<void> getStudentCourseDetails(int courseId) async {
+    emit(StudentCourseLoading());
+    final result = await repository.getStudentCourseDetails(courseId);
 
+    if (result.isSuccess && result.data != null) {
+      emit(StudentCourseDetailsLoaded(result.data!));
+    } else {
+      emit(StudentCourseError(result.message ?? 'Failed to load program details'));
+    }
+  }
 }

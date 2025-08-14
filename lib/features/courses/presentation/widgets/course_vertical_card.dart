@@ -1,10 +1,11 @@
 
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:tcw/core/constansts/context_extensions.dart';
-import 'package:tcw/features/courses/data/models/course_model.dart';
-import 'package:tcw/core/routes/app_routes.dart';
+import '../../../../core/constansts/context_extensions.dart';
+import '../../data/models/course_model.dart';
+import '../../../../core/routes/app_routes.dart';
 
 class VerticalCourseCard extends StatelessWidget {
 
@@ -18,8 +19,8 @@ class VerticalCourseCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-               Modular.to.pushNamed(AppRoutes.courseDetailsScreen);
-              },
+        Modular.to.pushNamed(AppRoutes.courseDetailsScreen);
+      },
       child: Column(
         children: [
           Container(
@@ -40,27 +41,27 @@ class VerticalCourseCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// Instructor + Date Row
-            // TODO
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   children: [
-                //     Row(
-                //       children: [
-                //         CircleAvatar(
-                //           backgroundImage:
-                //               Image.asset(course.coachImageUrl).image,
-                //           radius: 12,
-                //         ),
-                //         SizedBox(width: context.propWidth(8)),
-                //         Text(course.coachName),
-                //       ],
-                //     ),
-                //     Text(formattedDate),
-                //   ],
-                // ),
-         
+                // TODO
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        // CircleAvatar(
+                        //   backgroundImage:
+                        //       Image.asset(course.coachImageUrl).image,
+                        //   radius: 12,
+                        // ),
+                        SizedBox(width: context.propWidth(8)),
+                        Text(course.instructorName??''),
+                      ],
+                    ),
+                    // Text(formattedDate),
+                  ],
+                ),
+
                 const SizedBox(height: 12),
-      
+
                 /// Title
                 Text(
                   course.title ?? '',
@@ -70,32 +71,33 @@ class VerticalCourseCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-      
+
                 /// Watched Progress + Button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-            // TODO
+                    // TODO
                     // Text(
-                    //   '${course.watchedLessons} / ${course.totalLessons} Watched',
+                    //   tr('watched_progress', args: ['${course.watchedLessons}', '${course.totalLessons}']),
                     //   style: const TextStyle(
-                    //     color:  Color(0xFF175941),
+                    //     color: Color(0xFF175941),
                     //     fontWeight: FontWeight.w500,
                     //   ),
                     // ),
+
                     Container(
                       height: 15,
-                    padding: const EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                           horizontal: 8),
                       decoration: ShapeDecoration(
                         color: const Color(0x33B7924F),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
-                          'SHOW LESSONS',
-                          style: TextStyle(
+                          tr('show_lessons'),
+                          style: const TextStyle(
                             color: Color(0xFFB7924F),
                             fontSize: 10,
                             fontFamily: 'Lato',
@@ -103,6 +105,7 @@ class VerticalCourseCard extends StatelessWidget {
                           ),
                         ),
                       ),
+
                     )
                   ],
                 ),

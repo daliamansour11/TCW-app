@@ -35,8 +35,6 @@ class _EventSliderState extends State<EventSlider> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return SizedBox(
       height: context.propHeight(230),
       child: PageView.builder(
@@ -56,20 +54,21 @@ class _EventSliderState extends State<EventSlider> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: DecorationImage(
-          image: NetworkImage(event.thumbUrl ?? AssetUtils.programPlaceHolder),
-        onError: (exception, stackTrace) {
-          print('Image failed to load: $exception');
-        },
-
-        fit: BoxFit.cover,
+          image: NetworkImage(
+            event.thumbUrl ?? AssetUtils.programPlaceHolder,
+          ),
+          fit: BoxFit.cover,
+          onError: (exception, stackTrace) {
+            debugPrint('Image failed to load: $exception');
+          },
         ),
       ),
       child: Stack(
         children: [
           _buildOverlay(),
-          _buildTopDetails(context, event),
-          _buildTitle(context, event),
-          _buildJoinButton(context,event),
+          _buildTopDetails(event),
+          _buildTitle(event),
+          _buildJoinButton(event),
           _buildIndicator(),
         ],
       ),
@@ -82,7 +81,7 @@ class _EventSliderState extends State<EventSlider> {
         borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(
           colors: [
-            Colors.black.withValues(alpha:0.6),
+            Colors.black.withOpacity(0.6),
             Colors.transparent,
           ],
           begin: Alignment.bottomCenter,
@@ -92,18 +91,15 @@ class _EventSliderState extends State<EventSlider> {
     );
   }
 
-  Widget _buildTopDetails(BuildContext context, Meeting event) {
-    DateTime startDateTime = event.scheduledAt;
-    DateTime endDateTime = event.scheduledAt.add(Duration(hours: 1));
-    final dateFormat = DateFormat('EEEE, d MMM yyyy');
-    final timeFormat = DateFormat('hh:mm a');
-
-    final formattedDate = dateFormat.format(startDateTime);
-    final formattedStart = timeFormat.format(startDateTime);
-    final formattedEnd = timeFormat.format(endDateTime);
+  Widget _buildTopDetails(Meeting event) {
+    final startDateTime = event.scheduledAt;
+    final endDateTime = startDateTime.add(const Duration(hours: 1));
+    final formattedDate = DateFormat('EEEE, d MMM yyyy').format(startDateTime);
+    final formattedStart = DateFormat('hh:mm a').format(startDateTime);
+    final formattedEnd = DateFormat('hh:mm a').format(endDateTime);
 
     return Padding(
-      padding: EdgeInsets.all(context.propHeight(12)),
+      padding: const EdgeInsets.all(12),
       child: Align(
         alignment: Alignment.topRight,
         child: Row(
@@ -111,26 +107,26 @@ class _EventSliderState extends State<EventSlider> {
           children: [
             const Icon(Icons.calendar_today, color: Colors.white, size: 14),
             const SizedBox(width: 4),
-            Text(formattedDate, style: GoogleFonts.poppins(fontSize: 10, color: Colors.white)),
+            Text(formattedDate,
+                style: GoogleFonts.poppins(fontSize: 10, color: Colors.white)),
             const SizedBox(width: 8),
             const Icon(Icons.access_time, color: Colors.white, size: 14),
             const SizedBox(width: 4),
-            Text('$formattedStart - $formattedEnd', style: GoogleFonts.poppins(fontSize: 10, color: Colors.white)),
+            Text('$formattedStart - $formattedEnd',
+                style: GoogleFonts.poppins(fontSize: 10, color: Colors.white)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTitle(BuildContext context, Meeting event) {
+  Widget _buildTitle(Meeting event) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
-          event.title?.isNotEmpty == true
-              ? event.title!
-              : 'Event Title',
+          event.title?.isNotEmpty == true ? event.title! : 'event_title'.tr(),
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -140,7 +136,7 @@ class _EventSliderState extends State<EventSlider> {
     );
   }
 
-  Widget _buildJoinButton(BuildContext context,Meeting event) {
+  Widget _buildJoinButton(Meeting event) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Align(
@@ -148,53 +144,33 @@ class _EventSliderState extends State<EventSlider> {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            backgroundColor:Colors.black,
+            backgroundColor: Colors.black,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
           ),
-          // onPressed: () {
-          //   final url = event.meetingLink;
-          //   if (url != null && url.isNotEmpty) {
-          //     Navigator.of(context).push(
-          //       MaterialPageRoute(
-          //         builder: (context) => LiveEventScreen(
-          //           meetingUrl: url,
-          //           questions: [], liveId: widget.events.first.id,
-          //         ),
-          //       ),
-          //     );
-          //   } else {
-          //     ScaffoldMessenger.of(context).showSnackBar(
-          //       const SnackBar(content: Text('Cannot open meeting link')),
-          //     );
-          //   }
-          // },
           onPressed: () async {
             final url = event.meetingLink;
-            if (url != null && await canLaunch(url)) {
-              await launch(url);
+            if (url != null && await canLaunchUrl(Uri.parse(url))) {
+              await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Cannot open meeting link')),
+                SnackBar(content: Text('cannot_open_meeting'.tr())),
               );
             }
           },
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: 5,
             children: [
-              Text(
-                'join now',
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
+              Text('join_now'.tr(),
+                  style: GoogleFonts.poppins(color: Colors.white)),
               Container(
                 padding: const EdgeInsets.all(3),
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white,
                 ),
-                child:const Icon(
+                child: const Icon(
                   Icons.play_arrow_outlined,
                   size: 20,
                   color: Colors.black,

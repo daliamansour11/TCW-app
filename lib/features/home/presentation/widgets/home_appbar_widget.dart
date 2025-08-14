@@ -1,12 +1,14 @@
-import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart' show AppBar, AssetImage, BoxConstraints, BoxDecoration, BoxShape, BuildContext, Center, Colors, Container, Directionality, EdgeInsets, FontWeight, Icon, IconButton, Icons, ImageIcon, Positioned, PreferredSizeWidget, Size, SizedBox, Stack, StatelessWidget, Text, TextStyle, Widget;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tcw/core/shared/shared_widget/custom_text.dart';
-import 'package:tcw/core/utils/asset_utils.dart';
-import 'package:tcw/features/auth/data/models/user_model.dart';
-import 'package:tcw/features/home/presentation/home_viewmodel.dart';
-import 'package:tcw/core/routes/app_routes.dart';
-import 'package:tcw/features/notification/presentation/cubit/notification_cubit.dart';
+import '../../../../core/shared/shared_widget/custom_text.dart';
+import '../../../../core/utils/asset_utils.dart';
+import '../../../auth/data/models/user_model.dart';
+import '../home_viewmodel.dart';
+import '../../../../core/routes/app_routes.dart';
+import '../../../notification/presentation/cubit/notification_cubit.dart';
 import 'package:zapx/zapx.dart';
+import 'package:intl/intl.dart';
 
 class HomeAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
   const HomeAppbarWidget({super.key});
@@ -15,16 +17,21 @@ class HomeAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     if (userData == null) return const SizedBox();
 
+    final textDirection = context.locale.languageCode == 'ar'
+        ? TextDirection.RTL
+        : TextDirection.LTR;
+
     return AppBar(
       leading: userData != null
           ? userData!.imageWidget.paddingSymmetric(horizontal: 5)
           : const SizedBox(width: 40),
       centerTitle: false,
       title: CustomText(
-        'Welcome, ${userData?.getFirstName} 👋',
+        tr('welcome', args: [userData?.getFirstName ?? '']) + ' 👋',
         fontWeight: FontWeight.w600,
         fontSize: 17,
       ),
+
       actions: [
         BlocBuilder<NotificationCubit, NotificationState>(
           builder: (context, state) {
@@ -45,7 +52,7 @@ class HomeAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
                     top: 8,
                     child: Container(
                       padding: const EdgeInsets.all(4),
-                      decoration:const BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.red,
                         shape: BoxShape.circle,
                       ),

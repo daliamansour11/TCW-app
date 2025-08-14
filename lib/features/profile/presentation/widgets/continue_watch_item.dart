@@ -1,6 +1,7 @@
-
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:tcw/features/profile/data/model/video_item.dart';
+
 class ContinueWatchingItem extends StatelessWidget {
   final VideoItem video;
 
@@ -79,7 +80,7 @@ class ContinueWatchingItem extends StatelessWidget {
                 const Icon(Icons.access_time, size: 14, color: Colors.grey),
 
               Text(
-                video.isTaskPending ? "Task Pending" : video.duration,
+                video.isTaskPending ? tr('task_pending') : video.duration,
                 style: const TextStyle(
                   fontSize: 12,
                   color: Colors.grey,

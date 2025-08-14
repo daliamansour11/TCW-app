@@ -7,11 +7,13 @@ import 'package:video_player/video_player.dart';
 class ReelVideoPlayer extends StatefulWidget {
   final String videoUrl;
   final VoidCallback? onStartedPlaying;
+  final String errorMessage;
 
   const ReelVideoPlayer({
     super.key,
     required this.videoUrl,
     this.onStartedPlaying,
+    required this. errorMessage,
   });
 
   @override

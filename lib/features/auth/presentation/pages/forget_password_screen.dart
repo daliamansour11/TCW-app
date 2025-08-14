@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/routes/app_routes.dart';
 import 'package:tcw/core/shared/shared_widget/custom_button.dart';
@@ -39,9 +40,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         if (state is AuthLoading) {
           LoadingUtil.show();
         } else {
-          if (LoadingUtil.isLoading) {
-            LoadingUtil.close();
-          }
+          if (LoadingUtil.isLoading) LoadingUtil.close();
 
           if (state is AuthPasswordResetTokenSent) {
             ToastUtil.show(state.message);
@@ -59,8 +58,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text('Forgot Password',
-              style: context.textTheme.headlineMedium),
+          title: Text(tr('forgot_password'), style: context.textTheme.headlineMedium),
         ),
         body: SafeArea(
           child: Padding(
@@ -73,21 +71,20 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 children: [
                   const SizedBox(height: 16),
                   Text(
-                    'Enter the email we will send the OTP in this email to reset your password',
+                    tr('forget_password_message'),
                     style: context.textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
                   RoundedTextField(
-                    hint: 'Enter your E-mail',
+                    hint: tr('enter_email'),
                     icon: Icons.email_outlined,
                     controller: viewModel.emailController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return tr('please_enter_email');
                       }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$')
-                          .hasMatch(value)) {
-                        return 'Enter a valid email';
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$').hasMatch(value)) {
+                        return tr('enter_valid_email');
                       }
                       return null;
                     },
@@ -95,7 +92,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   const Spacer(),
                   CustomButton(
                     onPressed: () => viewModel.onSendForgetPassword(),
-                    title: 'Continue',
+                    title: tr('continue'),
                   ),
                   const SizedBox(height: 16),
                 ],

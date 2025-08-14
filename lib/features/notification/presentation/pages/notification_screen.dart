@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
 import 'package:tcw/features/notification/data/models/notification_model.dart';
 import 'package:tcw/features/notification/presentation/cubit/notification_cubit.dart';
@@ -15,49 +15,49 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  bool  _isLoading = true;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Fetch notifications when screen loads
     context.read<NotificationCubit>().fetchStudentPushNotification();
-    Timer(Duration(seconds: 12), () {
+
+    Timer(const Duration(seconds: 12), () {
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
-    });}
+    });
+  }
 
   Map<String, List<NotificationModel>> categorizeNotifications(
       List<NotificationModel> notifications) {
     final now = DateTime.now();
     final Map<String, List<NotificationModel>> categorized = {
-      'Today': [],
-      'Yesterday': [],
-      'Last Week': [],
-      'Last Month': [],
-      'Last Year': [],
+      tr('today'): [],
+      tr('yesterday'): [],
+      tr('last_week'): [],
+      tr('last_month'): [],
+      tr('last_year'): [],
     };
 
     for (var notif in notifications) {
       final diff = now.difference(notif.createdAt);
 
       if (diff.inDays == 0) {
-        categorized['Today']!.add(notif);
+        categorized[tr('today')]!.add(notif);
       } else if (diff.inDays == 1) {
-        categorized['Yesterday']!.add(notif);
+        categorized[tr('yesterday')]!.add(notif);
       } else if (diff.inDays <= 7) {
-        categorized['Last Week']!.add(notif);
+        categorized[tr('last_week')]!.add(notif);
       } else if (diff.inDays <= 30) {
-        categorized['Last Month']!.add(notif);
+        categorized[tr('last_month')]!.add(notif);
       } else {
-        categorized['Last Year']!.add(notif);
+        categorized[tr('last_year')]!.add(notif);
       }
     }
 
-    // Remove empty categories
     categorized.removeWhere((key, value) => value.isEmpty);
     return categorized;
   }
@@ -65,7 +65,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Notification'),
+      appBar: CustomAppBar(title: tr('notification')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<NotificationCubit, NotificationState>(
@@ -78,14 +78,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Something went wrong or took too long.'),
+                      Text(tr('something_wrong')),
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
                             _isLoading = true;
                           });
-                          context.read<NotificationCubit>()..fetchStudentPushNotification();
+                          context
+                              .read<NotificationCubit>()
+                              .fetchStudentPushNotification();
                           Timer(const Duration(seconds: 12), () {
                             if (mounted) {
                               setState(() {
@@ -94,23 +96,25 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             }
                           });
                         },
-                        child: const Text('Retry'),
+                        child: Text(tr('retry')),
                       ),
                     ],
                   ),
                 );
-              }            }
-            if (state is NotificationError) {
-              return Center(child: Text('Error: ${state.message}'));
+              }
             }
 
-            // Get notifications from loaded state or cubit's internal list
+            if (state is NotificationError) {
+              return Center(
+                  child: Text(tr('error', args: [state.message])));
+            }
+
             final notifications = (state is NotificationLoaded)
                 ? state.notifications
                 : context.read<NotificationCubit>().allNotification;
 
             if (notifications.isEmpty) {
-              return const Center(child: Text('No notifications found.'));
+              return Center(child: Text(tr('no_notifications')));
             }
 
             final categorized = categorizeNotifications(notifications);
@@ -129,7 +133,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                   const SizedBox(height: 12),
                   ...entry.value
-                      .map((notif) => NotificationItem(notification: notif))
+                      .map((notif) =>
+                      NotificationItem(notification: notif))
                       .toList(),
                   const SizedBox(height: 24),
                 ])

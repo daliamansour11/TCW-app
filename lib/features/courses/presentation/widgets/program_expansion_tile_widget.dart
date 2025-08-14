@@ -83,7 +83,7 @@ class _ProgramUnSubscribeExpansionTileWidgetState extends State<ProgramUnSubscri
                     '${widget.detail.data?.sections.first.durationMinutes??12} h',
                   ),
                   buildItemSection(
-                      Icons.people_alt_outlined,
+                    Icons.people_alt_outlined,
 
                     '${widget.detail.data?.availableSeats??10} Available',
                   ),
@@ -149,7 +149,7 @@ class _ProgramUnSubscribeExpansionTileWidgetState extends State<ProgramUnSubscri
         children: [
           InkWell(
             onTap:()=> Zap.toNamed(
-                AppRoutes.lessonScreen,
+              AppRoutes.lessonScreen,
               arguments: {
                 'lesson': lesson,
                 'instructorName': widget.detail.data?.instructor?.name ?? 0,
@@ -213,7 +213,7 @@ class _ProgramUnSubscribeExpansionTileWidgetState extends State<ProgramUnSubscri
               const Spacer(),
               const Icon(Icons.access_time, size: 16),
               const SizedBox(width: 4),
-               Padding(
+              Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child:  CustomText('${lesson.durationMinutes??'1:30 m'}', fontSize: 12),
               ),

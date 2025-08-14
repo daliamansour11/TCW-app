@@ -35,7 +35,7 @@ class CourseLessonsLoaded extends StudentCourseState {
   CourseLessonsLoaded(this.lesson);
   final List<LessonModel> lesson;
 }
-class ToggleLikeSuccess extends StudentCourseState {
-  ToggleLikeSuccess(this.wishlists);
-  final WishlistModel wishlists;
+class StudentCourseDetailsLoaded extends StudentCourseState {
+  StudentCourseDetailsLoaded(this.enrolledCourseDetails);
+  final EnrolledCourseDetailsModel enrolledCourseDetails ;
 }

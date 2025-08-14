@@ -6,6 +6,8 @@ class EnrolledCourseModel {
     required this.instructor,
     required this.date,
     required this.thumb,
+    required this.id,
+
 
     required this.watchedLessons,
     required this.totalLessons,
@@ -18,6 +20,7 @@ class EnrolledCourseModel {
       instructor: json['instructor'] ?? '',
       date: DateTime.parse(json['date']),
       watchedLessons: json['watchedLessons'] ?? 0,
+      id: json['id'] ?? 0,
       totalLessons: json['totalLessons'] ?? 0,
       isEnrolled: json['isEnrolled'] ?? true,
       thumb: json['thumb'],
@@ -30,6 +33,7 @@ class EnrolledCourseModel {
   final int totalLessons;
   final bool isEnrolled;
     final String thumb;
+  final int id;
 
 
   Map<String, dynamic> toJson() {

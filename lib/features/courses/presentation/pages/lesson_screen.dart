@@ -24,7 +24,7 @@ import '../cubit/student/student_course_cubit.dart';
 import '../widgets/video_player_widget.dart';
 class LessonScreen extends StatefulWidget {
   final LessonModel lesson;
-final  Instructor? instructorName;
+  final  Instructor? instructorName;
   const LessonScreen({super.key, required this.lesson, this.instructorName, });
 
   @override
@@ -133,9 +133,9 @@ class _LessonScreenState extends State<LessonScreen> {
       _updateLastViewed();
     }
     super.dispose();
-}
+  }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     final lesson = widget.lesson;
     final videoUrl = lesson.video?.linkPath ?? '';

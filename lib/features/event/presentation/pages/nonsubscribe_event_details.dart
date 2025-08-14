@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:tcw/core/shared/shared_widget/custom_text.dart';
 import 'package:tcw/core/theme/app_colors.dart';
 import 'package:tcw/features/event/data/models/event_model.dart';
@@ -25,15 +26,15 @@ class _EventDetailsNonSubscribedScreenState
             children: [
               IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: () => Navigator.pop(context),
               ),
-              Center(
-                child: CustomText(
-                  widget.eventItem.title ?? '',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
+              Expanded(
+                child: Center(
+                  child: CustomText(
+                    widget.eventItem.title ?? '',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ],
@@ -45,7 +46,7 @@ class _EventDetailsNonSubscribedScreenState
                 const Icon(Icons.date_range,
                     size: 14, color: AppColors.primaryColor),
                 const SizedBox(width: 4),
-                 CustomText(
+                CustomText(
                   '${widget.eventItem.scheduledAt}',
                   fontSize: 12,
                 ),
@@ -81,14 +82,13 @@ class _EventDetailsNonSubscribedScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Date + Instructor Row
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.date_range,
                 size: 14, color: AppColors.primaryColor),
             const SizedBox(width: 4),
-             CustomText(
+            CustomText(
               '${widget.eventItem.scheduledAt}',
               fontSize: 12,
             ),
@@ -118,13 +118,14 @@ class _EventDetailsNonSubscribedScreenState
         children: [
           _buildLessonTag(),
           const SizedBox(height: 12),
-          const Text(
-            'About Event',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Text(
+            'about_event'.tr(),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Text('${  widget.eventItem.subTitle ?? 'No description available for this event.'}',
-
+          Text(
+            widget.eventItem.subTitle ??
+                'no_description_event'.tr(),
             style: const TextStyle(fontSize: 14),
           ),
         ],
@@ -139,9 +140,9 @@ class _EventDetailsNonSubscribedScreenState
         color: const Color(0xFFFFF3C0),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Text(
-        'Lesson 6',
-        style: TextStyle(fontSize: 12, color: Color(0xFFB58B00)),
+      child: Text(
+        'lesson_tag'.tr(args: ['6']),
+        style: const TextStyle(fontSize: 12, color: Color(0xFFB58B00)),
       ),
     );
   }

@@ -1,5 +1,342 @@
 {
  "Skip": "Skip",
- "Next": "Next"
+ "Next": "Next",
+ "settings": "Settings",
+ "personal_details": "Personal Details",
+ "tcw_spaces": "TCW Spaces",
+ "wishlist": "Wishlist",
+ "support_complaints": "Support & Complaints",
+ "suspend_account": "Suspend Account",
+ "change_language": "Change Language",
+ "select_language": "Select Language",
+ "arabic": "Arabic",
+ "english": "English",
+ "all_groups": "All Groups ({0})",
+ "my_groups": "My Groups ({0})",
+ "explore_groups": "Explore Groups ({0})",
+ "view_group": "View Group",
+ "inbox": "Inbox",
+ "members": "Members",
+ "messages": "Messages",
+ "something_wrong": "Something went wrong or took too long.",
+ "no_conversations_yet": "No conversations yet",
+ "error_fetch_conversations": "Error: Cannot fetch Conversations",
+ "no_courses_found": "No courses found.",
+ "chat": "Chat",
+ "no_messages": "No messages",
+ "error_fetch_messages": "Error: {0}",
+ "dashboard": "Dashboard",
+ "events": "Events",
+ "programmes": "Programmes",
+ "payments": "Payments",
+ "task": "Task",
+ "master_mind": "Master Mind",
+ "tcw_media": "TCW Media",
+ "setting": "Setting",
+ "log_out": "Log Out",
+ "overview": "Overview",
+ "notification": "Notification",
+ "points": "Points",
+ "rewards": "Rewards",
+ "welcome": "Welcome, {}",
+ "lessons": "{} Lessons",
+ "hours": "{} h",
+ "lesson": {
+  "zero": "No lessons",
+  "one": "1 Lesson",
+  "other": "{} Lessons"
+ },
+ "hour": {
+  "zero": "No hours",
+  "one": "1 Hour",
+  "other": "{} Hours"
+ },
+ "available": "{} Available",
+ "no_title": "No title",
+ "coach": "Coach",
+ "more_details": "More Details",
+ "app_name": "TCWTIR",
+ "program_details": "Program Details",
+ "no_data_available": "No data available",
+ "round": "Round {0}",
+ "enroll_now": "Enroll Now",
+ "sar": "SAR",
+ "unknownInstructor": "Unknown Instructor",
+ "lessonLabel": "Lesson {id}",
+ "noTaskFound": "No Task Found.",
+ "viewDetails": "View Details",
+ "taskTitle": "Task",
+ "continueWatching": "Continue Watching",
+ "dayLeft": "{count} Day Left",
+ "untitled": "Untitled",
+ "failedToUpdateFavorite": "Failed to update favorite status",
+ "lessonNumber": "Lesson {number}",
+ "hoursSuffix": "h",
+ "minutes": "minutes",
+ "wishlist_update_failed": "Failed to update favorite status",
+ "programs": "Programs",
+ "searchCourses": "Search courses...",
+ "errorMessage": "Something went wrong or took too long.",
+ "noCoursesFound": "No courses found.",
+ "unknown_instructor": "Unknown Instructor",
+ "no_task_found": "No tasks found.",
+ "1_day_left": "1 Day Left",
+ "view_details": "View Details",
+ "your_programs": "Your Programs",
+ "no_program_found": "No program found.",
+ "available_plural": "{count} seats",
+ "invalid_date": "Invalid date",
+ "show_lessons": "SHOW LESSONS",
+ "watched_progress": "{0} / {1} Watched",
+ "play": "Play",
+ "pause": "Pause",
+ "mute": "Mute",
+ "unmute": "Unmute",
+ "fullscreen_exit": "Exit Fullscreen",
+ "rewind_10": "Rewind 10 seconds",
+ "failed_update_favorite": "Failed to update favorite status",
+ "continue_watching": "Continue Watching",
+ "no_lessons_available": "No lessons available",
+ "task_pending": "Task Pending",
+ "week": "Week",
+ "month": "Month",
+ "no_events_found": "No Events found.",
+ "something_went_wrong": "Something went wrong.",
+ "about_event": "About Event",
+ "no_event_description": "No description available for this event.",
+ "more_options": "More Options",
+ "help": "Help",
 
+ "live_questions": "Live Questions (Q&A)",
+ "type_your_answer": "Type your answer...",
+ "poll_questions": "Poll Questions",
+ "poll_question_text": "Which time management technique do you find most effective?",
+ "select_one_or_more": "Select one or more",
+ "no_description_event": "No description available for this event.",
+ "lesson_tag": "Lesson {}",
+ "event_title": "Event Title",
+ "join_now": "Join Now",
+ "cannot_open_meeting_link": "Cannot open meeting link",
+ "no_description": "No description available",
+
+ "no_notifications": "No notifications found.",
+ "today": "Today",
+ "yesterday": "Yesterday",
+ "last_week": "Last Week",
+ "last_month": "Last Month",
+ "last_year": "Last Year",
+ "reels_history": "Reels History",
+ "your_mentor": "Your Mentor",
+ "contact_now": "Contact Now",
+ "weekly_study_hours": "Weekly Study Hours",
+ "greeting": "Hello",
+ "your_goals": "Your Goals",
+ "no_recent_reels": "No recently watched reels",
+
+ "no_programs_found": "No Programs found",
+
+ "mentor": "Mentor",
+ "cancel": "Cancel",
+ "Log_out": "Log Out",
+ "general": "Error",
+ "profile": {
+  "reels_history": "Reels History",
+  "no_recent_reels": "No recently watched reels",
+  "continue_watching": "Continue Watching",
+  "your_programs": "Your Programs",
+  "no_programs_found": "No Programs found",
+  "your_mentor": "Your Mentor",
+  "contact_now": "Contact Now",
+  "weekly_study_hours": "Weekly Study Hours",
+  "notification": "Notification",
+  "points": "Points",
+  "rewards": "Rewards",
+  "mentor": "Mentor",
+  "no_events": "No Events Available",
+  "logout_confirmation": "Are You Surce You Want To Log Out?"
+ },
+ "search_courses": "Search courses...",
+ "see_all": "See All",
+ "error": {
+  "something_went_wrong": "Something went wrong",
+  "general": "Error"
+ },
+ "retry": "Retry",
+
+ "reel": {
+  "post_success": "Reel Posted Successfully",
+  "earned_points": "You've earned 500 points — keep going, more rewards await!",
+  "watch_my_reel": "Watch My Reel",
+  "check_points": "Check My Points",
+  "edit_caption": "Edit Caption",
+  "create_reel": "Create A Reel",
+  "post_details": "Post Details",
+  "describe_hint": "Describe your Reel..",
+  "visibility": "Who can see it",
+  "select_video_error": "Please select a video",
+  "post_button": "Post Reel",
+  "create_a_reel": "Create A Reel",
+  "describe_your_reel": "Describe your Reel..",
+  "friends": "Friends",
+  "mention": "Mention",
+  "cancel": "Cancel",
+  "save_changes": "Save Changes",
+  "post_reel": "Post Reel",
+  "please_select_video": "Please select a video",
+  "caption_updated_successfully": "Caption Updated Successfully",
+  "reel_posted_successfully": "Reel Posted Successfully",
+  "check_my_points": "Check My Points",
+  "Add_the_Video_here": "Add the Video here",
+  "Click_to_add_video": "Click the video icon to add a video",
+  "Create_Reel_earn_points": "Create a Reel and earn 500 points!",
+  "like": "Like",
+  "comment": "Comment",
+  "share": "Share",
+  "follow": "Follow",
+  "following": "Following",
+  "followers": "Followers",
+  "video_error": "Error loading video",
+  "success_delete": "Reel deleted successfully",
+  "Failed_to_pick_video:": "Failed to pick video:",
+  "added_to_history": "Reel added to history after 5 seconds"
+ },
+ "common": {
+  "cancel": "Cancel",
+  "saving": "Saving...",
+  "save_changes": "Save Changes",
+  "retry": "Retry"
+
+
+ },
+ "media": {
+  "tcw_media": "TCW Media",
+  "tcw_reels": "TCW Reels",
+  "create_reel": "Create a Reel",
+  "no_reels_found": "No reels found",
+  "create_first_reel": "Create your first reel"
+ }
+,
+
+ "first_name": "First Name",
+ "last_name": "Last Name",
+ "phone_number": "Phone Number",
+ "phone_placeholder": "0123456789",
+ "save_changes": "Save Changes",
+
+ "support_and_complaints": "Support & Complaints",
+ "complaint_title": "Complaint Title",
+ "enter_complaint_title": "Enter your complaint title",
+ "please_enter_complaint_title": "Please enter complaint title",
+ "complaint_type": "Complaint Type",
+ "technical_issue": "Technical issue",
+ "please_enter_complaint_type": "Please enter complaint type",
+ "details": "Details",
+ "submit": "Submit",
+ "complaint_submitted": "Your complaint has been submitted!",
+ "edit": "Edit",
+ "delete": "Delete"
+,
+
+ "verification": "Verification",
+ "email_verification_message": "Enter your email address below and we’ll send you a verification code to confirm it’s you.",
+ "enter_email": "Enter your email",
+ "continue": "Continue",
+
+ "forgot_password": "Forgot Password",
+ "forget_password_message": "Enter the email we will send the OTP in this email to reset your password",
+ "please_enter_email": "Please enter your email",
+ "enter_valid_email": "Enter a valid email",
+
+ "login_page": "Log in Page",
+ "password": "Password",
+ "please_enter_password": "Please enter your password",
+ "password_min_length": "Password must be at least 6 characters",
+ "remember_me": "Remember me",
+ "log_in": "Log In",
+ "dont_have_account": "Don’t have an account? ",
+ "register_now": "Register Now",
+ "welcome_user": "Welcome {}"
+,
+
+ "onboarding": {
+  "title1": "Start Your Learning Journey!",
+  "desc1": "Explore a learning platform designed just for you...",
+  "title2": "Learn Smarter, Not Harder!",
+  "desc2": "Save time with the 'Mind Master' system...",
+  "title3": "All Your Tools in One Place!",
+  "desc3": "From your dashboard to progress tracking...",
+  "skip": "Skip",
+  "continue": "Continue",
+  "get_started": "Get Started"
+ }
+,
+ "auth": {
+  "register": "Register",
+  "enter_name": "Enter your Name",
+  "name_required": "Name is required",
+  "enter_email": "Enter your E-mail",
+  "email_required": "Please enter your email",
+  "email_invalid": "Enter a valid email",
+  "enter_phone": "Please enter your Phone",
+  "phone_required": "Phone is required",
+  "password": "Password",
+  "password_required": "Please enter your password",
+  "password_length": "Password must be at least 6 characters",
+  "retype_password": "Retype Password",
+  "confirm_password_required": "Please confirm your password",
+  "passwords_not_match": "Passwords do not match",
+  "have_account": "Have an account? ",
+  "login": "Login",
+  "welcome": "Welcome {}",
+
+
+  "reset_password": "Reset Password",
+  "enter_new_password": "Enter the new password",
+  "new_password": "Enter new password",
+  "confirm_password": "Confirm password",
+  "continue": "Continue"
+ }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

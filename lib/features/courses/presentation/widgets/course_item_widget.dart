@@ -1,4 +1,4 @@
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/shared/shared_widget/custom_button.dart';
@@ -8,13 +8,12 @@ import '../../../../core/shared/shared_widget/custom_text.dart';
 import '../../../../core/shared/shared_widget/riyal_logo.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/asset_utils.dart';
-
 import '../../../../core/routes/app_routes.dart';
 import '../../data/models/course_model.dart';
 import 'package:zap_sizer/zap_sizer.dart';
 import 'package:zapx/zapx.dart';
-
 import '../../../courses/presentation/cubit/course/courses_cubit.dart';
+
 class CourseItemWidget extends StatelessWidget {
   final CourseModel program;
 
@@ -38,9 +37,7 @@ class CourseItemWidget extends StatelessWidget {
       builder: (context, state) {
         if (state is! CoursesLoaded) return const SizedBox.shrink();
 
-        // الحصول على نسخة الكورس المحدثة من الـ Cubit
         final course = state.courses.firstWhere((c) => c.id == program.id, orElse: () => program);
-
         final isFavorite = course.isWishlisted ?? false;
 
         return CustomContainer(
@@ -86,7 +83,7 @@ class CourseItemWidget extends StatelessWidget {
                 spacing: 5,
                 children: [
                   CustomText(
-                    course.title ?? 'No title',
+                    course.title ?? tr('no_title'),
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
@@ -104,15 +101,15 @@ class CourseItemWidget extends StatelessWidget {
                 children: [
                   buildItemSection(
                     Icons.book_outlined,
-                    '${course.lessonsCount ?? 15} Lessons',
+                    plural('lesson', course.lessonsCount ?? 0),
                   ),
                   buildItemSection(
                     Icons.access_time,
-                    '${course.totalDurationMinutes ?? 10} h',
+                    plural('hour', course.totalDurationMinutes ?? 0),
                   ),
                   buildItemSection(
                     Icons.chair_outlined,
-                    '${course.availableSeats ?? 12} Available',
+                    plural('available', course.availableSeats ?? 0),
                   ),
                 ],
               ),
@@ -132,17 +129,17 @@ class CourseItemWidget extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
-                subtitle: const CustomText(
-                  'Coach',
+                subtitle: CustomText(
+                  tr('coach'),
                   fontSize: 12,
                   color: Colors.grey,
                 ),
                 trailing: CustomButton(
                   width: 15.w,
                   backgroundColor: Colors.black,
-                  title: 'More Details',
+                  title: tr('more_details'),
                   onPressed: () => Zap.toNamed(
-                    AppRoutes.programmeDetails,
+                    AppRoutes.courseDetailsScreen,
                     arguments: course.id,
                   ),
                 ),
