@@ -2,7 +2,7 @@ import 'package:tcw/core/apis/api_response.dart';
 import 'package:tcw/core/apis/api_service.dart';
 import 'package:tcw/core/apis/apis_url.dart';
 import 'package:tcw/features/courses/data/models/category_model.dart';
-import 'package:tcw/features/courses/data/models/lesson_model.dart';
+import 'package:tcw/features/courses/data/models/lesson_model.dart' hide LessonModel;
 import 'package:tcw/features/programmes/data/models/program_detail_model.dart';
 import 'package:tcw/features/programmes/data/models/programme_model.dart';
 
@@ -17,8 +17,6 @@ abstract class ProgramDatasource {
     int? subCategoryId,
     bool? featured,
   });
-
-
 
   Future<ApiResponse<ProgramDetailModel>> getProgramDetails(int courseId);
 

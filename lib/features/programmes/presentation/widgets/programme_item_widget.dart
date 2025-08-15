@@ -1,19 +1,18 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/shared/shared_widget/custom_button.dart';
-import '../../../../core/shared/shared_widget/custom_container.dart';
-import '../../../../core/shared/shared_widget/custom_image.dart';
-import '../../../../core/shared/shared_widget/custom_text.dart';
-import '../../../../core/shared/shared_widget/riyal_logo.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/asset_utils.dart';
+import 'package:tcw/core/shared/shared_widget/custom_button.dart';
+import 'package:tcw/core/shared/shared_widget/custom_container.dart';
+import 'package:tcw/core/shared/shared_widget/custom_image.dart';
+import 'package:tcw/core/shared/shared_widget/custom_text.dart';
+import 'package:tcw/core/shared/shared_widget/riyal_logo.dart';
+import 'package:tcw/core/theme/app_colors.dart';
+import 'package:tcw/core/utils/asset_utils.dart';
+import 'package:tcw/features/courses/data/models/course_model.dart';
 
-import '../../../../core/routes/app_routes.dart';
-import '../../data/models/programme_model.dart';
+import 'package:tcw/core/routes/app_routes.dart';
+import 'package:tcw/features/programmes/data/models/programme_model.dart';
 import 'package:zap_sizer/zap_sizer.dart';
 import 'package:zapx/zapx.dart';
-
-import '../../../courses/presentation/cubit/course/courses_cubit.dart';
 
 class ProgrammeItemWidget extends StatefulWidget {
   const ProgrammeItemWidget({required this.program, super.key}); // Fixed props
@@ -31,7 +30,7 @@ class _ProgrammeItemWidgetState extends State<ProgrammeItemWidget> {
 
     return CustomContainer(
       margin: const EdgeInsets.only(top: 10),
-      padding: 8,
+      padding: 5,
       color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,9 +42,15 @@ class _ProgrammeItemWidgetState extends State<ProgrammeItemWidget> {
                 borderRadius: BorderRadius.circular(12),
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
-                  child:  CustomImage(widget.program.thumbUrl??AssetUtils.programPlaceHolder, fit: BoxFit.cover),
+                  child: CachedNetworkImage(
+                    height: 180, width:double.infinity, fit: BoxFit.cover,
+                    placeholder: (context, url) => Image.asset(AssetUtils.programPlaceHolder),
+                    errorWidget: (context, url, error) =>const Icon(Icons.error,color: Colors.red,),
+                    imageUrl: widget.program.thumbUrl.toString(),
 
-    ),
+                  ),
+
+                ),
               ),
               Positioned(
                 top: 6,
@@ -55,14 +60,11 @@ class _ProgrammeItemWidgetState extends State<ProgrammeItemWidget> {
                   backgroundColor: Colors.white,
                   child: IconButton(
                     icon: Icon(
-                      size: 18,
                       isFavorite ? Icons.favorite : Icons.favorite_border,
                       color: isFavorite ? Colors.red : Colors.grey,
                     ),
-                    onPressed: ()async {
-                      await context.read<CourseCubit>().toggleCourseWishlist(
-                         widget.program.id??0,
-                      );
+                    onPressed: () {
+
                       setState(() {
                         isFavorite = !isFavorite;
                       });

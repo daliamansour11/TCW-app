@@ -12,8 +12,6 @@ abstract class ProgramRepository {
 
   });
 
-
-
   Future<ApiResponse<ProgramDetailModel>> getProgramDetails(int courseId);
 
   Future<ApiResponse<List<CategoryModel>>> getCategories({

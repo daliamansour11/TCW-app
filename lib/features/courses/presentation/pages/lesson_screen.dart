@@ -13,19 +13,15 @@ import 'package:zapx/zapx.dart';
 
 import '../../../../core/shared/shared_widget/custom_container.dart';
 import '../../../../core/storage/secure_storage_service.dart';
-import '../../../../core/utils/asset_utils.dart';
 import '../../../auth/data/models/user_model.dart';
 import '../../../programmes/data/models/program_detail_model.dart';
-import '../../data/local_data_source/local_storage.dart';
 import '../../data/models/last_viewed_model.dart';
-import '../../data/models/lesson_model.dart';
-import '../../data/models/section_model.dart' hide Instructor;
-import '../cubit/student/student_course_cubit.dart';
+
 import '../widgets/video_player_widget.dart';
 class LessonScreen extends StatefulWidget {
   final LessonModel lesson;
-  final  Instructor? instructorName;
-  const LessonScreen({super.key, required this.lesson, this.instructorName, });
+// final  Instructor? instructorName;
+  const LessonScreen({super.key, required this.lesson, });
 
   @override
   State<LessonScreen> createState() => _LessonScreenState();
@@ -76,11 +72,11 @@ class _LessonScreenState extends State<LessonScreen> {
     if (_addedToContinueWatching) return; // prevent duplicates
 
     _addedToContinueWatching = true;
-    context.read<StudentCourseCubit>().updateLastViewed(
-      widget.lesson.courseId ?? 0,
-      widget.lesson.sectionId ?? 0,
-      widget.lesson.id ?? 0,
-    );
+    // context.read<StudentCourseCubit>().updateLastViewed(
+    //   widget.lesson.courseId ?? 0,
+    //   widget.lesson.sectionId ?? 0,
+    //   widget.lesson.id ?? 0,
+    // );
   }void _videoListener() {
     if (_controller == null) return;
     final pos = _controller!.value.position.inSeconds;
@@ -132,6 +128,7 @@ class _LessonScreenState extends State<LessonScreen> {
     if (!_addedToContinueWatching) {
       _updateLastViewed();
     }
+
     super.dispose();
   }
 
@@ -139,7 +136,7 @@ class _LessonScreenState extends State<LessonScreen> {
   Widget build(BuildContext context) {
     final lesson = widget.lesson;
     final videoUrl = lesson.video?.linkPath ?? '';
-    final instructorName = widget.instructorName ?? 'Unknown Instructor';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -172,8 +169,7 @@ class _LessonScreenState extends State<LessonScreen> {
                 child: _isYoutubeUrl(videoUrl)
                     ? VideoPlayerWidget(
                   videoUrl: videoUrl,
-                  videoId: '',
-                  sourceType: lesson.video?.sourceType ?? '',
+                   lessonId: widget.lesson.id??0,
                 )
                     : _controller != null && _controller!.value.isInitialized
                     ? AspectRatio(
@@ -215,7 +211,58 @@ class _LessonScreenState extends State<LessonScreen> {
                 ),
               ),
 
-
+              // SizedBox(
+              //   height: 150,
+              //   child: _continueWatching.isEmpty
+              //       ? Center(
+              //     child: Text(
+              //       'No items yet.',
+              //       style: context.textTheme.bodyMedium?.copyWith(color: const Color(0xFF9E9E9E)),
+              //     ),
+              //   )
+              //       : ListView.separated(
+              //     scrollDirection: Axis.horizontal,
+              //     itemCount: _continueWatching.length,
+              //     separatorBuilder: (_, __) => const SizedBox(width: 12),
+              //     itemBuilder: (context, index) {
+              //       final item = _continueWatching[index];
+              //       final itemVideoUrl = item['videoUrl'] as String? ?? '';
+              //       final title = item['title'] as String? ?? 'Untitled';
+              //       final thumbnail = getVideoThumbnail(itemVideoUrl);
+              //       return GestureDetector(
+              //         onTap: () async {
+              //           // Navigate to lesson screen. we pass a Map — adapt on receiver if needed.
+              //           Zap.toNamed(AppRoutes.lessonScreen, arguments: item);
+              //         },
+              //         child: Column(
+              //           children: [
+              //             ClipRRect(
+              //               borderRadius: BorderRadius.circular(12),
+              //               child: Image.network(
+              //                 thumbnail,
+              //                 height: 100,
+              //                 width: 160,
+              //                 fit: BoxFit.cover,
+              //               ),
+              //             ),
+              //             const SizedBox(height: 8),
+              //             SizedBox(
+              //               width: 160,
+              //               child: Text(
+              //                 title,
+              //                 style: context.textTheme.bodyMedium?.copyWith(
+              //                   fontWeight: FontWeight.w600,
+              //                 ),
+              //                 maxLines: 2,
+              //                 overflow: TextOverflow.ellipsis,
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -294,7 +341,6 @@ class _LessonScreenState extends State<LessonScreen> {
     if (lastViewed == null) return SizedBox.shrink();
 
     return GestureDetector(
-      onTap: () => _navigateToLastViewed(lastViewed),
       child: Container(
         padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.only(bottom: 16),
@@ -328,7 +374,7 @@ class _LessonScreenState extends State<LessonScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Continue Watching',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -336,16 +382,14 @@ class _LessonScreenState extends State<LessonScreen> {
                     ),
                   ),
                   SizedBox(height: 4),
-                  Text(
-                    lastViewed.lessonTitle ?? 'Untitled',
+                  Text("",
                     style: TextStyle(fontSize: 14),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 8),
                   LinearProgressIndicator(
-                    value: (lastViewed.positionSeconds ?? 0) /
-                        (/* total duration if available */ 300),
+                    value: 4,
                     backgroundColor: Colors.grey[300],
                     color: AppColors.primaryColor,
                   ),
@@ -360,24 +404,6 @@ class _LessonScreenState extends State<LessonScreen> {
   // String _getVideoThumbnail(String? url) {
   //   // Your existing thumbnail generation logic
   // }
-  void _navigateToLastViewed(LastViewedModel lastViewed) {
-    final lesson = LessonModel(
-      id: lastViewed.lastViewedLesson,
-      courseId: lastViewed.lastViewedCourse,
-      sectionId: lastViewed.lastViewedSection,
-      title: lastViewed.lessonTitle,
-      video: IntroVideo(linkPath: lastViewed.videoUrl, url: '', sourceType: ''),
-      resumePositionMs: lastViewed.positionSeconds! * 1000,
-      // Add other necessary fields
-    );
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => LessonScreen(lesson: lesson),
-      ),
-    );
-  }
   Widget _buildLessonInfo(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),

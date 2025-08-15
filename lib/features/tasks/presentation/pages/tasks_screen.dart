@@ -58,7 +58,7 @@ class _TasksScreenState extends State<TasksScreen> {
                         children: [
                           SectionHeader(
                             count: todoTasks.length,
-                            titleKey: 'tasks_to_do'.tr(), // Localized
+                              title: 'tasks_to_do'.tr(),
                           ),
                           SizedBox(
                             height: context.propHeight(200),
@@ -83,7 +83,7 @@ class _TasksScreenState extends State<TasksScreen> {
 
                           SectionHeader(
                             count: completedTasks.length,
-                            titleKey: 'completed_tasks'.tr(), // Localized
+                            title: 'completed_tasks'.tr(), // Localized
                           ),
                           SizedBox(
                             height: context.propHeight(200),

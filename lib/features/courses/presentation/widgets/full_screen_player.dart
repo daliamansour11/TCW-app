@@ -1,9 +1,10 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class FullscreenPlayer extends StatefulWidget {
+
   const FullscreenPlayer({super.key, required this.controller});
   final VideoPlayerController controller;
 
@@ -22,6 +23,7 @@ class _FullscreenPlayerState extends State<FullscreenPlayer> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
 
+    // Continuously rebuild to sync the progress bar
     widget.controller.addListener(() {
       if (!_isDragging && mounted) setState(() {});
     });
@@ -83,8 +85,8 @@ class _FullscreenPlayerState extends State<FullscreenPlayer> {
                     value: _isDragging
                         ? _dragValue
                         : position.inSeconds
-                        .clamp(0, duration.inSeconds)
-                        .toDouble(),
+                            .clamp(0, duration.inSeconds)
+                            .toDouble(),
                     onChanged: (val) {
                       setState(() {
                         _isDragging = true;
@@ -119,9 +121,6 @@ class _FullscreenPlayerState extends State<FullscreenPlayer> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       IconButton(
-                        tooltip: controller.value.isPlaying
-                            ? tr('pause')
-                            : tr('play'),
                         icon: Icon(
                           controller.value.isPlaying
                               ? Icons.pause
@@ -137,7 +136,6 @@ class _FullscreenPlayerState extends State<FullscreenPlayer> {
                         },
                       ),
                       IconButton(
-                        tooltip: tr('rewind_10'),
                         icon: const Icon(Icons.replay_10, color: Colors.white),
                         onPressed: () {
                           final pos = controller.value.position -
@@ -147,7 +145,6 @@ class _FullscreenPlayerState extends State<FullscreenPlayer> {
                         },
                       ),
                       IconButton(
-                        tooltip: _isMuted ? tr('unmute') : tr('mute'),
                         icon: Icon(
                           _isMuted ? Icons.volume_off : Icons.volume_up,
                           color: Colors.white,
@@ -160,7 +157,6 @@ class _FullscreenPlayerState extends State<FullscreenPlayer> {
                         },
                       ),
                       IconButton(
-                        tooltip: tr('fullscreen_exit'),
                         icon: const Icon(Icons.fullscreen_exit,
                             color: Colors.white),
                         onPressed: () => Navigator.pop(context),

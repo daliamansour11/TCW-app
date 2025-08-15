@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tcw/core/shared/shared_widget/custom_text.dart';
 import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
@@ -23,6 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     viewmodel = SettingsViewmodel(context);
   }
 
+
   void _showLanguageDialog() {
     showDialog(
       context: context,
@@ -33,15 +35,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             ListTile(
               title: Text('arabic'.tr()),
-              onTap: () {
-                context.setLocale(const Locale('ar'));
+              onTap: () async {
+                await _setLanguage(const Locale('ar'));
                 Navigator.pop(context);
               },
             ),
             ListTile(
               title: Text('english'.tr()),
-              onTap: () {
-                context.setLocale(const Locale('en'));
+              onTap: () async {
+                await _setLanguage(const Locale('en'));
                 Navigator.pop(context);
               },
             ),
@@ -50,6 +52,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+
+  Future<void> _setLanguage(Locale locale) async {
+    await context.setLocale(locale);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('saved_locale', locale.languageCode);
+  }
+
 
   @override
   Widget build(BuildContext context) {

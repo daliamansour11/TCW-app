@@ -4,18 +4,16 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:tcw/features/home/presentation/home_viewmodel.dart';
-import 'package:tcw/features/home/presentation/widgets/build_section_header.dart';
-import 'package:tcw/features/home/presentation/widgets/home_appbar_widget.dart';
-import 'package:tcw/features/home/presentation/widgets/side_menu_widget.dart';
-import 'package:tcw/features/programmes/presentation/cubit/program_cubit.dart';
-import 'package:tcw/features/programmes/presentation/widgets/programme_item_widget.dart';
+import '../../../courses/presentation/widgets/programme_item_widget.dart';
+import '../home_viewmodel.dart';
+import '../widgets/build_section_header.dart';
+import '../widgets/home_appbar_widget.dart';
+import '../widgets/side_menu_widget.dart';
 
-import 'package:tcw/features/reels/presentation/pages/media_screen.dart';
-import 'package:tcw/features/reels/presentation/reel_viewmodel.dart';
+import '../../../reels/presentation/pages/media_screen.dart';
+import '../../../reels/presentation/reel_viewmodel.dart';
 
 import '../../../courses/presentation/cubit/course/courses_cubit.dart';
-import '../../../courses/presentation/widgets/course_item_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

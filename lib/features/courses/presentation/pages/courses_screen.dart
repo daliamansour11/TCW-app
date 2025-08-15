@@ -2,10 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+
 import '../../../../core/shared/shared_widget/app_bar.dart';
 import '../../../../core/shared/shared_widget/search_filter_widget.dart';
+import '../../../programmes/presentation/cubit/program_cubit.dart';
 import '../cubit/course/courses_cubit.dart';
-import '../widgets/course_item_widget.dart';
+import '../widgets/programme_item_widget.dart';
 
 class CoursesScreen extends StatefulWidget {
   const CoursesScreen({super.key});
@@ -33,7 +35,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'programs'.tr()), // localized
+      appBar: CustomAppBar(title: tr('programs')), // localized
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(10),
         child: Column(
@@ -46,7 +48,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
             const SizedBox(height: 16),
             BlocBuilder<CourseCubit, CourseState>(
               builder: (context, state) {
-                if (state is CourseLoading) {
+                if (state is ProgramLoading) {
                   if (_isLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else {
@@ -54,7 +56,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('error_message'.tr()), // localized
+                          Text(tr('something_went_wrong')), // localized
                           const SizedBox(height: 10),
                           ElevatedButton(
                             onPressed: () {
@@ -70,7 +72,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                 }
                               });
                             },
-                            child: Text('retry'.tr()), // localized
+                            child: Text(tr('retry')), // localized
                           ),
                         ],
                       ),
@@ -78,10 +80,10 @@ class _CoursesScreenState extends State<CoursesScreen> {
                   }
                 } else if (state is CoursesLoaded || state is CourseLoadingMore) {
                   final courses = (state is CoursesLoaded)
-                      ? state.courses
+                      ? (state).courses
                       : context.read<CourseCubit>().allCourses;
                   if (courses.isEmpty) {
-                    return Center(child: Text('no_courses_found'.tr())); // localized
+                    return Center(child: Text(tr('no_courses_found'))); // localized
                   }
                   return ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
@@ -89,8 +91,8 @@ class _CoursesScreenState extends State<CoursesScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: courses.length,
                     itemBuilder: (context, index) {
-                      final course = courses[index];
-                      return CourseItemWidget(program: course);
+                      final program = courses[index];
+                      return CourseItemWidget(program: program);
                     },
                   );
                 } else if (state is CourseError) {

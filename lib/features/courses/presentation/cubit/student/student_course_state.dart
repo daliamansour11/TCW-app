@@ -33,6 +33,7 @@ class StudentCourseError extends StudentCourseState {
 }
 class CourseLessonsLoaded extends StudentCourseState {
   CourseLessonsLoaded(this.lesson);
+
   final List<LessonModel> lesson;
 }
 class StudentCourseDetailsLoaded extends StudentCourseState {

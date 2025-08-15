@@ -49,32 +49,34 @@ class _HomeLayoutState extends State<HomeLayout> {
       const  ProfileScreen(),
 
 ];
-    _tabs = const [
+
+    _tabs = [
       _TabItem(
-        label: 'Home',
+        labelMap: {'en': 'Home', 'ar': 'الرئيسية'},
         activeIcon: AssetUtils.home,
         inactiveIcon: AssetUtils.inActiveHome,
       ),
       _TabItem(
-        label: 'Events',
+        labelMap: {'en': 'Events', 'ar': 'الفعاليات'},
         activeIcon: AssetUtils.eventOrange,
         inactiveIcon: AssetUtils.eventGray,
       ),
       _TabItem(
-        label: 'AI',
+        labelMap: {'en': 'AI', 'ar': 'الذكاءالاصطناعي'},
         activeIcon: AssetUtils.chatBot,
         inactiveIcon: AssetUtils.chatBot,
       ),
       _TabItem(
-        label: 'TCW media',
+        labelMap: {'en': 'TCW Media', 'ar': 'ميديا'},
         activeIcon: AssetUtils.coursesIcon,
         inactiveIcon: AssetUtils.coursesIcon,
       ),
       _TabItem(
-        label: 'Profile',
+        labelMap: {'en': 'Profile', 'ar': 'الملف الشخصي'},
         iconData: Icons.person_outline,
       ),
     ];
+
 
   }
 
@@ -114,7 +116,7 @@ class _HomeLayoutState extends State<HomeLayout> {
       ),
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
         itemCount: _tabs.length,
-        height: context.propHeight(80),
+        height: context.propHeight(90),
         gapLocation: GapLocation.none,
         notchSmoothness: NotchSmoothness.smoothEdge,
         activeIndex: selectedIdx,
@@ -127,23 +129,23 @@ class _HomeLayoutState extends State<HomeLayout> {
               children: [
                 tab.iconData != null
                     ? Icon(
-                        tab.iconData,
-                        color: isActive
-                            ? AppColors.primaryColor
-                            : AppColors.hintTextColor,
-                        size: context.propHeight(24),
-                      )
+                  tab.iconData,
+                  color: isActive
+                      ? AppColors.primaryColor
+                      : AppColors.hintTextColor,
+                  size: context.propHeight(24),
+                )
                     : Image.asset(
-                        isActive ? tab.activeIcon! : tab.inactiveIcon!,
-                        color: isActive
-                            ? AppColors.primaryColor
-                            : AppColors.hintTextColor,
-                        width: context.propWidth(24),
-                        height: context.propHeight(24),
-                      ),
+                  isActive ? tab.activeIcon! : tab.inactiveIcon!,
+                  color: isActive
+                      ? AppColors.primaryColor
+                      : AppColors.hintTextColor,
+                  width: context.propWidth(24),
+                  height: context.propHeight(24),
+                ),
                 SizedBox(height: context.propHeight(7)),
                 Text(
-                  tab.label,
+                  tab.getLabel(Localizations.localeOf(context)),
                   style: GoogleFonts.almarai(
                     fontSize: ResponsiveText.responsiveFontSize(context, 12),
                     fontWeight: FontWeight.w400,
@@ -153,6 +155,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                   ),
                 ),
               ],
+
             ),
           );
         },
@@ -161,15 +164,21 @@ class _HomeLayoutState extends State<HomeLayout> {
   }
 }
 
+
 class _TabItem {
   const _TabItem({
-    required this.label,
+    required this.labelMap,
     this.activeIcon,
     this.inactiveIcon,
     this.iconData,
   });
-  final String label;
+
+  final Map<String, String> labelMap;
   final String? activeIcon;
   final String? inactiveIcon;
   final IconData? iconData;
+
+  String getLabel(Locale locale) {
+    return labelMap[locale.languageCode] ?? labelMap.values.first;
+  }
 }

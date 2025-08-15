@@ -4,7 +4,7 @@ import 'package:tcw/features/courses/data/models/category_model.dart';
 import 'package:tcw/features/courses/data/models/course_model.dart';
 import 'package:tcw/features/courses/data/models/section_model.dart';
 
-import '../models/course_details_model.dart';
+import '../models/course_detail_model.dart';
 import '../models/wishlist_model.dart';
 
 abstract class CourseRepository {
@@ -19,7 +19,7 @@ abstract class CourseRepository {
     bool? featured,
   });
 
-  Future<ApiResponse<CourseDetailsModel>> getCourseDetails(int courseId);
+  Future<ApiResponse<CourseDetailModel>> getCourseDetails(int courseId);
 
   Future<ApiResponse<List<CategoryModel>>> getCategories({
     int limit,
@@ -27,7 +27,8 @@ abstract class CourseRepository {
     bool subCategory,
   });
   Future<ApiResponse<List<SectionModel>>> getCourseLessons(int courseId) ;
-  Future<ApiResponse<WishlistModel>> toggleLikeOnCourses(int courseId);
+  Future<ApiResponse<WishlistModel>> toggleLikeOnCourses(int courseId) ;
+
 }
 
 class CourseRepositoryImpl implements CourseRepository {
@@ -59,7 +60,7 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   @override
-  Future<ApiResponse<CourseDetailsModel>> getCourseDetails(int courseId) {
+  Future<ApiResponse<CourseDetailModel>> getCourseDetails(int courseId) {
     return _datasource.getCourseDetails(courseId);
   }
 
@@ -76,10 +77,9 @@ class CourseRepositoryImpl implements CourseRepository {
  Future<ApiResponse<List<SectionModel>>> getCourseLessons(int courseId) {
    return _datasource.getCourseLessons(courseId);
  }
+ @override
+ Future<ApiResponse<WishlistModel>> toggleLikeOnCourses(int courseId) {
+   return _datasource.toggleLikeOnCourses(courseId);
 
-  @override
-  Future<ApiResponse<WishlistModel>> toggleLikeOnCourses(int courseId) {
-    return _datasource.toggleLikeOnCourses(courseId);
-
-  }
+ }
  }

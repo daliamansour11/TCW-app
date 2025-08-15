@@ -166,8 +166,8 @@
   "points": "النقاط",
   "rewards": "المكافآت",
   "mentor": "مرشد",
-  "logout_confirmation": "هل تريد تسجيل الخروج"
-
+  "logout_confirmation": "هل تريد تسجيل الخروج",
+  "no_events": "لا يوجد فعاليات حاليا"
  },
  "search_courses": "ابحث في البرامج...",
  "see_all": "عرض الكل",
@@ -201,7 +201,7 @@
   "video_error": "خطأ في تحميل الفيديو",
   "success_delete": "تم حذف الريل بنجاح",
   "Failed_to_pick_video:": "فشل تحميل الفيديو",
-  "added_to_history": "تمت إضافة الريل إلى التاريخ بعد 5 ثوانٍ",
+  "added_to_history": "تمت إضافة الريل إلى التاريخ بعد 5 ثوانٍ"
 
  }
 ,
@@ -214,7 +214,7 @@
  "media": {
   "tcw_media": "وسائط TCW",
   "tcw_reels": "ريلز TCW",
-  "create_reel": "إنشاء رييل",
+  "create_reel": "إنشاء ريل",
   "no_reels_found": "لم يتم العثور على ريلز",
   "create_first_reel": "أنشئ أول رييل لك"
  },
@@ -293,9 +293,96 @@
   "enter_new_password": "أدخل كلمة المرور الجديدة",
   "new_password": "أدخل كلمة المرور الجديدة",
   "confirm_password": "تأكيد كلمة المرور",
-  "continue": "متابعة"
- }
+  "continue": "متابعة",
+
+ "lesson": {
+  "zero": "لا يوجد دروس",
+  "one": "درس واحد",
+  "other": "{count} دروس"
+ },
+ "hour": {
+  "zero": "لا يوجد ساعات",
+  "one": "ساعة واحدة",
+  "other": "{count} ساعات"
+ },
+ "available": "{count} متاح"
+,
+
+ "programs": "البرامج",
+ "something_went_wrong": "حدث خطأ أو استغرق الأمر وقتًا طويلاً.",
+ "retry": "إعادة المحاولة",
+ "no_courses_found": "لا توجد دورات."
+,
+ "no_lessons_available": "لا توجد دروس",
+ "lesson_with_number": "الدرس {count}",
+ "minutes": "{count} دقيقة",
+ "task_pending": "مهمة معلقة"
+,
+
+ "lessons_count": "{} درس",
+ "duration_hours": "{} ساعة",
+ "available_seats": "{} متاح",
+ "lesson_label": "درس",
+ "minutes_label": "دقيقة",
+
+  "lesson_default_title": "عنوان الدرس غير متوفر",
+  "lesson_default_description": "لا يوجد وصف متاح لهذا الدرس",
+  "home": "الرئيسية",
+  "events": "الأحداث",
+  "ai": "الذكاء الاصطناعي",
+  "tcw_media": "وسائط TCW",
+  "profile": "الملف الشخصي",
+  "day": "متبقي يوم واحد",
+  "continueWatching": "تابع المشاهدة",
+
+ "lesson_default_title": "عنوان الدرس غير متوفر",
+ "lesson_default_description": "لا يوجد وصف متاح لهذا الدرس",
+ "task_default_title": "عنوان المهمة غير متوفر",
+ "task_default_description": "لا يوجد وصف متاح لهذه المهمة",
+ "task": "مهمة",
+ "day": "يوماً متبقي",
+ "viewDetails": "عرض التفاصيل",
+  "price_format": "{} ريال",
+  "enroll_now": "سجل الآن",
+  "duration_minutes": "{minutes} دقائق",
+  "wish_list": "قائمة الرغبات",
+  "lessons": "الدروس",
+  "wishlist_empty": "قائمة الرغبات فارغة",
+
+ "ask_hint": "ماذا تريد أن تسأل؟",
+ "search": "بحث",
+ "think": "فكر",
+
+ "welcome_bot": "مرحبا بك في روبوت TCW",
+ "how_can_i_help": "كيف يمكنني مساعدتك اليوم؟",
+
+
+ "invalid_date": "تاريخ غير صالح",
+
+ "available_seat": "{count} مقعد",
+  "all_groups": "جميع المجموعات ({count})",
+  "my_groups": "مجموعاتي ({count})",
+  "explore_groups": "استكشاف المجموعات ({count})",
+  "lessons": "{count} درس",
+  "hours": "{count} س",
+  "available": "{count} متاح",
+  "lesson_number": "الدرس {number}",
+  "lesson_duration": "{duration} دقيقة"
+
+
+
+
+
+
 }
+
+}
+
+
+
+
+
+
 
 
 

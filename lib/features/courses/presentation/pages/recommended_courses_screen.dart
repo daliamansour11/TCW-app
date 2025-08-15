@@ -8,6 +8,8 @@ import 'package:tcw/features/courses/presentation/courses_viewmodel.dart';
 import 'package:tcw/features/courses/presentation/cubit/course/courses_cubit.dart';
 import 'package:tcw/features/courses/presentation/widgets/course_card.dart';
 
+import '../widgets/programme_item_widget.dart';
+
 class RecommendedCoursesScreen extends StatefulWidget {
   const RecommendedCoursesScreen({
     super.key,
@@ -70,7 +72,7 @@ class _RecommendedCoursesScreenState extends State<RecommendedCoursesScreen> {
                     padding: const EdgeInsets.only(bottom: 80),
                     itemCount: courses.length,
                     itemBuilder: (context, index) {
-                      return CourseCard(course: courses[index]);
+                      return CourseItemWidget(  program: courses[index],);
                     },
                   );
                 }

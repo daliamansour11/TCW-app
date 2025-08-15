@@ -22,7 +22,8 @@ import '../../features/chat/presentation/pages/inbox_screen.dart';
 import '../../features/chat/presentation/pages/message_screen.dart';
 import '../../features/chat/presentation/pages/new_group_screen.dart';
 import '../../features/courses/data/datasources/course_datasource_impl.dart';
-import '../../features/courses/data/models/course_details_model.dart';
+import '../../features/courses/data/models/course_model.dart';
+import '../../features/courses/data/models/student_course_details.dart' hide Lesson;
 import '../../features/courses/data/models/task_model.dart';
 import '../../features/courses/data/repositories/course_repository_impl.dart';
 import '../../features/courses/data/repositories/student_course_repository_impl.dart';
@@ -31,9 +32,9 @@ import '../../features/courses/presentation/cubit/student/student_course_cubit.d
 import '../../features/courses/presentation/pages/course_datails_screen.dart';
 import '../../features/courses/presentation/pages/courses_screen.dart';
 import '../../features/courses/presentation/pages/lesson_screen.dart';
+import 'package:tcw/features/programmes/data/models/program_detail_model.dart' show Lesson, LessonModel;
 import '../../features/courses/presentation/pages/my_library_screen.dart';
 import '../../features/courses/presentation/pages/recommended_courses_screen.dart';
-import '../../features/courses/presentation/widgets/program_subscribe_rounds_widget.dart';
 import '../../features/event/data/data_source/event_data_source.dart';
 import '../../features/event/data/models/event_model.dart';
 import '../../features/event/data/repositories/event_repository.dart';
@@ -46,6 +47,7 @@ import '../../features/payment/presentation/pages/new_card_screen.dart';
 import '../../features/payment/presentation/pages/proccess_pay_screen.dart';
 import '../../features/profile/presentation/pages/profile_screen.dart';
 import '../../features/programmes/data/data_source/program_datasource_impl.dart';
+import '../../features/programmes/data/models/program_detail_model.dart' show Lesson, LessonModel;
 import '../../features/programmes/data/repositories/programs_repository_impl.dart';
 import '../../features/programmes/presentation/cubit/program_cubit.dart';
 
@@ -62,7 +64,6 @@ import '../../features/tasks/presentation/cubit/course_tasks_cubit.dart';
 import '../../features/tasks/presentation/pages/new_task_screen.dart';
 import '../../features/tasks/presentation/pages/task_detail_screen.dart';
 import '../../features/event/presentation/pages/event_calendar_screen.dart';
-import '../../features/programmes/presentation/pages/programe_details_view.dart';
 import '../../features/programmes/presentation/pages/programmes_view.dart';
 import '../../features/reels/presentation/pages/create_reel_page.dart';
 import '../../features/reels/presentation/pages/reel_view_screen.dart';
@@ -87,7 +88,7 @@ import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../../features/chat/data/chat_data_source/chat_data_source.dart';
 import '../../features/chat/data/chat_repo/chat_repositories.dart';
 import '../../features/chat/presentation/cubit/_chat_cubit.dart';
-import '../../features/courses/data/models/lesson_model.dart';
+import '../../features/courses/data/models/lesson_model.dart' hide LessonModel;
 
 TransitionType transition = TransitionType.upToDown;
 
@@ -297,7 +298,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
   ),
   ChildRoute(
     AppRoutes.wishListScreen,
-    child: (_, ModularArguments args) => const WishListScreen(),
+    child: (_, ModularArguments args) =>  const WishListScreen(),
     transition: transition,
   ),
   ChildRoute(
@@ -355,8 +356,8 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
       final courseId = args.data is int ? args.data as int : 0;
 
       return BlocProvider(
-        create: (context) => CourseCubit(CourseRepositoryImpl(CourseDatasourceImpl()))..getCourseLessons(courseId),
-        child: CourseDetailsScreen(courseId: courseId),
+        create: (context) => ProgramCubit(ProgramRepositoryImpl(ProgramDatasourceImpl()))..fetchProgramDetails(courseId),
+        child: ProgrameDetailsView( courseId),
       );
     },
     transition: transition,
@@ -405,16 +406,19 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
       return MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (_) => CourseTasksCubit(CourseTaskRepositoriesImp(TaskDataSourceImp()))..getCourseTasks(lesson.id??0),
-          ),   BlocProvider(
-              create: (_) => StudentCourseCubit(StudentCourseRepositoryImpl()),
+            create: (_) => CourseTasksCubit(CourseTaskRepositoriesImp(TaskDataSourceImp()))
+              ..getCourseTasks(lesson.id ?? 0),
           ),
-
+          BlocProvider(
+            create: (_) => StudentCourseCubit(StudentCourseRepositoryImpl()),
+          ),
         ],
-        child: LessonScreen(lesson: lesson),
+        child: LessonScreen(lesson: lesson,
+        ),
       );
     },
   ),
+
 
   ChildRoute(
     AppRoutes.tasksScreen,
@@ -537,7 +541,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
   ),
   ChildRoute(
     AppRoutes.groupChatScreen,
-    child: (_, ModularArguments args) => 
+    child: (_, ModularArguments args) =>
         GroupChatScreen(liveId: args.data as int,),
     transition: transition,
   ),
@@ -571,23 +575,24 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
         create: (context) => ProgramCubit(ProgramRepositoryImpl(ProgramDatasourceImpl()))
           ..fetchProgramDetails(programId),
         child: ProgrameDetailsView(
-          programId: programId,
+           programId,
         ),
       );
     },
     transition: transition,
-  ),ChildRoute(
-    AppRoutes.programSubscribeRoundsWidget,
-    child: (_, ModularArguments args) {
-      final programId = args.data  as CourseDetailsModel;
-
-      return BlocProvider(
-        create: (context) => StudentCourseCubit(StudentCourseRepositoryImpl())..getStudentCourseDetails(programId.data?.id??0),
-        child: ProgramSubscribeRoundsWidget(programId),
-      );
-    },
-    transition: transition,
-  ),
+  )
+    // ,ChildRoute(
+  //   AppRoutes.programSubscribeRoundsWidget,
+  //   child: (_, ModularArguments args) {
+  //     final programId = args.data  as CourseDetailsModel;
+  //
+  //     return BlocProvider(
+  //       create: (context) => StudentCourseCubit(StudentCourseRepositoryImpl())..getStudentCourseDetails(programId.data?.id??0),
+  //       child: ProgramSubscribeRoundsWidget(programId),
+  //     );
+  //   },
+  //   transition: transition,
+  // ),
 
 
 

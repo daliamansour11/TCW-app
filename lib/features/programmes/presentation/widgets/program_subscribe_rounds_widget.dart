@@ -7,26 +7,22 @@ import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/features/programmes/data/models/program_detail_model.dart';
 import 'package:tcw/core/routes/app_routes.dart';
 import 'package:zapx/zapx.dart';
-class ProgramSubscribeRoundsWidget extends StatefulWidget {
+import 'package:easy_localization/easy_localization.dart';
+
+class ProgramSubscribeRoundsWidget extends StatelessWidget {
   const ProgramSubscribeRoundsWidget(this.detail, {super.key});
 
   final ProgramDetailModel detail;
 
   @override
-  State<ProgramSubscribeRoundsWidget> createState() => _ProgramSubscribeRoundsWidgetState();
-}
-
-class _ProgramSubscribeRoundsWidgetState extends State<ProgramSubscribeRoundsWidget> {
-  bool isFavorite = false;
-
-  @override
   Widget build(BuildContext context) {
-    final sections = widget.detail.data?.sections ?? [];
-    final allLessons = sections.expand((section) => section.lessons ?? []).toList();
-
+    final sections = detail.data?.sections ?? [];
+    final allLessons = sections
+        .expand((section) => section.lessons ?? [])
+        .toList();
     return CustomContainer(
       child: allLessons.isEmpty
-          ? const Center(child: Text('No lessons available'))
+          ? Center(child: Text(tr('no_lessons_available')))
           : ListView.separated(
         itemCount: allLessons.length,
         shrinkWrap: true,
@@ -35,111 +31,121 @@ class _ProgramSubscribeRoundsWidgetState extends State<ProgramSubscribeRoundsWid
         itemBuilder: (context, index) {
           final lesson = allLessons[index];
 
-          return  GestureDetector(
+          return GestureDetector(
             onTap: () => Zap.toNamed(
               AppRoutes.lessonScreen,
-              arguments: lesson
-              // arguments: {
-              //   'lesson': lesson,
-              //   'instructorName': widget.detail.data?.instructor?.name ?? 0,
-              // },
+              arguments: lesson,
+                // 'instructorName': detail.data?.instructor?.name ?? 'Unknown Instructor',
             ),
+            child:CustomContainer(
+              child: allLessons.isEmpty
+                  ? Center(child: Text(tr('no_lessons_available')))
+                  : ListView.separated(
+                itemCount: allLessons.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                separatorBuilder: (context, index) => const SizedBox(height: 15),
+                itemBuilder: (context, index) {
+                  final lesson = allLessons[index];
 
-
-          child: CustomContainer(
-              margin: const EdgeInsets.all(10),
-              padding:8,
-              color: Colors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: CustomImage(
-                            widget.detail.data?.thumbUrl ?? AssetUtils.programPlaceHolder,
-                            fit: BoxFit.cover,
+                  return GestureDetector(
+                    onTap: () => Zap.toNamed(
+                      AppRoutes.lessonScreen,
+                      arguments: lesson,
+                    ),
+                    child: CustomContainer(
+                      margin: const EdgeInsets.all(10),
+                      padding: 8,
+                      color: Colors.white,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 8,
+                        children: [
+                          Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: AspectRatio(
+                                  aspectRatio: 16 / 9,
+                                  child: CustomImage(
+                                    detail.data?.thumbUrl ??
+                                        AssetUtils.programPlaceHolder,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 6,
+                                right: 6,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.white.withOpacity(0.3),
+                                  child: IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(
+                                      Icons.favorite_border,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 8,
-
-                        right: 8,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: IconButton(
-                            icon: Icon(
-                              isFavorite ? Icons.favorite : Icons.favorite_border,
-                              color: isFavorite ? Colors.red : Colors.grey,
-                            ),
-                            onPressed: () {
-
-                              setState(() {
-                                isFavorite = !isFavorite;
-                              });
-                            },
+                          Row(
+                            spacing: 4,
+                            children: [
+                              CustomContainer(
+                                padding: 4,
+                                borderRadius: 8,
+                                color: AppColors.primaryColor.withOpacity(0.3),
+                                child: CustomText(
+                                  '${tr('lesson_label')} ${lesson.id ?? ''}',
+                                  color: AppColors.primaryColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const Spacer(),
+                              const Icon(Icons.access_time, size: 16),
+                              CustomText(
+                                '${lesson.durationMinutes ?? 10} ${tr('minutes_label')}',
+                                fontSize: 14,
+                              ),
+                            ],
                           ),
-                        ),
-                      ),                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      CustomContainer(
-                        padding: 4,
-                        borderRadius: 8,
-                        color: AppColors.primaryColor.withOpacity(0.3),
-                        child: CustomText(
-                          'Lesson ${lesson.id ?? ''}',
-                          color: AppColors.primaryColor,
-                          fontSize: 14,
-                        ),
+                          CustomText(
+                            lesson.title ?? '',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          LinearProgressIndicator(
+                            value: 0.4, // lesson.progress ?? 0.0
+                            backgroundColor: Colors.grey[300],
+                            color: AppColors.primaryColor,
+                            minHeight: 5,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.pending_actions_outlined,
+                                size: 16,
+                                color: AppColors.primaryColor,
+                              ),
+                              CustomText(
+                                tr('task_pending'),
+                                fontSize: 14,
+                                color: AppColors.primaryColor,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      const Spacer(),
-                      const Icon(Icons.access_time, size: 16),
-                      CustomText(
-                        '${lesson.durationMinutes ?? 10} min',
-                        fontSize: 14,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  CustomText(
-                    lesson.title ?? '',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  const SizedBox(height: 8),
-                  LinearProgressIndicator(
-                    value: 0.4, //    lesson.progress
-                    backgroundColor: Colors.grey[300],
-                    color: AppColors.primaryColor,
-                    minHeight: 5,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  const SizedBox(height: 8),
-                  const Row(
-                    children: [
-                      Icon(
-                        Icons.pending_actions_outlined,
-                        size: 16,
-                        color: AppColors.primaryColor,
-                      ),
-                      SizedBox(width: 4),
-                      CustomText(
-                        'Task Pending',
-                        fontSize: 14,
-                        color: AppColors.primaryColor,
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  );
+                },
               ),
-            ),
+            )
+
           );
         },
       ),

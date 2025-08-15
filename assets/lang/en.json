@@ -289,14 +289,85 @@
   "login": "Login",
   "welcome": "Welcome {}",
 
+  "lesson": {
+   "zero": "No lessons",
+   "one": "1 Lesson",
+   "other": "{} Lessons"
+  },
+  "hour": {
+   "zero": "No hours",
+   "one": "1 Hour",
+   "other": "{count} Hours"
+  },
+  "available": "{count} Available",
 
   "reset_password": "Reset Password",
   "enter_new_password": "Enter the new password",
   "new_password": "Enter new password",
   "confirm_password": "Confirm password",
-  "continue": "Continue"
+  "continue": "Continue",
+
+ "programs": "Programs",
+ "something_went_wrong": "Something went wrong or took too long.",
+ "retry": "Retry",
+ "no_courses_found": "No courses found.",
+
+
+  "home": "Home",
+  "ai": "AI",
+  "events": "Events",
+  "tcw_media": "TCW Media",
+  "profile": "Profile"
+ ,
+ "no_lessons_available": "No lessons available",
+ "lesson_with_number": "Lesson {count}",
+ "minutes": "{count} min",
+ "task_pending": "Task Pending",
+ "minutes_label": "min"
+,
+ "lessons_count": "{count} Lessons",
+ "duration_hours": "{count} Hours",
+ "available_seats": "{count} Available",
+ "lesson_label": "Lesson",
+
+  "lesson_default_title": "",
+  "lesson_default_description": "",
+ "day": "1 Day Left",
+  "price_format": "{} SAR",
+  "enroll_now": " Enroll Now",
+
+ "lessons": "{count} Lessons",
+ "hours": "{count} h",
+ "available": "{count} Available",
+ "lesson": "Lesson {number}",
+ "favorite": "Favorite",
+ "unfavorite": "Unfavorite",
+
+
+ "duration_default": "1:30 m",
+ "duration_minutes": "{minutes} m",
+ "duration_hours_minutes": "{hours}h {minutes}m"
+,
+ "wish_list": "Wish List",
+  "wishlist_empty": "Your wishlist is empty",
+
+ "ask_hint": "What do you want to ask?",
+ "search": "Search",
+ "think": "Think",
+
+ "welcome_bot": "WELCOME TO TCW Bot",
+ "how_can_i_help": "How can I help you today?",
+  "lesson_number": "Lesson {number}",
+
+ "lesson_duration": "{duration} min",
+  "invalid_date": "Invalid date",
+
+ "available_seat": "{count} seat(s)",
+
  }
+
 }
+
 
 
 

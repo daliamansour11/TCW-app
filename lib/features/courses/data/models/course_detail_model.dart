@@ -1,18 +1,15 @@
-import '../../../courses/data/models/lesson_model.dart';
+class CourseDetailModel {
 
-class CourseDetailsModel {
-
-  factory CourseDetailsModel.fromJson(Map<String, dynamic> json) {
-    return CourseDetailsModel(
+  factory CourseDetailModel.fromJson(Map<String, dynamic> json) {
+    return CourseDetailModel(
       status: json['status'] ??'',
       data: json['data'] != null ? Data.fromJson(json['data']) : null,
     );
   }
-  CourseDetailsModel({
+  CourseDetailModel({
     required this.status,
     required this.data,
   });
-
   final String? status;
   final Data? data;
 
@@ -42,9 +39,11 @@ class Data {
       introVideo: json['intro_video'] == null ? null : IntroVideo.fromJson(json['intro_video']),
       sections: (json['sections'] as List?)?.map((x) => Section.fromJson(x)).toList() ?? [],
       moreCourses: (json['more_courses'] as List?)?.map((x) => MoreCourse.fromJson(x)).toList() ?? [],
+      isWishlisted: json['is_wishlisted'],
+
     );
   }
-  Data({
+  Data( {
     required this.id,
     required this.title,
     required this.subTitle,
@@ -61,6 +60,7 @@ class Data {
     required this.introVideo,
     required this.sections,
     required this.moreCourses,
+    this.isWishlisted
   });
   final int? id;
   final String? title;
@@ -78,6 +78,7 @@ class Data {
   final IntroVideo? introVideo;
   final List<Section> sections;
   final List<MoreCourse> moreCourses;
+  final bool? isWishlisted;
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -97,6 +98,26 @@ class Data {
     'sections': sections.map((x) => x.toJson()).toList(),
     'more_courses': moreCourses.map((x) => x.toJson()).toList(),
   };
+  Data copyWith({bool? isWishlisted}) => Data(
+    id: id,
+    title: title,
+    subTitle: subTitle,
+    description: description,
+    requirements: requirements,
+    learningTopics: learningTopics,
+    price: price,
+    thumbUrl: thumbUrl,
+    instructor: instructor,
+    isSubscribed: isSubscribed,
+    availableSeats: availableSeats,
+    sectionsCount: sectionsCount,
+    totalDurationMinutes: totalDurationMinutes,
+    introVideo: introVideo,
+    sections: sections,
+    moreCourses: moreCourses,
+    isWishlisted: isWishlisted ?? this.isWishlisted,
+  );
+
 }
 
 class Instructor {
@@ -157,7 +178,7 @@ class Section {
       description: json['description'],
       durationMinutes: json['duration_minutes'],
       totalLessons: json['totalLessons'],
-      lessons: (json['lessons'] as List?)?.map((x) => LessonModel.fromJson(x)).toList(),
+      lessons: (json['lessons'] as List?)?.map((x) => Lesson.fromJson(x)).toList(),
     );
   }
   Section({
@@ -173,7 +194,7 @@ class Section {
   final String? topic;
   final String? description;
   final int? durationMinutes;
-  final List<LessonModel>? lessons;
+  final List<Lesson>? lessons;
   final int? totalLessons;
 
   Map<String, dynamic> toJson() => {
@@ -185,6 +206,47 @@ class Section {
     'lessons': lessons?.map((x) => x.toJson()).toList(),
   };
 }
+
+class Lesson {
+
+  factory Lesson.fromJson(Map<String, dynamic> json) {
+    return Lesson(
+        id: json['id'],
+        title: json['title'],
+        description: json['description'],
+        durationMinutes: json['duration_minutes'],
+        video: IntroVideo.fromJson(json['video']));
+  }
+  Lesson({
+    this.id,
+    this.title,
+    this.description,
+    this.durationMinutes,
+    this.video,
+  });
+
+  final int? id;
+  final String? title;
+  final String? description;
+  final int? durationMinutes;
+  final IntroVideo? video;
+
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'title': title,
+        'description': description,
+        'duration_minutes': durationMinutes,
+        'video': video
+      };
+}
+enum LessonStatus {
+  pending,
+  completed,
+  inProgress,
+  locked,
+}
+
 class MoreCourse {
 
   factory MoreCourse.fromJson(Map<String, dynamic> json) {

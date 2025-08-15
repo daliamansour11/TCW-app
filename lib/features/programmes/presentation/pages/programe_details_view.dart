@@ -1,8 +1,7 @@
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/shared/shared_widget/app_bar.dart';
 import '../../../../core/shared/shared_widget/custom_button.dart';
 import '../../../../core/shared/shared_widget/custom_container.dart';
@@ -17,8 +16,7 @@ import 'package:zap_sizer/zap_sizer.dart';
 import 'package:zapx/zapx.dart';
 
 class ProgrameDetailsView extends StatefulWidget {
-  const ProgrameDetailsView({required this.programId, super.key});
-
+  const ProgrameDetailsView(this.programId, {super.key});
   final int programId;
 
   @override
@@ -26,88 +24,110 @@ class ProgrameDetailsView extends StatefulWidget {
 }
 
 class _ProgrameDetailsViewState extends State<ProgrameDetailsView> {
-  bool  _isLoading = true;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    context.read<ProgramCubit>()..fetchProgramDetails(widget.programId);
-    Timer(Duration(seconds: 12), () {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    });}
+    _fetchProgram();
+  }
 
+  void _fetchProgram() {
+    context.read<ProgramCubit>().fetchProgramDetails(widget.programId);
+    Timer(const Duration(seconds: 12), () {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProgramCubit, ProgramState>(
-      builder: (context, state) {
-        String appBarTitle = 'TCWTIR';
+    return Scaffold(
+      appBar: CustomAppBar(title: 'program_details'.tr()),
+      body: BlocBuilder<ProgramCubit, ProgramState>(
+        builder: (context, state) {
+          if (state is ProgramLoading) {
+            return _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _buildTimeoutRetry();
+          } else if (state is ProgramDetailLoaded) {
+            final details = state.program;
+            if (details.data == null) {
+              return Center(child: Text(tr('no_data_available')));
+            }
 
-        if (state is ProgramDetailLoaded && state.program.data != null) {
-          final isSubscribed = state.program.data!.isSubscribed ?? false;
-          appBarTitle = isSubscribed? 'TCWTIR' : (state.program.data!.title ?? 'Program Details');
-        }
+            final isSubscribed = details.data!.isSubscribed;
 
-        return Scaffold(
-          appBar: CustomAppBar(title: appBarTitle),
-          body: Builder(
-            builder: (_) {
-              if (state is ProgramLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is ProgramDetailLoaded) {
-                final details = state.program;
-                if (details.data == null) {
-                  return const Center(child: Text('No data available'));
-                }
-                final  isSubscribed = state.program.data?.isSubscribed ?? false;
-                return ListView(
-                  padding: const EdgeInsets.all(10),
-                  children: [
-                    if (isSubscribed==true)
-                      const CustomText('Round 1'),
-                    ProgramTopBarDetails(details),
-                    if (isSubscribed==true)
-                      ProgramSubscribeRoundsWidget(details)
-                    else
-                      ProgramUnSubscribeExpansionTileWidget(details),
-                  ],
-                );
-              } else if (state is ProgramError) {
-                return Center(child: Text(state.message));
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-          bottomNavigationBar: (state is ProgramDetailLoaded && state.program.data != null&& state.program.data?.isSubscribed==false)
-
-              ?
-              CustomContainer(
-            height: 15.h,
-            padding: 8,
-            child: Row(
-              spacing: 5,
+            return ListView(
+              padding: const EdgeInsets.all(10),
               children: [
-                Flexible(
-                  child: CustomButton(
-                    title: 'Enroll Now',
-                    onPressed: () => Zap.toNamed(AppRoutes.proccessPayScreen),
-                    backgroundColor: Colors.black,
-                  ),
-                ),
-                const SizedBox.shrink(),
-                const RiyalLogo(),
-                CustomText('${state.program.data?.price ?? 200} SAR'),
+                if (isSubscribed == true)
+                  CustomText(tr('round_1')),
+                ProgramTopBarDetails(details),
+                if (isSubscribed == true)
+                  ProgramSubscribeRoundsWidget(details)
+                else
+                  ProgramUnSubscribeExpansionTileWidget(details),
               ],
-            ),
-          ):const SizedBox.shrink()
-        );
-      },
+            );
+          } else if (state is ProgramError) {
+            return Center(child: Text(state.message));
+          }
+          return const SizedBox.shrink();
+        },
+      ),
+      bottomNavigationBar: BlocBuilder<ProgramCubit, ProgramState>(
+        builder: (context, state) {
+          if (state is ProgramDetailLoaded &&
+              state.program.data != null &&
+              state.program.data!.isSubscribed == false) {
+            final details = state.program;
+            return CustomContainer(
+              height: 15.h,
+              padding: 8,
+              child: Row(
+                spacing: 5,
+                children: [
+                  Flexible(
+                    child: CustomButton(
+                      title: tr('enroll_now'),
+                      onPressed: () =>
+                          Zap.toNamed(AppRoutes.proccessPayScreen),
+                      backgroundColor: Colors.black,
+                    ),
+                  ),
+                  const RiyalLogo(),
+                  CustomText(
+                    'price_format'.tr(namedArgs: {'0': '${details.data?.price ?? 200}'}),
+                  ),
+
+                ],
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 
-
+  Widget _buildTimeoutRetry() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(tr('something_went_wrong')),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              setState(() => _isLoading = true);
+              _fetchProgram();
+            },
+            child: Text(tr('retry')),
+          ),
+        ],
+      ),
+    );
+  }
 }

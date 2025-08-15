@@ -1,5 +1,7 @@
 import 'package:tcw/features/courses/data/models/lesson_model.dart';
 
+import 'course_detail_model.dart';
+
 class SectionModel {
   SectionModel({
     required this.id,
@@ -22,8 +24,8 @@ class SectionModel {
       courseId: json['course_id'],
       createdAt: DateTime.tryParse(json['created_at'] ?? ''),
       updatedAt: DateTime.tryParse(json['updated_at'] ?? ''),
-      lessons: List<LessonModel>.from(
-          (json['lessons'] as List).map((x) => LessonModel.fromJson(x))),
+      lessons: List<Lesson>.from(
+          (json['lessons'] as List).map((x) => Lesson.fromJson(x))),
       durationMinutes: json['duration_minutes'],
       totalLessons: json['totalLessons'],
       instructor: json['instructor'] == null ? null : Instructor.fromJson(json['instructor']),
@@ -31,7 +33,7 @@ class SectionModel {
     );
   }
   final int id;
-  final List<LessonModel> lessons;
+  final List<Lesson> lessons;
   final String topic;
   final String description;
   final int courseId;

@@ -35,8 +35,6 @@ class ProgramModel {
     required this.isSubscribed,
   });
 
-
-
   final int? id;
   final String? title;
   final String? subTitle;
@@ -53,6 +51,4 @@ class ProgramModel {
   final bool? isSubscribed;
 
 }
-
-
 

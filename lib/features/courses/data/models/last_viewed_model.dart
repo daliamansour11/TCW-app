@@ -11,9 +11,6 @@ class LastViewedModel {
     this.lastViewedAssignment,
     this.createdAt,
     this.updatedAt,
-    this.positionSeconds,
-    this.videoUrl,
-    this.lessonTitle,
   });
 
   factory LastViewedModel.fromJson(Map<String, dynamic> json) {
@@ -27,9 +24,6 @@ class LastViewedModel {
       lastViewedAssignment: json['last_viewed_assignment'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
-      positionSeconds: json['position_seconds'],
-      videoUrl: json['video_url'],
-      lessonTitle: json['lesson_title'],
     );
   }
   final int id;
@@ -41,9 +35,6 @@ class LastViewedModel {
   final int? lastViewedAssignment;
   final String? createdAt;
   final String? updatedAt;
-  final int? positionSeconds;
-  final String? videoUrl;
-  final String? lessonTitle;
 
   Map<String, dynamic> toJson() {
     return {

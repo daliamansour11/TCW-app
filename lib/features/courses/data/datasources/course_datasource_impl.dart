@@ -6,7 +6,7 @@ import 'package:tcw/features/courses/data/models/course_model.dart';
 import 'package:tcw/features/courses/data/models/lesson_model.dart';
 import 'package:tcw/features/courses/data/models/section_model.dart';
 
-import '../models/course_details_model.dart';
+import '../models/course_detail_model.dart';
 import '../models/wishlist_model.dart';
 
 abstract class CourseDatasource {
@@ -21,7 +21,7 @@ abstract class CourseDatasource {
     bool? featured,
   });
 
-  Future<ApiResponse<CourseDetailsModel>> getCourseDetails(int courseId);
+  Future<ApiResponse<CourseDetailModel>> getCourseDetails(int courseId);
 
   Future<ApiResponse<List<CategoryModel>>> getCategories({
     int limit,
@@ -29,8 +29,7 @@ abstract class CourseDatasource {
     bool subCategory,
   });
   Future<ApiResponse<List<SectionModel>>> getCourseLessons(int courseId);
-  Future<ApiResponse<WishlistModel>> toggleLikeOnCourses(
-      int courseId);
+  Future<ApiResponse<WishlistModel>> toggleLikeOnCourses(int courseId) ;
 }
 
 class CourseDatasourceImpl implements CourseDatasource {
@@ -70,14 +69,14 @@ class CourseDatasourceImpl implements CourseDatasource {
   }
 
   @override
-  Future<ApiResponse<CourseDetailsModel>> getCourseDetails(int courseId) async {
+  Future<ApiResponse<CourseDetailModel>> getCourseDetails(int courseId) async {
     final response = await ApiService.instance.get(
       '${ApiUrl.course.getCourseDetails}/$courseId',
     );
 
     if (response.isError) return response.error();
 
-    final data = CourseDetailsModel.fromJson(response.mapData['data']);
+    final data = CourseDetailModel.fromJson(response.mapData['data']);
 
     return response.copyWith(data: data);
   }
@@ -120,7 +119,6 @@ class CourseDatasourceImpl implements CourseDatasource {
     return response.copyWith(data: lesson);
 
   }
-
   @override
   Future<ApiResponse<WishlistModel>> toggleLikeOnCourses(int courseId)async {
     try {

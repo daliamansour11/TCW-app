@@ -1,5 +1,3 @@
-import '../../../courses/data/models/lesson_model.dart';
-
 class ProgramDetailModel {
 
   factory ProgramDetailModel.fromJson(Map<String, dynamic> json) {
@@ -185,6 +183,48 @@ class Section {
     'lessons': lessons?.map((x) => x.toJson()).toList(),
   };
 }
+
+class LessonModel {
+
+  factory LessonModel.fromJson(Map<String, dynamic> json) {
+    return LessonModel(
+        id: json['id'],
+        title: json['title'],
+        description: json['description'],
+        durationMinutes: json['duration_minutes'],
+        video: IntroVideo.fromJson(json['video']));
+  }
+  LessonModel({
+    this.id,
+    this.title,
+    this.description,
+    this.durationMinutes,
+    this.video,
+  });
+  final int? id;
+  final String? title;
+  final String? description;
+  final int? durationMinutes;
+  final IntroVideo? video;
+
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'title': title,
+        'description': description,
+        'duration_minutes': durationMinutes,
+        'video': video
+      };
+}
+enum LessonStatus {
+  pending,
+  completed,
+  inProgress,
+  locked,
+}
+
+
+
 class MoreCourse {
 
   factory MoreCourse.fromJson(Map<String, dynamic> json) {

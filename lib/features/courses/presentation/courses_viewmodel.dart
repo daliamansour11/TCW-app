@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as ctx;
 import 'package:tcw/features/courses/data/models/last_viewed_model.dart';
 import 'package:tcw/features/courses/presentation/cubit/course/courses_cubit.dart';
 import 'package:tcw/features/courses/presentation/cubit/student/student_course_cubit.dart';
@@ -122,19 +121,10 @@ class CoursesViewmodel {
   }
 
 
-    Future<void> updateLastViewed(   int courseId,
-        int sectionId,
-        int lessonId, ) async {
+    Future<void> updateLastViewed(LastViewedModel model) async {
     try{
       await ctx.read<StudentCourseCubit>().updateLastViewed(
-           courseId,sectionId,lessonId );
-    } catch (e) {
-      debugPrint('Error updating Last Viewed: $e');
-    }
-  }
- Future<void> toggleLikeOnCourse(   int courseId,) async {
-    try{
-      await ctx.read<CourseCubit>().toggleCourseWishlist( courseId );
+           model );
     } catch (e) {
       debugPrint('Error updating Last Viewed: $e');
     }

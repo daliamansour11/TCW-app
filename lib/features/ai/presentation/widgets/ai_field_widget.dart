@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/shared/shared_widget/custom_button.dart';
@@ -82,7 +83,7 @@ class _AiFieldWidgetState extends State<AiFieldWidget> {
                 controller: _controller,
                 minLines: 3,
                 maxLines: 5,
-                hintText: 'What do you want to ask?',
+                hintText: 'ask_hint'.tr(), // localized
                 backgroundColor: Colors.transparent,
                 borderRadius: 24,
                 borderColor: Colors.transparent,
@@ -105,7 +106,7 @@ class _AiFieldWidgetState extends State<AiFieldWidget> {
                     ),
                   ),
                   CustomButton.icon(
-                    title: 'Search',
+                    title: 'search'.tr(), // localized
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     icon: const Icon(Icons.language, size: 17, color: Colors.white),
                     iconAlignment: IconAlignment.start,
@@ -114,7 +115,7 @@ class _AiFieldWidgetState extends State<AiFieldWidget> {
                     onPressed: () {},
                   ),
                   CustomButton.icon(
-                    title: 'Think',
+                    title: 'think'.tr(), // localized
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     icon: const Icon(Icons.lightbulb_outline, size: 17, color: Colors.white),
                     iconAlignment: IconAlignment.start,

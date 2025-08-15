@@ -6,9 +6,12 @@ import 'package:tcw/core/constansts/context_extensions.dart';
 import 'package:tcw/core/shared/shared_widget/custom_button.dart';
 import 'package:tcw/core/routes/app_routes.dart';
 import 'package:tcw/core/shared/shared_widget/custom_text.dart';
-import 'package:tcw/core/utils/asset_utils.dart';
 import 'package:tcw/features/courses/data/models/enrolled_course_model.dart';
 import 'package:zapx/zapx.dart';
+
+import '../../../programmes/presentation/widgets/program_subscribe_rounds_widget.dart';
+import '../cubit/student/student_course_cubit.dart';
+import '../pages/course_datails_screen.dart';
 
 class VerticalCourseCard extends StatelessWidget {
   const VerticalCourseCard({super.key, required this.course});
@@ -17,7 +20,7 @@ class VerticalCourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formattedDate =
-    DateFormat('d/M/yyyy').format(course.date ?? DateTime.now());
+        DateFormat('d/M/yyyy').format(course.date ?? DateTime.now());
 
     return GestureDetector(
       onTap: () {
@@ -58,7 +61,8 @@ class VerticalCourseCard extends StatelessWidget {
                           backgroundColor: Colors.grey[200],
                         ),
                         SizedBox(width: context.propWidth(8)),
-                         CustomText(course.instructor??''),
+                        CustomText(course.instructor ?? ''),
+                        // TODO: dynamic instructor name
                       ],
                     ),
                     Text(
@@ -73,9 +77,9 @@ class VerticalCourseCard extends StatelessWidget {
                 /// Title
                 CustomText(
                   course.title ?? '',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,),
-
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
 
                 const SizedBox(height: 8),
 
@@ -91,21 +95,21 @@ class VerticalCourseCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      height: 28,
-                      child: CustomButton(
-                        width: 22.w,
                         height: 28,
-                        title: 'SHOW LESSONS',
-                        backgroundColor:  Colors.white,
-                        textColor:  Colors.black,
-                        onPressed: () {
-                          Zap.toNamed(
-                            AppRoutes.programSubscribeRoundsWidget,
-                            arguments:course.id,
-                          );
-                        },
-                      ),
-                    ),
+                        child: CustomButton(
+                            width: 22.w,
+                            height: 28,
+                            title: 'SHOW LESSONS',
+                            backgroundColor: Colors.white,
+                            textColor: Colors.black,
+                            onPressed: () async {
+                                Zap.toNamed(
+                                  AppRoutes.courseDetailsScreen,
+                                  arguments: course.id, // pass course ID
+                                );
+
+
+                            })),
                   ],
                 ),
               ],

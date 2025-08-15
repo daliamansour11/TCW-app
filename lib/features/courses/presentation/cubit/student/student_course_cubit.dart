@@ -1,13 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tcw/features/courses/data/models/lesson_model.dart';
+import 'package:tcw/features/courses/data/models/lesson_model.dart' hide LessonModel;
 import 'package:tcw/features/courses/data/repositories/student_course_repository_impl.dart';
 import 'package:tcw/features/courses/data/models/enrolled_course_model.dart';
 import 'package:tcw/features/courses/data/models/last_viewed_model.dart';
 import 'package:tcw/features/courses/data/models/certificate_model.dart';
 
-import '../../../../../core/apis/api_response.dart';
+import '../../../../programmes/data/models/program_detail_model.dart';
+import '../../../data/models/course_model.dart';
 import '../../../data/models/student_course_details.dart';
-import '../../../data/models/wishlist_model.dart';
 
 part 'student_course_state.dart';
 class StudentCourseCubit extends Cubit<StudentCourseState> {
@@ -55,23 +55,9 @@ class StudentCourseCubit extends Cubit<StudentCourseState> {
       emit(StudentCourseError(result.message ?? 'Failed to load courses'));
     }
   }
-  Future<void> updateLastViewed(
-      int courseId,
-      int sectionId,
-      int lessonId,
-      ) async {
-    emit(StudentCourseLoading());
-
-    final response = await repository.updateLastViewed(courseId, sectionId, lessonId);
-
-    if (response.isError) {
-      emit(StudentCourseError(response.message ?? 'Failed to update last viewed'));
-    } else {
-      await getLastViewed();
-    }
+  Future<void> updateLastViewed(LastViewedModel model) async {
+    final response = await repository.updateLastViewed(model);
   }
-
-
 
   Future<void> downloadCertificate(int courseId) async {
     emit(StudentCourseLoading());
@@ -93,62 +79,16 @@ class StudentCourseCubit extends Cubit<StudentCourseState> {
     emit(StudentCourseError(result.message ?? 'Failed to load course details'));
     }
   }
-  List<LessonModel> favoriteLessons = [];
-  List<LessonModel> courseLessons = [];
+Future<void> getStudentCourseDetails(int courseId) async {
+  emit(StudentCourseLoading());
+  final result = await repository.getStudentCourseDetails(courseId);
 
-  Future<ApiResponse<WishlistModel>?> toggleLessonWishlist(int lessonId) async {
-    emit(StudentCourseLoading());
-
-    ApiResponse<WishlistModel>? response;
-
-    try {
-      response = await repository.toggleLikeOnCourses(lessonId);
-
-      if (response.data != null) {
-        final wishlistModel = response.data!;
-
-        LessonModel? addedLesson;
-        try {
-          addedLesson = favoriteLessons.firstWhere((lesson) => lesson.id == lessonId);
-        } catch (e) {
-          addedLesson = null;
-        }
-
-        if (wishlistModel.isWishlisted) {
-          if (addedLesson == null) {
-            LessonModel? lessonToAdd;
-            try {
-              lessonToAdd = courseLessons.firstWhere((lesson) => lesson.id == lessonId);
-            } catch (e) {
-              lessonToAdd = null;
-            }
-            if (lessonToAdd != null) {
-              favoriteLessons.add(lessonToAdd);
-            }
-          }
-        } else {
-          favoriteLessons.removeWhere((lesson) => lesson.id == lessonId);
-        }
-
-        emit(CourseLessonsLoaded(List.from(favoriteLessons)));
-      } else {
-        emit(StudentCourseError(response.message ?? 'Failed to toggle lesson wishlist'));
-      }
-    } catch (e) {
-      emit(StudentCourseError('Error: ${e.toString()}'));
-    }
-
-    return response;
+  if (result.isSuccess && result.data != null) {
+    emit(StudentCourseDetailsLoaded(result.data! as EnrolledCourseDetailsModel));
+  } else {
+    emit(StudentCourseError(result.message ?? 'Failed to load program details'));
   }
+}
 
-  Future<void> getStudentCourseDetails(int courseId) async {
-    emit(StudentCourseLoading());
-    final result = await repository.getStudentCourseDetails(courseId);
 
-    if (result.isSuccess && result.data != null) {
-      emit(StudentCourseDetailsLoaded(result.data!));
-    } else {
-      emit(StudentCourseError(result.message ?? 'Failed to load program details'));
-    }
-  }
 }
