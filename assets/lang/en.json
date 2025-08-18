@@ -106,7 +106,6 @@
  "no_event_description": "No description available for this event.",
  "more_options": "More Options",
  "help": "Help",
-
  "live_questions": "Live Questions (Q&A)",
  "type_your_answer": "Type your answer...",
  "poll_questions": "Poll Questions",
@@ -118,7 +117,6 @@
  "join_now": "Join Now",
  "cannot_open_meeting_link": "Cannot open meeting link",
  "no_description": "No description available",
-
  "no_notifications": "No notifications found.",
  "today": "Today",
  "yesterday": "Yesterday",
@@ -132,9 +130,7 @@
  "greeting": "Hello",
  "your_goals": "Your Goals",
  "no_recent_reels": "No recently watched reels",
-
  "no_programs_found": "No Programs found",
-
  "mentor": "Mentor",
  "cancel": "Cancel",
  "Log_out": "Log Out",
@@ -152,8 +148,7 @@
   "points": "Points",
   "rewards": "Rewards",
   "mentor": "Mentor",
-  "no_events": "No Events Available",
-  "logout_confirmation": "Are You Surce You Want To Log Out?"
+  "no_events": "No Events Available"
  },
  "search_courses": "Search courses...",
  "see_all": "See All",
@@ -161,8 +156,6 @@
   "something_went_wrong": "Something went wrong",
   "general": "Error"
  },
- "retry": "Retry",
-
  "reel": {
   "post_success": "Reel Posted Successfully",
   "earned_points": "You've earned 500 points — keep going, more rewards await!",
@@ -205,8 +198,6 @@
   "saving": "Saving...",
   "save_changes": "Save Changes",
   "retry": "Retry"
-
-
  },
  "media": {
   "tcw_media": "TCW Media",
@@ -214,15 +205,12 @@
   "create_reel": "Create a Reel",
   "no_reels_found": "No reels found",
   "create_first_reel": "Create your first reel"
- }
-,
-
+ },
  "first_name": "First Name",
  "last_name": "Last Name",
  "phone_number": "Phone Number",
  "phone_placeholder": "0123456789",
  "save_changes": "Save Changes",
-
  "support_and_complaints": "Support & Complaints",
  "complaint_title": "Complaint Title",
  "enter_complaint_title": "Enter your complaint title",
@@ -234,19 +222,15 @@
  "submit": "Submit",
  "complaint_submitted": "Your complaint has been submitted!",
  "edit": "Edit",
- "delete": "Delete"
-,
-
+ "delete": "Delete",
  "verification": "Verification",
  "email_verification_message": "Enter your email address below and we’ll send you a verification code to confirm it’s you.",
  "enter_email": "Enter your email",
  "continue": "Continue",
-
  "forgot_password": "Forgot Password",
  "forget_password_message": "Enter the email we will send the OTP in this email to reset your password",
  "please_enter_email": "Please enter your email",
  "enter_valid_email": "Enter a valid email",
-
  "login_page": "Log in Page",
  "password": "Password",
  "please_enter_password": "Please enter your password",
@@ -255,9 +239,7 @@
  "log_in": "Log In",
  "dont_have_account": "Don’t have an account? ",
  "register_now": "Register Now",
- "welcome_user": "Welcome {}"
-,
-
+ "welcome_user": "Welcome {}",
  "onboarding": {
   "title1": "Start Your Learning Journey!",
   "desc1": "Explore a learning platform designed just for you...",
@@ -268,8 +250,7 @@
   "skip": "Skip",
   "continue": "Continue",
   "get_started": "Get Started"
- }
-,
+ },
  "auth": {
   "register": "Register",
   "enter_name": "Enter your Name",
@@ -287,86 +268,85 @@
   "passwords_not_match": "Passwords do not match",
   "have_account": "Have an account? ",
   "login": "Login",
+  "logout_confirmation": "Are You Sure You Want To Log Out?",
+
   "welcome": "Welcome {}",
-
-  "lesson": {
-   "zero": "No lessons",
-   "one": "1 Lesson",
-   "other": "{} Lessons"
-  },
-  "hour": {
-   "zero": "No hours",
-   "one": "1 Hour",
-   "other": "{count} Hours"
-  },
-  "available": "{count} Available",
-
-  "reset_password": "Reset Password",
-  "enter_new_password": "Enter the new password",
-  "new_password": "Enter new password",
-  "confirm_password": "Confirm password",
-  "continue": "Continue",
-
+  "confirm_password": "Confirm Password",
+  "continue": "Continue"
+ },
+ "lesson": {
+  "zero": "No lessons",
+  "one": "1 Lesson",
+  "other": "{} Lessons"
+ },
+ "hour": {
+  "zero": "No hours",
+  "one": "1 Hour",
+  "other": "{count} Hours"
+ },
+ "available": "{count} Available",
+ "reset_password": "Reset Password",
+ "enter_new_password": "Enter the new password",
+ "new_password": "Enter new password",
+ "confirm_password": "Confirm password",
+ "continue": "Continue",
  "programs": "Programs",
  "something_went_wrong": "Something went wrong or took too long.",
  "retry": "Retry",
  "no_courses_found": "No courses found.",
-
-
-  "home": "Home",
-  "ai": "AI",
-  "events": "Events",
-  "tcw_media": "TCW Media",
-  "profile": "Profile"
- ,
+ "home": "Home",
+ "ai": "AI",
+ "events": "Events",
+ "tcw_media": "TCW Media",
  "no_lessons_available": "No lessons available",
  "lesson_with_number": "Lesson {count}",
  "minutes": "{count} min",
  "task_pending": "Task Pending",
- "minutes_label": "min"
-,
+ "minutes_label": "min",
  "lessons_count": "{count} Lessons",
  "duration_hours": "{count} Hours",
  "available_seats": "{count} Available",
  "lesson_label": "Lesson",
-
-  "lesson_default_title": "",
-  "lesson_default_description": "",
+ "lesson_default_title": "",
+ "lesson_default_description": "",
  "day": "1 Day Left",
-  "price_format": "{} SAR",
-  "enroll_now": " Enroll Now",
-
+ "price_format": "{} SAR",
+ "enroll_now": " Enroll Now",
  "lessons": "{count} Lessons",
  "hours": "{count} h",
  "available": "{count} Available",
  "lesson": "Lesson {number}",
  "favorite": "Favorite",
  "unfavorite": "Unfavorite",
-
-
  "duration_default": "1:30 m",
  "duration_minutes": "{minutes} m",
- "duration_hours_minutes": "{hours}h {minutes}m"
-,
+ "duration_hours_minutes": "{hours}h {minutes}m",
  "wish_list": "Wish List",
-  "wishlist_empty": "Your wishlist is empty",
-
+ "wishlist_empty": "Your wishlist is empty",
  "ask_hint": "What do you want to ask?",
  "search": "Search",
  "think": "Think",
-
  "welcome_bot": "WELCOME TO TCW Bot",
  "how_can_i_help": "How can I help you today?",
-  "lesson_number": "Lesson {number}",
-
+ "lesson_number": "Lesson {number}",
  "lesson_duration": "{duration} min",
-  "invalid_date": "Invalid date",
-
+ "invalid_date": "Invalid date",
  "available_seat": "{count} seat(s)",
+ "lessons": "{count} Lessons",
+ "hours": "{count} Hours",
+ "available": "{count} Seats",
+ "coach": "Coach",
+ "more_details": "More Details",
+ "no_title": "No Title"
 
- }
+
+
+
+
 
 }
+
+
 
 
 

@@ -101,18 +101,19 @@ class CourseItemWidget extends StatelessWidget {
                 children: [
                   buildItemSection(
                     Icons.book_outlined,
-                    plural('lesson', course.lessonsCount ?? 0),
+                    plural('lesson', course.lessonsCount ?? 0)  
                   ),
                   buildItemSection(
                     Icons.access_time,
-                    plural('hour', course.totalDurationMinutes ?? 0),
+                    plural('hour', course.totalDurationMinutes ?? 0)
                   ),
                   buildItemSection(
                     Icons.chair_outlined,
-                    plural('available', course.availableSeats ?? 0),
+                      plural('available', course.availableSeats ?? 0)
                   ),
                 ],
               ),
+
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: CircleAvatar(

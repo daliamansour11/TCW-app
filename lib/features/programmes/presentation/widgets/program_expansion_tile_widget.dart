@@ -80,15 +80,17 @@ class _ProgramUnSubscribeExpansionTileWidgetState extends State<ProgramUnSubscri
                 children: [
                   buildItemSection(
                     Icons.book_outlined,
-                    'lessons'.tr(namedArgs: {'count': '${widget.detail.data?.sections.first.totalLessons ?? 12}'}),
+                      plural('lesson', widget.detail.data?.sections?.first.totalLessons ?? 0)
                   ),
                   buildItemSection(
                     Icons.access_time,
-                    'hours'.tr(namedArgs: {'count': '${widget.detail.data?.sections.first.durationMinutes ?? 12}'}),
+                      plural('hours', widget.detail.data?.sections.first.durationMinutes ??12)
+
                   ),
                   buildItemSection(
                     Icons.people_alt_outlined,
-                    'available'.tr(namedArgs: {'count': '${widget.detail.data?.availableSeats ?? 10}'}),
+                      plural('available', widget.detail.data?.availableSeats ?? 10)
+
                   ),
                 ],
               ),
@@ -200,10 +202,11 @@ class _ProgramUnSubscribeExpansionTileWidgetState extends State<ProgramUnSubscri
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: CustomText(
-                tr('lesson_number', namedArgs: {'number': '${index + 1}'}),
+                  tr('lesson_number', namedArgs: {'number': '${index + 1}'}),
                   fontSize: 12,
                   color: AppColors.primaryColor,
                 ),
+
               ),
               const Spacer(),
               const Icon(Icons.access_time, size: 16),
@@ -211,9 +214,10 @@ class _ProgramUnSubscribeExpansionTileWidgetState extends State<ProgramUnSubscri
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: CustomText(
-               plural('duration', lesson.durationMinutes ?? 90)
-                 , fontSize: 12,
+                  plural('duration', lesson.durationMinutes ?? 90, namedArgs: {'count': '${lesson.durationMinutes ?? 90}'}),
+                  fontSize: 12,
                 ),
+
               ),
 
 

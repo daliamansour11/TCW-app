@@ -13,8 +13,8 @@ class ReelEarnPointsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return  CustomContainer(
       borderRadius: 16,
-      fullPadding:const EdgeInsets.all(10),
-      color:const Color.fromRGBO(183, 146, 79, 0.1),
+      fullPadding: EdgeInsets.all(10),
+      color: Color.fromRGBO(183, 146, 79, 0.1),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 5,

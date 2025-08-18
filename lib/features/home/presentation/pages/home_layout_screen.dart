@@ -62,7 +62,7 @@ class _HomeLayoutState extends State<HomeLayout> {
         inactiveIcon: AssetUtils.eventGray,
       ),
       _TabItem(
-        labelMap: {'en': 'AI', 'ar': 'الذكاءالاصطناعي'},
+        labelMap: {'en': 'AI', 'ar': 'الذكاء الاصطناعي'},
         activeIcon: AssetUtils.chatBot,
         inactiveIcon: AssetUtils.chatBot,
       ),

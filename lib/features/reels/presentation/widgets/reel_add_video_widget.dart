@@ -25,7 +25,7 @@ class ReelAddVideoWidget extends StatelessWidget {
         spacing: 10,
         children: [
           const SizedBox.shrink(),
-          const Icon(Icons.video_call, size: 50, color: Colors.grey),
+           Icon(Icons.video_call, size: 50, color: Colors.grey),
           CustomText(
             'reel.Add_the_Video_here'.tr(),
             color: AppColors.primaryColor,

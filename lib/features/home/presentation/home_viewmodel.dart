@@ -13,7 +13,7 @@ class HomeViewmodel {
   static void logOutDialog(BuildContext context) {
     customIconDialog(
       context,
-      title: 'profile.logout_confirmation'.tr(),     icon: const Icon(
+      title: 'auth.logout_confirmation'.tr(),     icon: const Icon(
         Icons.logout_outlined,
         color: Colors.red,
       ),

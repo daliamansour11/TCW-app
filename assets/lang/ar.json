@@ -191,6 +191,7 @@
   "Add_the_Video_here": "اضف الفيديو هنا",
   "Click_to_add_video": "اضغط هنا لاضافة فيديو",
   "Create_Reel_earn_points": "انشئ ريل لتربح 500 نقطه",
+  "check_my_points": "التحقق من نقاطي",
   "post_button": "نشر الريل",
   "like": "إعجاب",
   "comment": "تعليق",
@@ -288,13 +289,12 @@
   "have_account": "هل لديك حساب؟ ",
   "login": "تسجيل الدخول",
   "welcome": "مرحبًا {}",
-
   "reset_password": "إعادة تعيين كلمة المرور",
   "enter_new_password": "أدخل كلمة المرور الجديدة",
   "new_password": "أدخل كلمة المرور الجديدة",
   "confirm_password": "تأكيد كلمة المرور",
-  "continue": "متابعة",
-
+  "continue": "متابعة"
+ },
  "lesson": {
   "zero": "لا يوجد دروس",
   "one": "درس واحد",
@@ -305,8 +305,7 @@
   "one": "ساعة واحدة",
   "other": "{count} ساعات"
  },
- "available": "{count} متاح"
-,
+
 
  "programs": "البرامج",
  "something_went_wrong": "حدث خطأ أو استغرق الأمر وقتًا طويلاً.",
@@ -346,7 +345,6 @@
   "enroll_now": "سجل الآن",
   "duration_minutes": "{minutes} دقائق",
   "wish_list": "قائمة الرغبات",
-  "lessons": "الدروس",
   "wishlist_empty": "قائمة الرغبات فارغة",
 
  "ask_hint": "ماذا تريد أن تسأل؟",
@@ -360,56 +358,13 @@
  "invalid_date": "تاريخ غير صالح",
 
  "available_seat": "{count} مقعد",
-  "all_groups": "جميع المجموعات ({count})",
-  "my_groups": "مجموعاتي ({count})",
-  "explore_groups": "استكشاف المجموعات ({count})",
-  "lessons": "{count} درس",
-  "hours": "{count} س",
-  "available": "{count} متاح",
+
+  "lesson_duration": "{duration} دقيقة",
   "lesson_number": "الدرس {number}",
-  "lesson_duration": "{duration} دقيقة"
-
-
-
-
-
-
-}
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  "duration": {
+   "one": "{count} دقيقة",
+   "other": "{count} دقائق"
+  }}
 
 
 
