@@ -22,8 +22,7 @@ abstract class StudentCourseDatasources {
   Future<ApiResponse<bool>> updateLastViewed(LastViewedModel lastViewedData);
   Future<ApiResponse<LastViewedModel>> getLastViewed();
   Future<ApiResponse<List<LessonModel>>> getCourseLessons(int courseId);
-
-  }
+  Future<ApiResponse<EnrolledCourseDetailsModel>> getEnrolledCourseDetails(int courseId) ;}
 
 class StudentCourseDatasourceImpl implements StudentCourseDatasources {
   @override
@@ -122,9 +121,9 @@ class StudentCourseDatasourceImpl implements StudentCourseDatasources {
   }
 
   @override
-Future<ApiResponse<EnrolledCourseDetailsModel>> getStudentCourseDetails(int courseId) async {
+Future<ApiResponse<EnrolledCourseDetailsModel>> getEnrolledCourseDetails(int courseId) async {
   final response = await ApiService.instance
-      .get(ApiUrl.studentCourse.getCourseClassRoomDetails(courseId)
+      .get(ApiUrl.studentCourse.getCourseClassRoomDetails(1)
   ,withToken: true,
   );
 

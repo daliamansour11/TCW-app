@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tcw/features/courses/data/models/lesson_model.dart' hide LessonModel;
-import 'package:tcw/features/courses/data/repositories/student_course_repository_impl.dart';
-import 'package:tcw/features/courses/data/models/enrolled_course_model.dart';
-import 'package:tcw/features/courses/data/models/last_viewed_model.dart';
-import 'package:tcw/features/courses/data/models/certificate_model.dart';
+import '../../../data/models/lesson_model.dart' hide LessonModel;
+import '../../../data/repositories/student_course_repository_impl.dart';
+import '../../../data/models/enrolled_course_model.dart';
+import '../../../data/models/last_viewed_model.dart';
+import '../../../data/models/certificate_model.dart';
 
+import '../../../../../core/utils/asset_utils.dart';
 import '../../../../programmes/data/models/program_detail_model.dart';
-import '../../../data/models/course_model.dart';
 import '../../../data/models/student_course_details.dart';
 
 part 'student_course_state.dart';
@@ -16,6 +16,7 @@ class StudentCourseCubit extends Cubit<StudentCourseState> {
   final StudentCourseRepository repository;
 
   List<EnrolledCourseModel> enrolledCourses = [];
+bool isEmpty= false;
 
   Future<void> fetchEnrolledCourses({
     int limit = 10,
@@ -23,28 +24,26 @@ class StudentCourseCubit extends Cubit<StudentCourseState> {
     String? search,
   }) async {
     emit(StudentCourseLoading());
+
     final result = await repository.getEnrolledCourses(
       limit: limit,
       offset: offset,
-      search: search
-
+      search: search,
     );
 
-    print('Fetched courses: ${result.data?.length ?? 0}');
+    await Future.delayed(const Duration(milliseconds: 500));
 
-    if (result.isSuccess && result.data != null) {
-      final newCourses = result.data!;
-      if (offset == 1) {
-        enrolledCourses = [];
-      }
+    List<EnrolledCourseModel> newCourses = result.data ?? [];
 
-      enrolledCourses.addAll(newCourses);
 
-      emit(EnrolledCoursesLoaded(List.from(enrolledCourses)));
-    } else {
-      emit(StudentCourseError(result.message ?? 'Failed to load courses'));
+    if (offset == 1) {
+      enrolledCourses = [];
     }
+    enrolledCourses.addAll(newCourses);
+
+    emit(EnrolledCoursesLoaded(List.from(enrolledCourses)));
   }
+
     Future<void> getLastViewed() async {
 
     final result = await repository.getLastViewed();
@@ -79,12 +78,12 @@ class StudentCourseCubit extends Cubit<StudentCourseState> {
     emit(StudentCourseError(result.message ?? 'Failed to load course details'));
     }
   }
-Future<void> getStudentCourseDetails(int courseId) async {
+Future<void> getEnrolledCourseDetails(int courseId) async {
   emit(StudentCourseLoading());
-  final result = await repository.getStudentCourseDetails(courseId);
+  final result = await repository.getEnrolledCourseDetails(courseId);
 
   if (result.isSuccess && result.data != null) {
-    emit(StudentCourseDetailsLoaded(result.data! as EnrolledCourseDetailsModel));
+    emit(StudentCourseDetailsLoaded(result.data! as EnrolledCourseModel));
   } else {
     emit(StudentCourseError(result.message ?? 'Failed to load program details'));
   }

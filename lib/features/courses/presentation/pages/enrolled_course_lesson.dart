@@ -7,8 +7,6 @@ import '../../../../core/constansts/context_extensions.dart';
 import '../../../../core/shared/shared_widget/custom_text.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/lesson_model.dart';
-import '../../data/models/quiz_model.dart';
-import '../../data/models/section_model.dart';
 import '../../data/models/task_model.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../tasks/presentation/cubit/course_tasks_cubit.dart';
@@ -17,12 +15,13 @@ import 'package:zapx/zapx.dart';
 import '../../../../core/shared/shared_widget/custom_container.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../auth/data/models/user_model.dart';
+import '../../../programmes/data/models/program_detail_model.dart' hide LessonModel;
 import '../../data/models/last_viewed_model.dart';
 
-import '../../data/models/student_course_details.dart';
 import '../widgets/video_player_widget.dart';
 class LessonScreen extends StatefulWidget {
   final LessonModel lesson;
+// final  Instructor? instructorName;
   const LessonScreen({super.key, required this.lesson, });
 
   @override
@@ -108,7 +107,6 @@ class _LessonScreenState extends State<LessonScreen> {
     } catch (_) {}
   }
 
-
   void _startYoutubeWatchTimer() {
     int secondsWatched = 0;
     _youtubeWatchTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -130,15 +128,13 @@ class _LessonScreenState extends State<LessonScreen> {
     if (!_addedToContinueWatching) {
       _updateLastViewed();
     }
-
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     final lesson = widget.lesson;
-    final videoUrl = lesson.videoLinkPath?? '';
-    final SectionModel? section ;
+    final videoUrl = lesson.videoLinkPath?.linkPath ?? '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -171,7 +167,7 @@ class _LessonScreenState extends State<LessonScreen> {
                 child: _isYoutubeUrl(videoUrl)
                     ? VideoPlayerWidget(
                   videoUrl: videoUrl,
-                   lessonId: widget.lesson.id??0,
+                  lessonId: widget.lesson.id??0,
                 )
                     : _controller != null && _controller!.value.isInitialized
                     ? AspectRatio(
@@ -182,7 +178,7 @@ class _LessonScreenState extends State<LessonScreen> {
               ),
 
               _buildLessonInfo(context),
-              // _buildTaskCard(context,section),
+              _buildTaskCard(context),
               _buildSectionHeader(
                 'Continue Watching',
                 trailing: Row(
@@ -272,7 +268,7 @@ class _LessonScreenState extends State<LessonScreen> {
     );
   }
 
-  Widget _buildTaskItem(BuildContext context,  Quiz quiz) {
+  Widget _buildTaskItem(BuildContext context, Task task) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -281,7 +277,7 @@ class _LessonScreenState extends State<LessonScreen> {
           children: [
             Expanded(
               child: Text(
-                quiz.title,
+                task.title,
                 style: context.textTheme.headlineSmall?.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -306,7 +302,7 @@ class _LessonScreenState extends State<LessonScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          quiz.description ?? '',
+          task.description ?? '',
           style: context.textTheme.bodyMedium?.copyWith(
             color: const Color(0xFF9E9E9E),
             fontSize: 14,
@@ -448,24 +444,7 @@ class _LessonScreenState extends State<LessonScreen> {
     );
   }
 
-  Widget _buildTaskCard(BuildContext context, SectionModel section) {
-    final tasks = section.quizs ?? [];
-
-    if (tasks.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: _boxDecoration(),
-        child: Center(
-          child: Text(
-            'No Task Found.',
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: const Color(0xFF9E9E9E),
-            ),
-          ),
-        ),
-      );
-    }
-
+  Widget _buildTaskCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _boxDecoration(),
@@ -479,35 +458,66 @@ class _LessonScreenState extends State<LessonScreen> {
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 12),
-          CustomContainer(
-            padding: 16,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Task',
-                      style: context.textTheme.headlineSmall?.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+
+          BlocConsumer<CourseTasksCubit, CourseTasksState>(
+              listener: (context, state) {
+                if (state is CourseTasksError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message)),
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state is CourseTasksLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is CourseTasksLoaded || state is CourseLoadingMore) {
+                  final tasks = (state is CourseTasksLoaded)
+                      ? state.tasks
+                      : context.read<CourseTasksCubit>().allTasks;
+                  if (tasks.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'No Task Found.',
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            color: const Color(0xFF9E9E9E),
+                          ),
+                        ),
                       ),
+                    );
+                  }
+                  return CustomContainer(
+                    padding: 16,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Task',
+                              style: context.textTheme.headlineSmall?.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              '1/2',
+                              style: context.textTheme.bodyMedium?.copyWith(
+                                color: const Color(0xFF9E9E9E),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        ...tasks.map((task) => _buildTaskItem(context, task)).toList(),
+                      ],
                     ),
-                    Text(
-                      '${tasks.length} total',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFF9E9E9E),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ...tasks.map((task) => _buildTaskItem(context, task)).toList(),
-              ],
-            ),
-          ),
+                  );
+                }
+                return const SizedBox.shrink();
+              })
         ],
       ),
     );

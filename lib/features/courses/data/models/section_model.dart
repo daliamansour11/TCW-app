@@ -1,72 +1,43 @@
-import 'package:tcw/features/courses/data/models/lesson_model.dart';
 
-import 'course_detail_model.dart';
+import 'lesson_model.dart';
+import 'quiz_model.dart';
 
 class SectionModel {
+  int id;
+  String title;
+  String description;
+  List<LessonModel> lessons;
+  List<Quiz> quizs;
+
   SectionModel({
     required this.id,
-    required this.topic,
+    required this.title,
     required this.description,
-    required this.courseId,
-    this.createdAt,
-    this.updatedAt,
     required this.lessons,
-    this.durationMinutes,
-    required this.totalLessons,
-    required this.instructor,
+    required this.quizs,
   });
 
   factory SectionModel.fromJson(Map<String, dynamic> json) {
     return SectionModel(
-      id: json['id'],
-      topic: json['topic'] ?? '',
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
       description: json['description'] ?? '',
-      courseId: json['course_id'],
-      createdAt: DateTime.tryParse(json['created_at'] ?? ''),
-      updatedAt: DateTime.tryParse(json['updated_at'] ?? ''),
-      lessons: List<Lesson>.from(
-          (json['lessons'] as List).map((x) => Lesson.fromJson(x))),
-      durationMinutes: json['duration_minutes'],
-      totalLessons: json['totalLessons'],
-      instructor: json['instructor'] == null ? null : Instructor.fromJson(json['instructor']),
-
+      lessons: (json['lessons'] as List<dynamic>? ?? [])
+          .map((e) => LessonModel.fromJson(e))
+          .toList(),
+      quizs: (json['quizs'] as List<dynamic>? ?? [])
+          .map((e) => Quiz.fromJson(e))
+          .toList(),
     );
   }
-  final int id;
-  final List<Lesson> lessons;
-  final String topic;
-  final String description;
-  final int courseId;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final int? durationMinutes;
-  final int? totalLessons;
-  final Instructor? instructor;
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'lessons': lessons.map((x) => x.toJson()).toList(),
-      };
-}
-class Instructor {
-
-  factory Instructor.fromJson(Map<String, dynamic> json) {
-    print('Instructor JSON: $json'); // DEBUG
-    return Instructor(
-      id: json['id'],
-      name: json['name'],
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'lessons': lessons.map((e) => e.toJson()).toList(),
+      'quizs': quizs.map((e) => e.toJson()).toList(),
+    };
   }
-  Instructor({
-    required this.id,
-    required this.name,
-  });
-
-  final int? id;
-  final String? name;
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-  };
 }

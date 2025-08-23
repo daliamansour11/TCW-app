@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcw/core/shared/shared_widget/app_bar.dart';
@@ -34,7 +35,7 @@ class _ProgrammesViewState extends State<ProgrammesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Programs'),
+      appBar:  CustomAppBar(title: 'program'.tr()),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(10),
         child: Column(

@@ -69,7 +69,7 @@ class CustomButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(radius ?? 25),
         side: borderColor == null && border == null
             ? BorderSide.none
-              :border?? BorderSide(color: borderColor ?? Colors.transparent,width: 1),
+              :border?? BorderSide(color: borderColor ?? Colors.black,width: 1),
           )),
         ),
         onPressed: onPressed,

@@ -9,16 +9,18 @@ final List<EnrolledCourseModel>courses;
   @override
   Widget build(BuildContext context) {
     return   SizedBox(
-      height: 400, // Adjust height as needed
+      height: 500,
       child:  ListView.separated(
+        scrollDirection: Axis.vertical,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         itemCount: courses.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final course = courses[index];
-          return VerticalCourseCard(course: course);
+          return VerticalCourseCard(course: course,);
         },
       )
     );
   }
 }
+// course: course

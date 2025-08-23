@@ -32,7 +32,6 @@ class _ProgrameDetailsViewState extends State<ProgrameDetailsView> {
   @override
   void initState() {
     super.initState();
-    // Fetch notifications when screen loads
     context.read<ProgramCubit>()..fetchProgramDetails(widget.programId);
     Timer(Duration(seconds: 12), () {
       if (mounted) {

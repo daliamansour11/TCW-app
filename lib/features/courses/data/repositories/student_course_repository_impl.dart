@@ -20,7 +20,7 @@ abstract class StudentCourseRepository {
   Future<ApiResponse<bool>> updateLastViewed(LastViewedModel lastViewedData);
   Future<ApiResponse<LastViewedModel>> getLastViewed();
   Future<ApiResponse<List<LessonModel>>> getCourseLessons(int courseId) ;
-  Future<ApiResponse<EnrolledCourseDetailsModel>> getStudentCourseDetails(int courseId);
+  Future<ApiResponse<EnrolledCourseDetailsModel>> getEnrolledCourseDetails(int courseId);
 }
 
 class StudentCourseRepositoryImpl implements StudentCourseRepository {
@@ -67,7 +67,7 @@ class StudentCourseRepositoryImpl implements StudentCourseRepository {
   }
 
 @override
-Future<ApiResponse<EnrolledCourseDetailsModel>> getStudentCourseDetails(int courseId) {
-  return studentCourseDatasourceImpl.getStudentCourseDetails(courseId);
+Future<ApiResponse<EnrolledCourseDetailsModel>> getEnrolledCourseDetails(int courseId) {
+  return studentCourseDatasourceImpl.getEnrolledCourseDetails(courseId);
 
 }}

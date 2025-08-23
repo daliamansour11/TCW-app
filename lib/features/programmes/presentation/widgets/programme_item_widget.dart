@@ -15,7 +15,7 @@ import 'package:zap_sizer/zap_sizer.dart';
 import 'package:zapx/zapx.dart';
 
 class ProgrammeItemWidget extends StatefulWidget {
-  const ProgrammeItemWidget({required this.program, super.key}); // Fixed props
+  const ProgrammeItemWidget({required this.program, super.key});
   final ProgramModel program;
   @override
   State<ProgrammeItemWidget> createState() => _ProgrammeItemWidgetState();

@@ -79,7 +79,6 @@
  "failedToUpdateFavorite": "فشل تحديث حالة المفضلة",
  "lessonNumber": "الدرس {number}",
  "hoursSuffix": "س",
- "programs": "البرامج",
  "searchCourses": "ابحث عن الدورات...",
  "errorMessage": "حدث خطأ أو استغرق الأمر وقتًا طويلاً.",
  "noCoursesFound": "لم يتم العثور على أي دورات",
@@ -153,22 +152,7 @@
  "reel_posted_successfully": "تم نشر الريل بنجاح",
  "watch_my_reel": "شاهد الريل الخاص بي",
  "check_my_points": "تحقق من نقاطي",
- "profile": {
-  "reels_history": "تاريخ الريلز",
-  "no_recent_reels": "لا يوجد ريلز مشاهدة مؤخراً",
-  "continue_watching": "تابع المشاهدة",
-  "your_programs": "برامجك",
-  "no_programs_found": "لم يتم العثور على برامج",
-  "your_mentor": "مرشدك",
-  "contact_now": "تواصل الآن",
-  "weekly_study_hours": "ساعات الدراسة الأسبوعية",
-  "notification": "الإشعارات",
-  "points": "النقاط",
-  "rewards": "المكافآت",
-  "mentor": "مرشد",
-  "logout_confirmation": "هل تريد تسجيل الخروج",
-  "no_events": "لا يوجد فعاليات حاليا"
- },
+
  "search_courses": "ابحث في البرامج...",
  "see_all": "عرض الكل",
  "error": {
@@ -306,7 +290,22 @@
   "other": "{count} ساعات"
  },
 
-
+ "profile": {
+  "reels_history": "تاريخ الريلز",
+  "no_recent_reels": "لا يوجد ريلز مشاهدة مؤخراً",
+  "continue_watching": "تابع المشاهدة",
+  "your_programs": "برامجك",
+  "no_programs_found": "لم يتم العثور على برامج",
+  "your_mentor": "مرشدك",
+  "contact_now": "تواصل الآن",
+  "weekly_study_hours": "ساعات الدراسة الأسبوعية",
+  "notification": "الإشعارات",
+  "points": "النقاط",
+  "rewards": "المكافآت",
+  "mentor": "مرشد",
+  "logout_confirmation": "هل تريد تسجيل الخروج",
+  "no_events": "لا يوجد فعاليات حاليا"
+ },
  "programs": "البرامج",
  "something_went_wrong": "حدث خطأ أو استغرق الأمر وقتًا طويلاً.",
  "retry": "إعادة المحاولة",
@@ -330,7 +329,6 @@
   "events": "الأحداث",
   "ai": "الذكاء الاصطناعي",
   "tcw_media": "وسائط TCW",
-  "profile": "الملف الشخصي",
   "day": "متبقي يوم واحد",
   "continueWatching": "تابع المشاهدة",
 

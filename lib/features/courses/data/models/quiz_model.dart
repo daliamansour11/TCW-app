@@ -1,26 +1,36 @@
 
-class QuizModel {
+class Quiz {
+  int id;
+  int sectionId;
+  String title;
+  String description;
+  int marks;
 
-  QuizModel({
+  Quiz({
     required this.id,
+    required this.sectionId,
     required this.title,
-    required this.isCompleted,
+    required this.description,
+    required this.marks,
   });
 
-  factory QuizModel.fromJson(Map<String, dynamic> json) {
-    return QuizModel(
-      id: json['id'],
-      title: json['title'],
-      isCompleted: json['is_completed'],
+  factory Quiz.fromJson(Map<String, dynamic> json) {
+    return Quiz(
+      id: json['id'] ?? 0,
+      sectionId: json['sectionId'] ?? 0,
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      marks: json['marks'] ?? 0,
     );
   }
-  final int id;
-  final String title;
-  final bool isCompleted;
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'is_completed': isCompleted,
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'sectionId': sectionId,
+      'title': title,
+      'description': description,
+      'marks': marks,
+    };
+  }
 }

@@ -6,10 +6,13 @@ import 'package:tcw/core/shared/shared_widget/search_filter_widget.dart';
 import 'package:tcw/features/courses/presentation/cubit/student/student_course_cubit.dart';
 import 'package:tcw/features/courses/presentation/widgets/courses_list_screen.dart';
 
+import '../../data/models/enrolled_course_model.dart';
+
 class MyCourseScreen extends StatelessWidget {
   const MyCourseScreen({
-    super.key,
+    super.key, required this.course,
   });
+ final List<EnrolledCourseModel> course;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +36,8 @@ class MyCourseScreen extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child :  BlocBuilder<StudentCourseCubit, StudentCourseState>(
+                    child :
+                    BlocBuilder<StudentCourseCubit, StudentCourseState>(
                       builder: (context, state) {
                         if (state is StudentCourseLoading) {
                           return const Center(child: CircularProgressIndicator());

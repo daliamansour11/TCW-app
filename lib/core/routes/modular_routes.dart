@@ -22,8 +22,8 @@ import '../../features/chat/presentation/pages/inbox_screen.dart';
 import '../../features/chat/presentation/pages/message_screen.dart';
 import '../../features/chat/presentation/pages/new_group_screen.dart';
 import '../../features/courses/data/datasources/course_datasource_impl.dart';
-import '../../features/courses/data/models/course_model.dart';
-import '../../features/courses/data/models/student_course_details.dart' hide Lesson;
+import '../../features/courses/data/models/enrolled_course_model.dart';
+import '../../features/courses/data/models/lesson_model.dart';
 import '../../features/courses/data/models/task_model.dart';
 import '../../features/courses/data/repositories/course_repository_impl.dart';
 import '../../features/courses/data/repositories/student_course_repository_impl.dart';
@@ -31,10 +31,10 @@ import '../../features/courses/presentation/cubit/course/courses_cubit.dart';
 import '../../features/courses/presentation/cubit/student/student_course_cubit.dart';
 import '../../features/courses/presentation/pages/course_datails_screen.dart';
 import '../../features/courses/presentation/pages/courses_screen.dart';
-import '../../features/courses/presentation/pages/lesson_screen.dart';
-import 'package:tcw/features/programmes/data/models/program_detail_model.dart' show Lesson, LessonModel;
+import '../../features/courses/presentation/pages/enrolled_course_lesson.dart';
 import '../../features/courses/presentation/pages/my_library_screen.dart';
 import '../../features/courses/presentation/pages/recommended_courses_screen.dart';
+import '../../features/courses/presentation/widgets/program_subscribe_rounds_widget.dart';
 import '../../features/event/data/data_source/event_data_source.dart';
 import '../../features/event/data/models/event_model.dart';
 import '../../features/event/data/repositories/event_repository.dart';
@@ -47,7 +47,7 @@ import '../../features/payment/presentation/pages/new_card_screen.dart';
 import '../../features/payment/presentation/pages/proccess_pay_screen.dart';
 import '../../features/profile/presentation/pages/profile_screen.dart';
 import '../../features/programmes/data/data_source/program_datasource_impl.dart';
-import '../../features/programmes/data/models/program_detail_model.dart' show Lesson, LessonModel;
+import '../../features/programmes/data/models/program_detail_model.dart' hide LessonModel;
 import '../../features/programmes/data/repositories/programs_repository_impl.dart';
 import '../../features/programmes/presentation/cubit/program_cubit.dart';
 
@@ -88,7 +88,6 @@ import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../../features/chat/data/chat_data_source/chat_data_source.dart';
 import '../../features/chat/data/chat_repo/chat_repositories.dart';
 import '../../features/chat/presentation/cubit/_chat_cubit.dart';
-import '../../features/courses/data/models/lesson_model.dart' hide LessonModel;
 
 TransitionType transition = TransitionType.upToDown;
 
@@ -97,6 +96,14 @@ List<ModularRoute> modularRoutes = <ChildRoute>[
     AppRoutes.aiScreen,
     child: (_, ModularArguments args) => const AiScreen(),
     transition: transition,
+  ),
+  ChildRoute(
+    AppRoutes.programSubscribeRoundsWidget,
+    child: (_, ModularArguments args) => BlocProvider(
+      create: (_) => StudentCourseCubit(StudentCourseRepositoryImpl()),
+
+    child:     ProgramSubscribeRoundsWidget(args.data as int)),
+    transition: TransitionType.fadeIn,
   ),
   ChildRoute(
     AppRoutes.start,
@@ -394,7 +401,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
     child: (_, ModularArguments args) =>BlocProvider(
 
         create: (context) => StudentCourseCubit((StudentCourseRepositoryImpl()))..fetchEnrolledCourses(limit: 10, offset: 1),
-        child:   const MyCourseScreen()),
+        child:    MyCourseScreen(course: [args.data as EnrolledCourseModel],)),
 
     transition: transition,
   ),
@@ -413,7 +420,7 @@ BlocProvider(create: (_) => NotificationCubit(NotificationRepositoryImp(Notifica
             create: (_) => StudentCourseCubit(StudentCourseRepositoryImpl()),
           ),
         ],
-        child: LessonScreen(lesson: lesson,
+        child: LessonScreen(lesson:lesson,
         ),
       );
     },

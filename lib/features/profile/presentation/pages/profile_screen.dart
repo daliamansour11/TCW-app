@@ -16,6 +16,7 @@ import '../../../courses/data/models/enrolled_course_model.dart';
 import '../../../courses/presentation/courses_viewmodel.dart';
 import '../../../courses/presentation/cubit/course/courses_cubit.dart';
 import '../../../courses/presentation/cubit/student/student_course_cubit.dart';
+import '../../../courses/presentation/pages/your_courses_screen.dart';
 import '../../../courses/presentation/widgets/courses_list_screen.dart';
 import '../../../event/presentation/cubit/event_cubit.dart';
 import '../../../event/presentation/widgets/event_slider_widget.dart';
@@ -75,6 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -118,14 +120,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                             Text('error.something_went_wrong'.tr()),
+                            Text('error.something_went_wrong'.tr()),
                             const SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: () {
                                 setState(() {
                                   _isLoading = true;
                                 });
-                                context.read<EventCubit>()..getEvents();
+                                context.read<EventCubit>()
+                                  ..getEvents();
                                 Timer(const Duration(seconds: 12), () {
                                   if (mounted) {
                                     setState(() {
@@ -134,15 +137,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   }
                                 });
                               },
-                              child:  Text('retry'.tr()),
+                              child: Text('retry'.tr()),
                             ),
                           ],
                         ),
                       );
-                    }          } else if (state is EventLoaded) {
+                    }
+                  } else if (state is EventLoaded) {
                     final events = state.event.data;
                     if (events.isEmpty) {
-                      return  Center(child: CustomText('profile.no_events'.tr()));
+                      return Center(child: CustomText('profile.no_events'
+                          .tr()));
                     }
                     return EventSlider(events: events);
                   } else if (state is EventError) {
@@ -205,13 +210,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               width: 120,
                               height: 150,
                               fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(
-                                color: Colors.grey.shade300,
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                color: Colors.grey,
-                                child: const Icon(Icons.error, color: Colors.white),
-                              ),
+                              placeholder: (context, url) =>
+                                  Container(
+                                    color: Colors.grey.shade300,
+                                  ),
+                              errorWidget: (context, url, error) =>
+                                  Container(
+                                    color: Colors.grey,
+                                    child: const Icon(
+                                        Icons.error, color: Colors.white),
+                                  ),
                             ),
                           ),
                         );
@@ -247,21 +255,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _buildSectionHeader('profile.your_programs'.tr(),
                   trailing: ShowMoreTileWidget(
                     onTab: () => Zap.toNamed(AppRoutes.coursesScreen),
-                  )),
-              BlocBuilder<StudentCourseCubit, StudentCourseState>(
+                  )), BlocBuilder<StudentCourseCubit, StudentCourseState>(
                 builder: (context, state) {
                   if (state is StudentCourseLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is EnrolledCoursesLoaded) {
                     if (state.courses.isEmpty) {
-                      return Center(child: Text('profile.no_programs_found'.tr()));
+                      return Center(child: Text('profile.no_programs_found'
+                          .tr()));
                     }
                     return CourseListScreen(courses: state.courses);
                   } else if (state is StudentCourseError) {
-                    return Center(
+                   return Center(
                         child: Text('${'error'.tr()}: ${state.message}'));
                   } else {
-                    return Center(child: Text('error.something_went_wrong'.tr()));
+                    return Center(
+                        child: Text('error.something_went_wrong'.tr()));
                   }
                 },
               ),
@@ -298,7 +307,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-
   Widget _buildStats() {
     return BlocBuilder<NotificationCubit, NotificationState>(
       builder: (context, state) {

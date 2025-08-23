@@ -38,5 +38,5 @@ class CourseLessonsLoaded extends StudentCourseState {
 }
 class StudentCourseDetailsLoaded extends StudentCourseState {
   StudentCourseDetailsLoaded(this.enrolledCourseDetails);
-  final EnrolledCourseDetailsModel enrolledCourseDetails ;
+  final EnrolledCourseModel enrolledCourseDetails ;
 }
